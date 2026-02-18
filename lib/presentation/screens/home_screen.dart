@@ -516,60 +516,64 @@ class _GameCard extends StatelessWidget {
                 ],
               )
             : Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(12),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: UpperText(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w900,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        selected
+                            ? Icons.check_circle_rounded
+                            : Icons.radio_button_unchecked_rounded,
+                        color: color,
+                        size: selected ? 24 : 20,
+                      ),
+                    ],
                   ),
-                  child: Icon(icon, color: color, size: 28),
-                ),
-                const Spacer(),
-                Icon(
-                  selected
-                      ? Icons.check_circle_rounded
-                      : Icons.radio_button_unchecked_rounded,
-                  color: color,
-                  size: selected ? 24 : 20,
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            UpperText(
-              title,
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 4),
-            UpperText(
-              subtitle,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const Spacer(),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(999),
+                  const SizedBox(height: 4),
+                  UpperText(
+                    subtitle,
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const Spacer(),
+                  Center(
+                    child: Icon(
+                      icon,
+                      size: 84,
+                      color: color.withValues(alpha: 0.82),
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: UpperText(
+                      levelHint,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                        color: color,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              child: UpperText(
-                levelHint,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w900,
-                  color: color,
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
