@@ -9,6 +9,7 @@ import '../viewmodels/home_selection_view_model.dart';
 import '../viewmodels/settings_view_model.dart';
 import '../widgets/upper_text.dart';
 import 'activity_selection_screen.dart';
+import 'progress_dashboard_screen.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -98,6 +99,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         title: const UpperText('LECTOESCRITURA'),
         actions: [
+          IconButton(
+            tooltip: 'PROGRESO',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => ProgressDashboardScreen(
+                    category: selection.category,
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(Icons.insights_rounded),
+          ),
           IconButton(
             tooltip: 'AJUSTES',
             onPressed: () {

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../application/providers/app_providers.dart';
+import '../../../core/utils/pedagogical_feedback.dart';
 import '../../../core/utils/text_utils.dart';
 import '../../../domain/models/activity_result.dart';
 import '../../../domain/models/activity_type.dart';
@@ -140,7 +141,11 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
 
     await ref
         .read(progressViewModelProvider.notifier)
-        .registerAttempt(itemId: item.id, correct: isCorrect);
+        .registerAttempt(
+          itemId: item.id,
+          correct: isCorrect,
+          activityType: ActivityType.escribirPalabra,
+        );
 
     if (!mounted) {
       return;
@@ -151,7 +156,10 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
         _correct++;
         _streak++;
         _bestStreak = max(_bestStreak, _streak);
-        _feedback = 'CORRECTO';
+        _feedback = PedagogicalFeedback.positive(
+          streak: _streak,
+          totalCorrect: _correct,
+        );
         _triesForCurrent = 0;
       });
 
@@ -176,7 +184,12 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
       _incorrect++;
       _streak = 0;
       _triesForCurrent++;
-      _feedback = 'INTÉNTALO DE NUEVO';
+      _feedback = PedagogicalFeedback.writingError(
+        expected: expected,
+        input: _controller.text,
+        attemptsOnCurrent: _triesForCurrent,
+        showHints: settings.showHints,
+      );
     });
   }
 

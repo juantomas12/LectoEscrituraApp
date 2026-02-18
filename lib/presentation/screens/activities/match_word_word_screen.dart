@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../application/providers/app_providers.dart';
+import '../../../core/utils/pedagogical_feedback.dart';
 import '../../../domain/models/activity_result.dart';
 import '../../../domain/models/activity_type.dart';
 import '../../../domain/models/category.dart';
@@ -157,7 +158,11 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
     if (pair.id.isNotEmpty) {
       await ref
           .read(progressViewModelProvider.notifier)
-          .registerAttempt(itemId: pair.id, correct: isCorrect);
+          .registerAttempt(
+            itemId: pair.id,
+            correct: isCorrect,
+            activityType: ActivityType.palabraPalabra,
+          );
     }
 
     if (!mounted) {
@@ -171,11 +176,17 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
         _correct++;
         _streak++;
         _bestStreak = max(_bestStreak, _streak);
-        _feedback = 'CORRECTO';
+        _feedback = PedagogicalFeedback.positive(
+          streak: _streak,
+          totalCorrect: _correct,
+        );
       } else {
         _incorrect++;
         _streak = 0;
-        _feedback = 'INTÉNTALO DE NUEVO';
+        _feedback = PedagogicalFeedback.retry(
+          attemptsOnCurrent: _incorrect,
+          hint: expected.isNotEmpty ? expected.substring(0, 1) : null,
+        );
       }
       _selectedLeft = null;
     });

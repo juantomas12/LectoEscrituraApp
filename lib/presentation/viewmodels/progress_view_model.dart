@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/app_providers.dart';
 import '../../domain/models/activity_result.dart';
+import '../../domain/models/activity_type.dart';
 import '../../domain/models/category.dart';
 import '../../domain/models/item_progress.dart';
 import '../../domain/models/level.dart';
@@ -14,6 +15,10 @@ class ProgressViewModel extends Notifier<int> {
 
   Map<String, ItemProgress> getItemProgressMap() {
     return ref.read(progressRepositoryProvider).getItemProgressMap();
+  }
+
+  Map<String, ItemProgress> getGameItemProgressMap() {
+    return ref.read(progressRepositoryProvider).getGameItemProgressMap();
   }
 
   List<ActivityResult> getAllResults() {
@@ -32,10 +37,15 @@ class ProgressViewModel extends Notifier<int> {
   Future<void> registerAttempt({
     required String itemId,
     required bool correct,
+    ActivityType? activityType,
   }) async {
     await ref
         .read(progressRepositoryProvider)
-        .registerItemAttempt(itemId: itemId, correct: correct);
+        .registerItemAttempt(
+          itemId: itemId,
+          correct: correct,
+          activityType: activityType,
+        );
     state++;
   }
 
@@ -52,4 +62,9 @@ final progressViewModelProvider = NotifierProvider<ProgressViewModel, int>(
 final itemProgressMapProvider = Provider<Map<String, ItemProgress>>((ref) {
   ref.watch(progressViewModelProvider);
   return ref.read(progressViewModelProvider.notifier).getItemProgressMap();
+});
+
+final gameItemProgressMapProvider = Provider<Map<String, ItemProgress>>((ref) {
+  ref.watch(progressViewModelProvider);
+  return ref.read(progressViewModelProvider.notifier).getGameItemProgressMap();
 });
