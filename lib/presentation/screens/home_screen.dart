@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/app_providers.dart';
+import '../../domain/models/activity_type.dart';
 import '../../domain/models/category.dart';
 import '../../domain/models/difficulty.dart';
-import '../../domain/models/level.dart';
 import '../viewmodels/home_selection_view_model.dart';
-import '../viewmodels/progress_view_model.dart';
 import '../viewmodels/settings_view_model.dart';
 import '../widgets/upper_text.dart';
 import 'activity_selection_screen.dart';
@@ -29,7 +28,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final settings = ref.watch(settingsViewModelProvider);
     final profile = ref.watch(localProfileProvider);
     final colorScheme = Theme.of(context).colorScheme;
-    ref.watch(progressViewModelProvider);
 
     if (!_didSyncSettings) {
       _didSyncSettings = true;
@@ -37,32 +35,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         selectionVm.setDifficulty(settings.defaultDifficulty);
       });
     }
-
-    final allResults = ref.read(progressViewModelProvider.notifier).getAllResults();
-    final categoryResults = allResults
-        .where((result) => result.category == selection.category && result.accuracy >= 0.7)
-        .toList();
-
-    int masteredFor(AppLevel level) {
-      return categoryResults
-          .where((result) => result.level == level)
-          .map((result) => result.activityType)
-          .toSet()
-          .length;
-    }
-
-    final canLevel2 = masteredFor(AppLevel.uno) >= 2;
-    final canLevel3 = masteredFor(AppLevel.dos) >= 1;
-    final canLevel4 = masteredFor(AppLevel.tres) >= 1;
-    final canLevel5 = masteredFor(AppLevel.cuatro) >= 1;
-
-    final isCurrentUnlocked = switch (selection.level) {
-      AppLevel.uno => true,
-      AppLevel.dos => canLevel2,
-      AppLevel.tres => canLevel3,
-      AppLevel.cuatro => canLevel4,
-      AppLevel.cinco => canLevel5,
-    };
 
     return Scaffold(
       appBar: AppBar(
@@ -234,66 +206,57 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       UpperText(
-                        'NIVEL',
+                        'JUEGO',
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 10),
-                      _LevelCard(
-                        title: 'NIVEL 1',
-                        subtitle: 'IMAGEN Y PALABRA',
-                        icon: Icons.looks_one_rounded,
-                        selected: selection.level == AppLevel.uno,
-                        locked: false,
+                      _GameCard(
+                        title: ActivityType.imagenPalabra.label,
+                        subtitle: 'UNE PALABRA CON SU IMAGEN',
+                        icon: Icons.link_rounded,
+                        selected: selection.game == ActivityType.imagenPalabra,
                         color: const Color(0xFF2F9E8A),
-                        onTap: () => selectionVm.setLevel(AppLevel.uno),
+                        onTap: () =>
+                            selectionVm.setGame(ActivityType.imagenPalabra),
                       ),
                       const SizedBox(height: 8),
-                      _LevelCard(
-                        title: 'NIVEL 2',
-                        subtitle: 'PALABRA CON PALABRA',
-                        icon: Icons.looks_two_rounded,
-                        selected: selection.level == AppLevel.dos,
-                        locked: !canLevel2,
+                      _GameCard(
+                        title: ActivityType.escribirPalabra.label,
+                        subtitle: 'COPIA, SEMICOPIA O DICTADO',
+                        icon: Icons.keyboard_alt_rounded,
+                        selected: selection.game == ActivityType.escribirPalabra,
                         color: const Color(0xFFF29F05),
-                        onTap: canLevel2
-                            ? () => selectionVm.setLevel(AppLevel.dos)
-                            : null,
+                        onTap: () =>
+                            selectionVm.setGame(ActivityType.escribirPalabra),
                       ),
                       const SizedBox(height: 8),
-                      _LevelCard(
-                        title: 'NIVEL 3',
-                        subtitle: 'IMAGEN CON FRASES',
-                        icon: Icons.looks_3_rounded,
-                        selected: selection.level == AppLevel.tres,
-                        locked: !canLevel3,
+                      _GameCard(
+                        title: ActivityType.palabraPalabra.label,
+                        subtitle: 'UNE PALABRAS IGUALES O RELACIONADAS',
+                        icon: Icons.compare_arrows_rounded,
+                        selected: selection.game == ActivityType.palabraPalabra,
                         color: const Color(0xFF6E77E5),
-                        onTap: canLevel3
-                            ? () => selectionVm.setLevel(AppLevel.tres)
-                            : null,
+                        onTap: () =>
+                            selectionVm.setGame(ActivityType.palabraPalabra),
                       ),
                       const SizedBox(height: 8),
-                      _LevelCard(
-                        title: 'NIVEL 4',
-                        subtitle: 'LETRAS Y VOCALES (2 SÍLABAS)',
-                        icon: Icons.looks_4_rounded,
-                        selected: selection.level == AppLevel.cuatro,
-                        locked: !canLevel4,
+                      _GameCard(
+                        title: ActivityType.imagenFrase.label,
+                        subtitle: 'UNE CADA FRASE CON SU IMAGEN',
+                        icon: Icons.text_snippet_rounded,
+                        selected: selection.game == ActivityType.imagenFrase,
                         color: const Color(0xFF00A5B5),
-                        onTap: canLevel4
-                            ? () => selectionVm.setLevel(AppLevel.cuatro)
-                            : null,
+                        onTap: () => selectionVm.setGame(ActivityType.imagenFrase),
                       ),
                       const SizedBox(height: 8),
-                      _LevelCard(
-                        title: 'NIVEL 5',
-                        subtitle: 'LETRAS Y VOCALES (3+ SÍLABAS)',
-                        icon: Icons.looks_5_rounded,
-                        selected: selection.level == AppLevel.cinco,
-                        locked: !canLevel5,
+                      _GameCard(
+                        title: ActivityType.letraObjetivo.label,
+                        subtitle: 'MISMO JUEGO CON NIVELES 1, 2 Y 3',
+                        icon: Icons.spellcheck_rounded,
+                        selected: selection.game == ActivityType.letraObjetivo,
                         color: const Color(0xFFDA5E2A),
-                        onTap: canLevel5
-                            ? () => selectionVm.setLevel(AppLevel.cinco)
-                            : null,
+                        onTap: () =>
+                            selectionVm.setGame(ActivityType.letraObjetivo),
                       ),
                     ],
                   ),
@@ -301,35 +264,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               const SizedBox(height: 16),
               FilledButton.icon(
-                onPressed: isCurrentUnlocked
-                    ? () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => ActivitySelectionScreen(
-                              category: selection.category,
-                              level: selection.level,
-                              difficulty: selection.difficulty,
-                            ),
-                          ),
-                        );
-                      }
-                    : null,
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => ActivitySelectionScreen(
+                        category: selection.category,
+                        activityType: selection.game,
+                        difficulty: selection.difficulty,
+                      ),
+                    ),
+                  );
+                },
                 icon: const Icon(Icons.play_arrow_rounded, size: 30),
                 label: const UpperText('EMPEZAR ACTIVIDAD'),
               ),
               const SizedBox(height: 10),
-              if (!isCurrentUnlocked)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: UpperText(
-                    'PARA DESBLOQUEAR, COMPLETA EL NIVEL ANTERIOR CON BUEN RESULTADO',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.primary,
-                          fontWeight: FontWeight.w700,
-                        ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
               Center(
                 child: UpperText(
                   'TODO EL CONTENIDO FUNCIONA OFFLINE',
@@ -434,13 +383,12 @@ class _CategoryCard extends StatelessWidget {
   }
 }
 
-class _LevelCard extends StatelessWidget {
-  const _LevelCard({
+class _GameCard extends StatelessWidget {
+  const _GameCard({
     required this.title,
     required this.subtitle,
     required this.icon,
     required this.selected,
-    required this.locked,
     required this.color,
     required this.onTap,
   });
@@ -449,9 +397,8 @@ class _LevelCard extends StatelessWidget {
   final String subtitle;
   final IconData icon;
   final bool selected;
-  final bool locked;
   final Color color;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -466,15 +413,11 @@ class _LevelCard extends StatelessWidget {
             color: selected ? color : color.withValues(alpha: 0.30),
             width: selected ? 3 : 1.3,
           ),
-          color: locked
-              ? Colors.grey.shade100
-              : selected
-              ? color.withValues(alpha: 0.16)
-              : Colors.white,
+          color: selected ? color.withValues(alpha: 0.16) : Colors.white,
         ),
         child: Row(
           children: [
-            Icon(icon, color: locked ? Colors.grey.shade500 : color, size: 34),
+            Icon(icon, color: color, size: 34),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
@@ -493,12 +436,8 @@ class _LevelCard extends StatelessWidget {
               ),
             ),
             Icon(
-              locked
-                  ? Icons.lock_rounded
-                  : selected
-                  ? Icons.check_circle_rounded
-                  : Icons.arrow_forward_ios_rounded,
-              color: locked ? Colors.grey.shade600 : color,
+              selected ? Icons.check_circle_rounded : Icons.arrow_forward_ios_rounded,
+              color: color,
               size: selected ? 24 : 18,
             ),
           ],

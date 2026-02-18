@@ -77,8 +77,11 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
     final filteredBySyllables = source.where((item) {
       final word = item.word ?? '';
       final syllables = estimateSpanishSyllables(word);
-      if (widget.level == AppLevel.cuatro) {
-        return syllables == 2;
+      if (widget.level == AppLevel.uno) {
+        return syllables <= 2;
+      }
+      if (widget.level == AppLevel.dos) {
+        return syllables >= 2 && syllables <= 3;
       }
       return syllables >= 3;
     }).toList();
@@ -90,25 +93,11 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
     final targetSize = widget.difficulty == Difficulty.primaria ? 4 : 6;
     final half = (targetSize / 2).ceil();
 
-    final candidateLetters = widget.level == AppLevel.cuatro
-        ? ['A', 'E', 'I', 'O', 'U']
-        : [
-            'A',
-            'E',
-            'I',
-            'O',
-            'U',
-            'L',
-            'M',
-            'N',
-            'P',
-            'R',
-            'S',
-            'T',
-            'C',
-            'D',
-            'B',
-          ];
+    final candidateLetters = switch (widget.level) {
+      AppLevel.uno => ['A', 'E', 'I', 'O', 'U'],
+      AppLevel.dos => ['A', 'E', 'I', 'O', 'U', 'L', 'M', 'N', 'P', 'R', 'S'],
+      _ => ['A', 'E', 'I', 'O', 'U', 'L', 'M', 'N', 'P', 'R', 'S', 'T', 'C', 'D', 'B'],
+    };
 
     String selectedLetter = candidateLetters.first;
     List<Item> positives = [];
@@ -330,9 +319,14 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             UpperText(
-                              widget.level == AppLevel.cuatro
-                                  ? 'BUSCA PALABRAS DE 2 SÍLABAS CON LA LETRA $_targetLetter'
-                                  : 'BUSCA PALABRAS DE 3 O MÁS SÍLABAS CON LA LETRA $_targetLetter',
+                              switch (widget.level) {
+                                AppLevel.uno =>
+                                  'NIVEL 1: BUSCA VOCALES EN PALABRAS CORTAS CON LA LETRA $_targetLetter',
+                                AppLevel.dos =>
+                                  'NIVEL 2: BUSCA LETRAS FRECUENTES EN PALABRAS MEDIAS CON LA LETRA $_targetLetter',
+                                _ =>
+                                  'NIVEL 3: BUSCA LETRAS EN PALABRAS LARGAS CON LA LETRA $_targetLetter',
+                              },
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(height: 8),

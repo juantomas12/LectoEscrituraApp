@@ -1,28 +1,28 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../domain/models/activity_type.dart';
 import '../../domain/models/category.dart';
 import '../../domain/models/difficulty.dart';
-import '../../domain/models/level.dart';
 
 class HomeSelectionState {
   const HomeSelectionState({
     required this.category,
-    required this.level,
+    required this.game,
     required this.difficulty,
   });
 
   final AppCategory category;
-  final AppLevel level;
+  final ActivityType game;
   final Difficulty difficulty;
 
   HomeSelectionState copyWith({
     AppCategory? category,
-    AppLevel? level,
+    ActivityType? game,
     Difficulty? difficulty,
   }) {
     return HomeSelectionState(
       category: category ?? this.category,
-      level: level ?? this.level,
+      game: game ?? this.game,
       difficulty: difficulty ?? this.difficulty,
     );
   }
@@ -33,7 +33,7 @@ class HomeSelectionViewModel extends Notifier<HomeSelectionState> {
   HomeSelectionState build() {
     return const HomeSelectionState(
       category: AppCategory.cosasDeCasa,
-      level: AppLevel.uno,
+      game: ActivityType.imagenPalabra,
       difficulty: Difficulty.primaria,
     );
   }
@@ -42,8 +42,8 @@ class HomeSelectionViewModel extends Notifier<HomeSelectionState> {
     state = state.copyWith(category: value);
   }
 
-  void setLevel(AppLevel value) {
-    state = state.copyWith(level: value);
+  void setGame(ActivityType value) {
+    state = state.copyWith(game: value);
   }
 
   void setDifficulty(Difficulty value) {
