@@ -241,6 +241,7 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
         final hovering = candidateData.isNotEmpty;
         return AnimatedContainer(
           duration: const Duration(milliseconds: 130),
+          width: double.infinity,
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: hovering
@@ -286,6 +287,7 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
     final remainingItems = _items
         .where((item) => !_classifiedByItem.containsKey(item.id))
         .toList();
+    final nextItem = remainingItems.isNotEmpty ? remainingItems.first : null;
 
     final withLetter = _items
         .where((item) => _classifiedByItem[item.id] == true)
@@ -378,45 +380,74 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                       ),
                     const SizedBox(height: 14),
                     UpperText(
-                      'TARJETAS',
+                      isMobile ? 'TARJETA ACTUAL' : 'TARJETAS',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 10,
-                      runSpacing: 10,
-                      children: remainingItems.map((item) {
-                        return Draggable<Item>(
-                          data: item,
-                          feedback: Material(
-                            color: Colors.transparent,
-                            child: SizedBox(
-                              width: 170,
-                              child: Card(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Column(
-                                    children: [
-                                      SizedBox(
-                                        height: 78,
-                                        child: ActivityAssetImage(assetPath: item.imageAsset),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      UpperText(item.word ?? ''),
-                                    ],
+                    if (isMobile)
+                      Column(
+                        children: [
+                          if (nextItem != null)
+                            Draggable<Item>(
+                              data: nextItem,
+                              feedback: Material(
+                                color: Colors.transparent,
+                                child: SizedBox(
+                                  width: 220,
+                                  child: _LetterCard(item: nextItem, mobileLarge: true),
+                                ),
+                              ),
+                              childWhenDragging: Opacity(
+                                opacity: 0.3,
+                                child: _LetterCard(item: nextItem, mobileLarge: true),
+                              ),
+                              child: _LetterCard(item: nextItem, mobileLarge: true),
+                            )
+                          else
+                            const UpperText('NO QUEDAN TARJETAS'),
+                          const SizedBox(height: 8),
+                          UpperText(
+                            'QUEDAN: ${remainingItems.length}',
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                        ],
+                      )
+                    else
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: remainingItems.map((item) {
+                          return Draggable<Item>(
+                            data: item,
+                            feedback: Material(
+                              color: Colors.transparent,
+                              child: SizedBox(
+                                width: 170,
+                                child: Card(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Column(
+                                      children: [
+                                        SizedBox(
+                                          height: 78,
+                                          child: ActivityAssetImage(assetPath: item.imageAsset),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        UpperText(item.word ?? ''),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          childWhenDragging: Opacity(
-                            opacity: 0.3,
+                            childWhenDragging: Opacity(
+                              opacity: 0.3,
+                              child: _LetterCard(item: item),
+                            ),
                             child: _LetterCard(item: item),
-                          ),
-                          child: _LetterCard(item: item),
-                        );
-                      }).toList(),
-                    ),
+                          );
+                        }).toList(),
+                      ),
                   ],
                 ),
               ),
@@ -426,13 +457,18 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
 }
 
 class _LetterCard extends StatelessWidget {
-  const _LetterCard({required this.item});
+  const _LetterCard({required this.item, this.mobileLarge = false});
 
   final Item item;
+  final bool mobileLarge;
 
   @override
   Widget build(BuildContext context) {
-    final cardWidth = MediaQuery.sizeOf(context).width < 900 ? 150.0 : 176.0;
+    final cardWidth = mobileLarge
+        ? min(MediaQuery.sizeOf(context).width - 40, 280.0)
+        : MediaQuery.sizeOf(context).width < 900
+        ? 150.0
+        : 176.0;
     return SizedBox(
       width: cardWidth,
       child: Card(
@@ -441,7 +477,7 @@ class _LetterCard extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(
-                height: 88,
+                height: mobileLarge ? 120 : 88,
                 child: ActivityAssetImage(
                   assetPath: item.imageAsset,
                   semanticsLabel: item.word,
