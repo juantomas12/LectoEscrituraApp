@@ -8,6 +8,7 @@ import '../widgets/upper_text.dart';
 import 'activities/match_image_phrase_screen.dart';
 import 'activities/match_image_word_screen.dart';
 import 'activities/match_word_word_screen.dart';
+import 'activities/letter_target_screen.dart';
 import 'activities/write_word_screen.dart';
 
 class ActivitySelectionScreen extends StatelessWidget {
@@ -31,6 +32,8 @@ class ActivitySelectionScreen extends StatelessWidget {
       ],
       AppLevel.dos => [ActivityType.palabraPalabra],
       AppLevel.tres => [ActivityType.imagenFrase],
+      AppLevel.cuatro => [ActivityType.letraObjetivo],
+      AppLevel.cinco => [ActivityType.letraObjetivo],
     };
 
     return Scaffold(
@@ -117,6 +120,7 @@ class ActivitySelectionScreen extends StatelessWidget {
       ActivityType.escribirPalabra => Icons.keyboard_alt_rounded,
       ActivityType.palabraPalabra => Icons.compare_arrows_rounded,
       ActivityType.imagenFrase => Icons.text_snippet_rounded,
+      ActivityType.letraObjetivo => Icons.spellcheck_rounded,
     };
   }
 
@@ -154,6 +158,17 @@ class ActivitySelectionScreen extends StatelessWidget {
             builder: (_) => MatchImagePhraseScreen(
               category: category,
               difficulty: difficulty,
+            ),
+          ),
+        );
+        return;
+      case ActivityType.letraObjetivo:
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => LetterTargetScreen(
+              category: category,
+              difficulty: difficulty,
+              level: level,
             ),
           ),
         );

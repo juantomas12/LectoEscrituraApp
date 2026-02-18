@@ -57,3 +57,38 @@ int countWords(String phrase) {
     phrase,
   ).split(' ').where((value) => value.isNotEmpty).length;
 }
+
+String normalizeWordForLetters(String value) {
+  return normalizeForComparison(value, ignoreAccents: true).replaceAll(' ', '');
+}
+
+bool containsLetter(String word, String letter) {
+  final normalizedWord = normalizeWordForLetters(word);
+  final normalizedLetter = normalizeWordForLetters(letter);
+  if (normalizedWord.isEmpty || normalizedLetter.isEmpty) {
+    return false;
+  }
+  return normalizedWord.contains(normalizedLetter);
+}
+
+int estimateSpanishSyllables(String rawWord) {
+  final word = normalizeWordForLetters(rawWord).replaceAll(RegExp(r'[^A-ZÑ]'), '');
+  if (word.isEmpty) {
+    return 0;
+  }
+
+  const vowels = 'AEIOU';
+  var syllables = 0;
+  var previousWasVowel = false;
+
+  for (var i = 0; i < word.length; i++) {
+    final char = word[i];
+    final isVowel = vowels.contains(char);
+    if (isVowel && !previousWasVowel) {
+      syllables++;
+    }
+    previousWasVowel = isVowel;
+  }
+
+  return syllables == 0 ? 1 : syllables;
+}

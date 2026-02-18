@@ -186,8 +186,10 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
     required Item item,
     required bool showHints,
     required double imageHeight,
+    required bool compactDesktop,
   }) {
     final matchedWord = _matchedByItem[item.id];
+    final imageZoom = compactDesktop ? 1.35 : 1.0;
 
     return Card(
       child: Padding(
@@ -197,9 +199,12 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
             SizedBox(
               height: imageHeight,
               child: matchedWord != null
-                  ? ActivityAssetImage(
-                      assetPath: item.imageAsset,
-                      semanticsLabel: item.word,
+                  ? Transform.scale(
+                      scale: imageZoom,
+                      child: ActivityAssetImage(
+                        assetPath: item.imageAsset,
+                        semanticsLabel: item.word,
+                      ),
                     )
                   : DragTarget<String>(
                       onWillAcceptWithDetails: (details) {
@@ -213,9 +218,12 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
                         return Stack(
                           fit: StackFit.expand,
                           children: [
-                            ActivityAssetImage(
-                              assetPath: item.imageAsset,
-                              semanticsLabel: item.word,
+                            Transform.scale(
+                              scale: imageZoom,
+                              child: ActivityAssetImage(
+                                assetPath: item.imageAsset,
+                                semanticsLabel: item.word,
+                              ),
                             ),
                             AnimatedContainer(
                               duration: const Duration(milliseconds: 140),
@@ -312,7 +320,7 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
                 padding: const EdgeInsets.only(top: 6),
                 child: UpperText(
                   'PISTA: ${item.word?.substring(0, 1) ?? ''}...',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -337,8 +345,8 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
         : 2;
     final desiredColumns = _items.length >= 4 ? (_items.length / 2).ceil() : 2;
     final crossAxisCount = desiredColumns.clamp(2, maxColumnsByWidth).toInt();
-    final imageHeight = isDesktop ? 155.0 : 190.0;
-    final gridItemExtent = isDesktop ? 315.0 : 360.0;
+    final imageHeight = isDesktop ? 175.0 : 190.0;
+    final gridItemExtent = isDesktop ? 295.0 : 360.0;
 
     return Scaffold(
       appBar: AppBar(
@@ -396,6 +404,7 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
                                     item: nextItem,
                                     showHints: settings.showHints,
                                     imageHeight: 210,
+                                    compactDesktop: false,
                                   ),
                                 ],
                               );
@@ -416,6 +425,7 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
                                 item: item,
                                 showHints: settings.showHints,
                                 imageHeight: imageHeight,
+                                compactDesktop: isDesktop,
                               );
                             },
                           ),

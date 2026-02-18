@@ -3,6 +3,7 @@ enum ActivityType {
   escribirPalabra,
   palabraPalabra,
   imagenFrase,
+  letraObjetivo,
 }
 
 extension ActivityTypeX on ActivityType {
@@ -11,6 +12,7 @@ extension ActivityTypeX on ActivityType {
     ActivityType.escribirPalabra => 'ESCRIBIR_PALABRA',
     ActivityType.palabraPalabra => 'PALABRA_PALABRA',
     ActivityType.imagenFrase => 'IMAGEN_FRASE',
+    ActivityType.letraObjetivo => 'LETRA_OBJETIVO',
   };
 
   String get label => switch (this) {
@@ -18,6 +20,7 @@ extension ActivityTypeX on ActivityType {
     ActivityType.escribirPalabra => 'IMAGEN CON PALABRA PARA ESCRIBIRLA',
     ActivityType.palabraPalabra => 'RELACIONAR PALABRAS CON PALABRAS',
     ActivityType.imagenFrase => 'RELACIONAR FRASES CON IMÁGENES',
+    ActivityType.letraObjetivo => 'LETRA OBJETIVO CON PALABRAS E IMÁGENES',
   };
 
   static ActivityType fromKey(String key) {

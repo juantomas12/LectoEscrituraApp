@@ -199,9 +199,11 @@ class _MatchImagePhraseScreenState
     required Item item,
     required bool showHints,
     required double imageHeight,
+    required bool compactDesktop,
   }) {
     final matched = _matchedByItem[item.id];
     final expected = _expectedPhraseByItem[item.id] ?? '';
+    final imageZoom = compactDesktop ? 1.35 : 1.0;
 
     return Card(
       child: Padding(
@@ -210,9 +212,12 @@ class _MatchImagePhraseScreenState
           children: [
             SizedBox(
               height: imageHeight,
-              child: ActivityAssetImage(
-                assetPath: item.imageAsset,
-                semanticsLabel: expected,
+              child: Transform.scale(
+                scale: imageZoom,
+                child: ActivityAssetImage(
+                  assetPath: item.imageAsset,
+                  semanticsLabel: expected,
+                ),
               ),
             ),
             const SizedBox(height: 8),
@@ -263,7 +268,7 @@ class _MatchImagePhraseScreenState
                 padding: const EdgeInsets.only(top: 6),
                 child: UpperText(
                   'PISTA: ${countWords(expected)} PALABRAS',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -288,8 +293,8 @@ class _MatchImagePhraseScreenState
         : 2;
     final desiredColumns = _items.length >= 4 ? (_items.length / 2).ceil() : 2;
     final crossAxisCount = desiredColumns.clamp(2, maxColumnsByWidth).toInt();
-    final imageHeight = isDesktop ? 155.0 : 190.0;
-    final gridItemExtent = isDesktop ? 325.0 : 370.0;
+    final imageHeight = isDesktop ? 175.0 : 190.0;
+    final gridItemExtent = isDesktop ? 305.0 : 370.0;
 
     return Scaffold(
       appBar: AppBar(title: const UpperText('RELACIONAR FRASES CON IMÁGENES')),
@@ -340,6 +345,7 @@ class _MatchImagePhraseScreenState
                                     item: nextItem,
                                     showHints: settings.showHints,
                                     imageHeight: 210,
+                                    compactDesktop: false,
                                   ),
                                 ],
                               );
@@ -360,6 +366,7 @@ class _MatchImagePhraseScreenState
                                 item: item,
                                 showHints: settings.showHints,
                                 imageHeight: imageHeight,
+                                compactDesktop: isDesktop,
                               );
                             },
                           ),
