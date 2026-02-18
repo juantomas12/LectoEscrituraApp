@@ -36,8 +36,7 @@ class _InverseDiscriminationScreenState
     extends ConsumerState<InverseDiscriminationScreen> {
   final Random _random = Random();
 
-  List<Item> _insidePool = [];
-  List<Item> _outsidePool = [];
+  final Map<AppCategory, List<Item>> _poolByCategory = {};
 
   int _currentRound = 0;
   int _roundCount = 5;
@@ -72,27 +71,19 @@ class _InverseDiscriminationScreenState
   Future<void> _prepare() async {
     final dataset = ref.read(datasetRepositoryProvider);
     final all = dataset.getAllItems();
-
-    _insidePool = all
-        .where(
-          (item) =>
-              item.category == widget.category &&
-              item.activityType == ActivityType.imagenPalabra &&
-              (item.word ?? '').isNotEmpty,
-        )
-        .toList();
-
-    _outsidePool = all
-        .where(
-          (item) =>
-              item.category != widget.category &&
-              item.activityType == ActivityType.imagenPalabra &&
-              (item.word ?? '').isNotEmpty,
-        )
-        .toList();
-
-    _insidePool.shuffle(_random);
-    _outsidePool.shuffle(_random);
+    _poolByCategory.clear();
+    for (final category in AppCategoryLists.reales) {
+      final items = all
+          .where(
+            (item) =>
+                item.category == category &&
+                item.activityType == ActivityType.imagenPalabra &&
+                (item.word ?? '').isNotEmpty,
+          )
+          .toList()
+        ..shuffle(_random);
+      _poolByCategory[category] = items;
+    }
 
     _roundCount = switch (widget.level) {
       AppLevel.uno => 4,
@@ -124,13 +115,23 @@ class _InverseDiscriminationScreenState
       return;
     }
 
-    if (_insidePool.length < _optionsCount - 1 || _outsidePool.isEmpty) {
+    final focusCategory = widget.category == AppCategory.mixta
+        ? _randomAvailableCategory()
+        : widget.category;
+
+    final insidePool = List<Item>.from(_poolByCategory[focusCategory] ?? const []);
+    final outsidePool = _poolByCategory.entries
+        .where((entry) => entry.key != focusCategory)
+        .expand((entry) => entry.value)
+        .toList();
+
+    if (insidePool.length < _optionsCount - 1 || outsidePool.isEmpty) {
       _finish();
       return;
     }
 
-    final odd = _outsidePool[_random.nextInt(_outsidePool.length)];
-    final insiders = List<Item>.from(_insidePool)..shuffle(_random);
+    final odd = outsidePool[_random.nextInt(outsidePool.length)];
+    final insiders = insidePool..shuffle(_random);
     final options = <Item>[odd, ...insiders.take(_optionsCount - 1)]..shuffle(_random);
 
     setState(() {
@@ -138,8 +139,23 @@ class _InverseDiscriminationScreenState
       _options = options;
       _selectedId = null;
       _answered = false;
-      _feedback = 'TOCA LA QUE NO ES DE ${widget.category.label}';
+      _feedback = 'TOCA LA QUE NO ES DE ${focusCategory.label}';
     });
+  }
+
+  AppCategory _randomAvailableCategory() {
+    final candidates = AppCategoryLists.reales.where((category) {
+      final ownSize = (_poolByCategory[category] ?? const []).length;
+      final otherSize = _poolByCategory.entries
+          .where((entry) => entry.key != category)
+          .fold<int>(0, (sum, entry) => sum + entry.value.length);
+      return ownSize >= _optionsCount - 1 && otherSize >= 1;
+    }).toList();
+
+    if (candidates.isEmpty) {
+      return AppCategory.cosasDeCasa;
+    }
+    return candidates[_random.nextInt(candidates.length)];
   }
 
   Future<void> _answer(Item selected) async {

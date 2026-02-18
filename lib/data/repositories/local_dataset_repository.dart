@@ -122,7 +122,7 @@ class LocalDatasetRepository implements DatasetRepository {
     return _allItems
         .where(
           (item) =>
-              item.category == category &&
+              (category == AppCategory.mixta || item.category == category) &&
               item.level == level &&
               item.activityType == activityType,
         )

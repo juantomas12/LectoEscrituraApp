@@ -367,6 +367,7 @@ class _CategoryCard extends StatelessWidget {
   final VoidCallback onTap;
 
   static const _icons = <AppCategory, IconData>{
+    AppCategory.mixta: Icons.shuffle_rounded,
     AppCategory.cosasDeCasa: Icons.chair_alt_rounded,
     AppCategory.comida: Icons.restaurant_rounded,
     AppCategory.dinero: Icons.paid_rounded,
@@ -377,6 +378,7 @@ class _CategoryCard extends StatelessWidget {
   };
 
   static const _colors = <AppCategory, Color>{
+    AppCategory.mixta: Color(0xFF1A7D95),
     AppCategory.cosasDeCasa: Color(0xFF2F9E8A),
     AppCategory.comida: Color(0xFFE8871E),
     AppCategory.dinero: Color(0xFF3AA356),

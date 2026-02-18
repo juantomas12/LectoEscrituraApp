@@ -1,4 +1,5 @@
 enum AppCategory {
+  mixta,
   cosasDeCasa,
   comida,
   dinero,
@@ -12,6 +13,7 @@ typedef Category = AppCategory;
 
 extension AppCategoryX on AppCategory {
   String get id => switch (this) {
+    AppCategory.mixta => 'MIX_CATEGORIAS',
     AppCategory.cosasDeCasa => 'COSAS_DE_CASA',
     AppCategory.comida => 'COMIDA',
     AppCategory.dinero => 'DINERO',
@@ -22,6 +24,7 @@ extension AppCategoryX on AppCategory {
   };
 
   String get label => switch (this) {
+    AppCategory.mixta => 'MIX DE CATEGORÍAS',
     AppCategory.cosasDeCasa => 'COSAS DE CASA',
     AppCategory.comida => 'COMIDA',
     AppCategory.dinero => 'DINERO',
@@ -40,4 +43,10 @@ extension AppCategoryX on AppCategory {
       orElse: () => AppCategory.cosasDeCasa,
     );
   }
+}
+
+extension AppCategoryLists on AppCategory {
+  static List<AppCategory> get reales => AppCategory.values
+      .where((category) => category != AppCategory.mixta)
+      .toList();
 }
