@@ -226,6 +226,10 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsViewModelProvider);
     final current = _currentItem;
+    final width = MediaQuery.sizeOf(context).width;
+    final isDesktop = width >= 1000;
+    final contentWidth = isDesktop ? 900.0 : 760.0;
+    final imageHeight = isDesktop ? 150.0 : 210.0;
 
     return Scaffold(
       appBar: AppBar(
@@ -235,9 +239,12 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
           ? const Center(child: CircularProgressIndicator())
           : current == null
           ? const Center(child: UpperText('NO HAY CONTENIDO DISPONIBLE'))
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
+          : Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: contentWidth),
+                child: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(12),
@@ -287,7 +294,7 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
                     child: Column(
                       children: [
                         SizedBox(
-                          height: 200,
+                          height: imageHeight,
                           child: ActivityAssetImage(
                             assetPath: current.imageAsset,
                             semanticsLabel: current.word,
@@ -365,7 +372,9 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
                   onPressed: _validate,
                   child: const UpperText('VALIDAR'),
                 ),
-              ],
+                  ],
+                ),
+              ),
             ),
     );
   }

@@ -35,15 +35,29 @@ class ActivitySelectionScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const UpperText('SELECCIÓN DE ACTIVIDAD')),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 980),
+          child: ListView(
+            padding: const EdgeInsets.all(20),
+            children: [
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const Row(
+                    children: [
+                      Icon(Icons.rocket_launch_rounded),
+                      SizedBox(width: 8),
+                      UpperText(
+                        'ELIGE TU RETO',
+                        style: TextStyle(fontWeight: FontWeight.w900),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
                   UpperText(
                     category.label,
                     style: Theme.of(context).textTheme.titleLarge,
@@ -66,14 +80,23 @@ class ActivitySelectionScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      UpperText(
-                        activity.label,
-                        style: Theme.of(context).textTheme.titleLarge,
+                      Row(
+                        children: [
+                          Icon(_activityIcon(activity)),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: UpperText(
+                              activity.label,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 10),
-                      FilledButton(
+                      FilledButton.icon(
                         onPressed: () => _openActivity(context, activity),
-                        child: const UpperText('INICIAR ACTIVIDAD'),
+                        icon: const Icon(Icons.play_arrow_rounded),
+                        label: const UpperText('INICIAR ACTIVIDAD'),
                       ),
                     ],
                   ),
@@ -81,9 +104,20 @@ class ActivitySelectionScreen extends StatelessWidget {
               ),
             ),
           ),
-        ],
+            ],
+          ),
+        ),
       ),
     );
+  }
+
+  IconData _activityIcon(ActivityType activity) {
+    return switch (activity) {
+      ActivityType.imagenPalabra => Icons.link_rounded,
+      ActivityType.escribirPalabra => Icons.keyboard_alt_rounded,
+      ActivityType.palabraPalabra => Icons.compare_arrows_rounded,
+      ActivityType.imagenFrase => Icons.text_snippet_rounded,
+    };
   }
 
   void _openActivity(BuildContext context, ActivityType activity) {

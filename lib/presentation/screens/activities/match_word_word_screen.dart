@@ -222,6 +222,8 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    final isDesktop = width >= 1000;
     return Scaffold(
       appBar: AppBar(
         title: const UpperText('RELACIONAR PALABRAS CON PALABRAS'),
@@ -230,10 +232,13 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _pairs.isEmpty
           ? const Center(child: UpperText('NO HAY CONTENIDO DISPONIBLE'))
-          : Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
+          : Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: isDesktop ? 1050 : 900),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
                   SegmentedButton<PairMode>(
                     segments: const [
                       ButtonSegment(
@@ -272,40 +277,74 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: _WordColumn(
-                            title: 'COLUMNA A',
-                            words: _leftWords,
-                            selected: _selectedLeft,
-                            matched: _matchedLeft,
-                            onTap: (word) {
-                              if (_matchedLeft.contains(word)) {
-                                return;
-                              }
-                              setState(() {
-                                _selectedLeft = word;
-                                _feedback = 'AHORA ELIGE EN COLUMNA B';
-                              });
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _WordColumn(
-                            title: 'COLUMNA B',
-                            words: _rightWords,
-                            selected: null,
-                            matched: _matchedRight,
-                            onTap: (word) => _tryMatch(word),
-                          ),
-                        ),
-                      ],
-                    ),
+                      Expanded(
+                        child: isDesktop
+                            ? Row(
+                                children: [
+                                  Expanded(
+                                    child: _WordColumn(
+                                      title: 'COLUMNA A',
+                                      words: _leftWords,
+                                      selected: _selectedLeft,
+                                      matched: _matchedLeft,
+                                      onTap: (word) {
+                                        if (_matchedLeft.contains(word)) {
+                                          return;
+                                        }
+                                        setState(() {
+                                          _selectedLeft = word;
+                                          _feedback = 'AHORA ELIGE EN COLUMNA B';
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: _WordColumn(
+                                      title: 'COLUMNA B',
+                                      words: _rightWords,
+                                      selected: null,
+                                      matched: _matchedRight,
+                                      onTap: (word) => _tryMatch(word),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Column(
+                                children: [
+                                  Expanded(
+                                    child: _WordColumn(
+                                      title: 'COLUMNA A',
+                                      words: _leftWords,
+                                      selected: _selectedLeft,
+                                      matched: _matchedLeft,
+                                      onTap: (word) {
+                                        if (_matchedLeft.contains(word)) {
+                                          return;
+                                        }
+                                        setState(() {
+                                          _selectedLeft = word;
+                                          _feedback = 'AHORA ELIGE EN COLUMNA B';
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Expanded(
+                                    child: _WordColumn(
+                                      title: 'COLUMNA B',
+                                      words: _rightWords,
+                                      selected: null,
+                                      matched: _matchedRight,
+                                      onTap: (word) => _tryMatch(word),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
     );

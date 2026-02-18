@@ -172,9 +172,173 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
     }
   }
 
+  Item? _nextUnmatchedItem() {
+    for (final item in _items) {
+      if (!_matchedByItem.containsKey(item.id)) {
+        return item;
+      }
+    }
+    return null;
+  }
+
+  Widget _buildItemCard({
+    required BuildContext context,
+    required Item item,
+    required bool showHints,
+    required double imageHeight,
+  }) {
+    final matchedWord = _matchedByItem[item.id];
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          children: [
+            SizedBox(
+              height: imageHeight,
+              child: matchedWord != null
+                  ? ActivityAssetImage(
+                      assetPath: item.imageAsset,
+                      semanticsLabel: item.word,
+                    )
+                  : DragTarget<String>(
+                      onWillAcceptWithDetails: (details) {
+                        return details.data.isNotEmpty;
+                      },
+                      onAcceptWithDetails: (details) {
+                        _handleDrop(item, details.data);
+                      },
+                      builder: (context, candidateData, rejected) {
+                        final isHovering = candidateData.isNotEmpty;
+                        return Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            ActivityAssetImage(
+                              assetPath: item.imageAsset,
+                              semanticsLabel: item.word,
+                            ),
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 140),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: isHovering
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Colors.transparent,
+                                  width: 3,
+                                ),
+                                color: isHovering
+                                    ? Theme.of(context)
+                                          .colorScheme
+                                          .primary
+                                          .withValues(alpha: 0.08)
+                                    : Colors.transparent,
+                              ),
+                            ),
+                            if (isHovering)
+                              Align(
+                                alignment: Alignment.topCenter,
+                                child: Container(
+                                  margin: const EdgeInsets.only(top: 8),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).colorScheme.primary,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: UpperText(
+                                    'SUELTA EN LA IMAGEN',
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onPrimary,
+                                        ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
+            ),
+            const SizedBox(height: 8),
+            if (matchedWord != null)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.green.shade100,
+                  border: Border.all(color: Colors.green.shade600),
+                ),
+                child: UpperText(
+                  matchedWord,
+                  textAlign: TextAlign.center,
+                ),
+              )
+            else
+              DragTarget<String>(
+                onWillAcceptWithDetails: (details) {
+                  return details.data.isNotEmpty;
+                },
+                onAcceptWithDetails: (details) {
+                  _handleDrop(item, details.data);
+                },
+                builder: (context, candidateData, rejected) {
+                  return Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: candidateData.isNotEmpty
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.outline,
+                        width: 2,
+                      ),
+                    ),
+                    child: const UpperText(
+                      'SUELTA AQUÍ',
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                },
+              ),
+            if (showHints && matchedWord == null)
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: UpperText(
+                  'PISTA: ${item.word?.substring(0, 1) ?? ''}...',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsViewModelProvider);
+    final width = MediaQuery.sizeOf(context).width;
+    final isMobile = width < 900;
+    final isDesktop = width >= 1000;
+    final contentWidth = isDesktop ? 1180.0 : 900.0;
+    final maxColumnsByWidth = width >= 1450
+        ? 4
+        : width >= 1180
+        ? 3
+        : 2;
+    final desiredColumns = _items.length >= 4 ? (_items.length / 2).ceil() : 2;
+    final crossAxisCount = desiredColumns.clamp(2, maxColumnsByWidth).toInt();
+    final imageHeight = isDesktop ? 155.0 : 190.0;
+    final gridItemExtent = isDesktop ? 315.0 : 360.0;
 
     return Scaffold(
       appBar: AppBar(
@@ -189,10 +353,13 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
                 child: UpperText('NO HAY CONTENIDO PARA ESTA CATEGORÍA'),
               ),
             )
-          : Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
+          : Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: contentWidth),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(12),
@@ -207,191 +374,51 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
                   ),
                   const SizedBox(height: 10),
                   Expanded(
-                    child: GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 10,
-                            crossAxisSpacing: 10,
-                            childAspectRatio: 0.92,
-                          ),
-                      itemCount: _items.length,
-                      itemBuilder: (context, index) {
-                        final item = _items[index];
-                        final matchedWord = _matchedByItem[item.id];
-
-                        return Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: matchedWord != null
-                                      ? ActivityAssetImage(
-                                          assetPath: item.imageAsset,
-                                          semanticsLabel: item.word,
-                                        )
-                                      : DragTarget<String>(
-                                          onWillAcceptWithDetails: (details) {
-                                            return details.data.isNotEmpty;
-                                          },
-                                          onAcceptWithDetails: (details) {
-                                            _handleDrop(item, details.data);
-                                          },
-                                          builder: (context, candidateData, rejected) {
-                                            final isHovering =
-                                                candidateData.isNotEmpty;
-                                            return Stack(
-                                              fit: StackFit.expand,
-                                              children: [
-                                                ActivityAssetImage(
-                                                  assetPath: item.imageAsset,
-                                                  semanticsLabel: item.word,
-                                                ),
-                                                AnimatedContainer(
-                                                  duration: const Duration(
-                                                    milliseconds: 140,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          12,
-                                                        ),
-                                                    border: Border.all(
-                                                      color: isHovering
-                                                          ? Theme.of(context)
-                                                                .colorScheme
-                                                                .primary
-                                                          : Colors.transparent,
-                                                      width: 3,
-                                                    ),
-                                                    color: isHovering
-                                                        ? Theme.of(context)
-                                                              .colorScheme
-                                                              .primary
-                                                              .withValues(
-                                                                alpha: 0.08,
-                                                              )
-                                                        : Colors.transparent,
-                                                  ),
-                                                ),
-                                                if (isHovering)
-                                                  Align(
-                                                    alignment:
-                                                        Alignment.topCenter,
-                                                    child: Container(
-                                                      margin:
-                                                          const EdgeInsets.only(
-                                                            top: 8,
-                                                          ),
-                                                      padding:
-                                                          const EdgeInsets.symmetric(
-                                                            horizontal: 8,
-                                                            vertical: 4,
-                                                          ),
-                                                      decoration: BoxDecoration(
-                                                        color: Theme.of(
-                                                          context,
-                                                        ).colorScheme.primary,
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              8,
-                                                            ),
-                                                      ),
-                                                      child: UpperText(
-                                                        'SUELTA EN LA IMAGEN',
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodySmall
-                                                            ?.copyWith(
-                                                              color:
-                                                                  Theme.of(
-                                                                        context,
-                                                                      )
-                                                                      .colorScheme
-                                                                      .onPrimary,
-                                                            ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                              ],
-                                            );
-                                          },
-                                        ),
-                                ),
-                                const SizedBox(height: 8),
-                                if (matchedWord != null)
-                                  Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 10,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      color: Colors.green.shade100,
-                                      border: Border.all(
-                                        color: Colors.green.shade600,
-                                      ),
-                                    ),
-                                    child: UpperText(
-                                      matchedWord,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  )
-                                else
-                                  DragTarget<String>(
-                                    onWillAcceptWithDetails: (details) {
-                                      return details.data.isNotEmpty;
-                                    },
-                                    onAcceptWithDetails: (details) {
-                                      _handleDrop(item, details.data);
-                                    },
-                                    builder:
-                                        (context, candidateData, rejected) {
-                                          return Container(
-                                            width: double.infinity,
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 10,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              border: Border.all(
-                                                color: candidateData.isNotEmpty
-                                                    ? Theme.of(
-                                                        context,
-                                                      ).colorScheme.primary
-                                                    : Theme.of(
-                                                        context,
-                                                      ).colorScheme.outline,
-                                                width: 2,
-                                              ),
-                                            ),
-                                            child: const UpperText(
-                                              'SUELTA AQUÍ',
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          );
-                                        },
+                    child: isMobile
+                        ? Builder(
+                            builder: (context) {
+                              final nextItem = _nextUnmatchedItem();
+                              if (nextItem == null) {
+                                return const Center(
+                                  child: UpperText('COMPLETANDO...'),
+                                );
+                              }
+                              return ListView(
+                                children: [
+                                  UpperText(
+                                    'ARRASTRA LA PALABRA HASTA LA IMAGEN',
+                                    style: Theme.of(context).textTheme.titleLarge,
+                                    textAlign: TextAlign.center,
                                   ),
-                                if (settings.showHints && matchedWord == null)
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 6),
-                                    child: UpperText(
-                                      'PISTA: ${item.word?.substring(0, 1) ?? ''}...',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodySmall,
-                                    ),
+                                  const SizedBox(height: 8),
+                                  _buildItemCard(
+                                    context: context,
+                                    item: nextItem,
+                                    showHints: settings.showHints,
+                                    imageHeight: 210,
                                   ),
-                              ],
+                                ],
+                              );
+                            },
+                          )
+                        : GridView.builder(
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: crossAxisCount,
+                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 10,
+                              mainAxisExtent: gridItemExtent,
                             ),
+                            itemCount: _items.length,
+                            itemBuilder: (context, index) {
+                              final item = _items[index];
+                              return _buildItemCard(
+                                context: context,
+                                item: item,
+                                showHints: settings.showHints,
+                                imageHeight: imageHeight,
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
                   ),
                   const SizedBox(height: 10),
                   Align(
@@ -423,7 +450,9 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
                         )
                         .toList(),
                   ),
-                ],
+                    ],
+                  ),
+                ),
               ),
             ),
     );

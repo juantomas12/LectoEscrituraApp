@@ -27,6 +27,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final selectionVm = ref.read(homeSelectionViewModelProvider.notifier);
     final settings = ref.watch(settingsViewModelProvider);
     final profile = ref.watch(localProfileProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     if (!_didSyncSettings) {
       _didSyncSettings = true;
@@ -35,9 +36,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       });
     }
 
-    // EN MODO PRUEBA, LOS NIVELES SUPERIORES QUEDAN SIEMPRE DISPONIBLES.
-    final canLevel2 = true;
-    final canLevel3 = true;
+    const canLevel2 = true;
+    const canLevel3 = true;
 
     final isCurrentUnlocked = switch (selection.level) {
       AppLevel.uno => true,
@@ -56,141 +56,228 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 MaterialPageRoute<void>(builder: (_) => const SettingsScreen()),
               );
             },
-            icon: const Icon(Icons.settings),
+            icon: const Icon(Icons.tune),
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
+      body: Stack(
         children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  const Icon(Icons.person_outline),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: UpperText('PERFIL LOCAL: ${profile.displayName}'),
-                  ),
-                ],
-              ),
+          Positioned(
+            top: -60,
+            right: -40,
+            child: _ColorBubble(
+              color: const Color(0xFF9FE6D9).withValues(alpha: 0.45),
+              size: 180,
             ),
           ),
-          const SizedBox(height: 14),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  UpperText(
-                    'SELECCIONA DIFICULTAD',
-                    style: Theme.of(context).textTheme.titleLarge,
+          Positioned(
+            left: -70,
+            top: 150,
+            child: _ColorBubble(
+              color: const Color(0xFFFFD48D).withValues(alpha: 0.40),
+              size: 210,
+            ),
+          ),
+          ListView(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF1F9D8B), Color(0xFF1A7D95)],
                   ),
-                  const SizedBox(height: 10),
-                  SegmentedButton<Difficulty>(
-                    segments: const [
-                      ButtonSegment(
-                        value: Difficulty.primaria,
-                        label: UpperText('PRIMARIA'),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.12),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.auto_stories_rounded, color: Colors.white, size: 34),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: UpperText(
+                            'APRENDE JUGANDO',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 26,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    UpperText(
+                      'HOLA ${profile.displayName}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
                       ),
-                      ButtonSegment(
-                        value: Difficulty.secundaria,
-                        label: UpperText('SECUNDARIA'),
+                    ),
+                    const SizedBox(height: 6),
+                    const UpperText(
+                      'ELIGE CATEGORÍA, NIVEL Y COMIENZA TU RETO',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 14),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      UpperText(
+                        'DIFICULTAD',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 10),
+                      SegmentedButton<Difficulty>(
+                        segments: const [
+                          ButtonSegment(
+                            value: Difficulty.primaria,
+                            icon: Icon(Icons.child_care_rounded),
+                            label: UpperText('PRIMARIA'),
+                          ),
+                          ButtonSegment(
+                            value: Difficulty.secundaria,
+                            icon: Icon(Icons.school_rounded),
+                            label: UpperText('SECUNDARIA'),
+                          ),
+                        ],
+                        selected: {selection.difficulty},
+                        onSelectionChanged: (value) {
+                          selectionVm.setDifficulty(value.first);
+                        },
                       ),
                     ],
-                    selected: {selection.difficulty},
-                    onSelectionChanged: (value) {
-                      selectionVm.setDifficulty(value.first);
-                    },
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-          const SizedBox(height: 14),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  UpperText(
-                    'SELECCIONA CATEGORÍA',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: AppCategory.values.map((category) {
-                      return ChoiceChip(
-                        label: UpperText(category.label),
-                        selected: selection.category == category,
-                        onSelected: (_) => selectionVm.setCategory(category),
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 14),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  UpperText(
-                    'SELECCIONA NIVEL',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 12),
-                  _LevelTile(
-                    title: 'NIVEL 1 - INICIACIÓN',
-                    subtitle: 'SIEMPRE DISPONIBLE',
-                    selected: selection.level == AppLevel.uno,
-                    locked: false,
-                    onTap: () => selectionVm.setLevel(AppLevel.uno),
-                  ),
-                  const SizedBox(height: 8),
-                  _LevelTile(
-                    title: 'NIVEL 2 - PALABRA ↔ PALABRA',
-                    subtitle: 'SIEMPRE DESBLOQUEADO (MODO PRUEBA)',
-                    selected: selection.level == AppLevel.dos,
-                    locked: !canLevel2,
-                    onTap: () => selectionVm.setLevel(AppLevel.dos),
-                  ),
-                  const SizedBox(height: 8),
-                  _LevelTile(
-                    title: 'NIVEL 3 - IMAGEN ↔ FRASE',
-                    subtitle: 'SIEMPRE DESBLOQUEADO (MODO PRUEBA)',
-                    selected: selection.level == AppLevel.tres,
-                    locked: !canLevel3,
-                    onTap: () => selectionVm.setLevel(AppLevel.tres),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 18),
-          FilledButton(
-            onPressed: isCurrentUnlocked
-                ? () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => ActivitySelectionScreen(
-                          category: selection.category,
-                          level: selection.level,
-                          difficulty: selection.difficulty,
-                        ),
+              const SizedBox(height: 14),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      UpperText(
+                        'CATEGORÍA',
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
-                    );
-                  }
-                : null,
-            child: const UpperText('CONTINUAR'),
+                      const SizedBox(height: 10),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final cardWidth = (constraints.maxWidth - 10) / 2;
+                          return Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: AppCategory.values.map((category) {
+                              return SizedBox(
+                                width: cardWidth,
+                                child: _CategoryCard(
+                                  category: category,
+                                  selected: selection.category == category,
+                                  onTap: () => selectionVm.setCategory(category),
+                                ),
+                              );
+                            }).toList(),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      UpperText(
+                        'NIVEL',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 10),
+                      _LevelCard(
+                        title: 'NIVEL 1',
+                        subtitle: 'IMAGEN Y PALABRA',
+                        icon: Icons.looks_one_rounded,
+                        selected: selection.level == AppLevel.uno,
+                        color: const Color(0xFF2F9E8A),
+                        onTap: () => selectionVm.setLevel(AppLevel.uno),
+                      ),
+                      const SizedBox(height: 8),
+                      _LevelCard(
+                        title: 'NIVEL 2',
+                        subtitle: 'PALABRA CON PALABRA',
+                        icon: Icons.looks_two_rounded,
+                        selected: selection.level == AppLevel.dos,
+                        color: const Color(0xFFF29F05),
+                        onTap: () => selectionVm.setLevel(AppLevel.dos),
+                      ),
+                      const SizedBox(height: 8),
+                      _LevelCard(
+                        title: 'NIVEL 3',
+                        subtitle: 'IMAGEN CON FRASES',
+                        icon: Icons.looks_3_rounded,
+                        selected: selection.level == AppLevel.tres,
+                        color: const Color(0xFF6E77E5),
+                        onTap: () => selectionVm.setLevel(AppLevel.tres),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              FilledButton.icon(
+                onPressed: isCurrentUnlocked
+                    ? () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => ActivitySelectionScreen(
+                              category: selection.category,
+                              level: selection.level,
+                              difficulty: selection.difficulty,
+                            ),
+                          ),
+                        );
+                      }
+                    : null,
+                icon: const Icon(Icons.play_arrow_rounded, size: 30),
+                label: const UpperText('EMPEZAR ACTIVIDAD'),
+              ),
+              const SizedBox(height: 10),
+              Center(
+                child: UpperText(
+                  'TODO EL CONTENIDO FUNCIONA OFFLINE',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurface.withValues(alpha: 0.70),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -198,54 +285,149 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
-class _LevelTile extends StatelessWidget {
-  const _LevelTile({
+class _ColorBubble extends StatelessWidget {
+  const _ColorBubble({required this.color, required this.size});
+
+  final Color color;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+        ),
+      ),
+    );
+  }
+}
+
+class _CategoryCard extends StatelessWidget {
+  const _CategoryCard({
+    required this.category,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final AppCategory category;
+  final bool selected;
+  final VoidCallback onTap;
+
+  static const _icons = <AppCategory, IconData>{
+    AppCategory.cosasDeCasa: Icons.chair_alt_rounded,
+    AppCategory.comida: Icons.restaurant_rounded,
+    AppCategory.dinero: Icons.paid_rounded,
+    AppCategory.bano: Icons.shower_rounded,
+    AppCategory.profesiones: Icons.work_rounded,
+    AppCategory.salud: Icons.favorite_rounded,
+    AppCategory.emociones: Icons.mood_rounded,
+  };
+
+  static const _colors = <AppCategory, Color>{
+    AppCategory.cosasDeCasa: Color(0xFF2F9E8A),
+    AppCategory.comida: Color(0xFFE8871E),
+    AppCategory.dinero: Color(0xFF3AA356),
+    AppCategory.bano: Color(0xFF3A8CE0),
+    AppCategory.profesiones: Color(0xFF8D62DA),
+    AppCategory.salud: Color(0xFFE75B74),
+    AppCategory.emociones: Color(0xFFF2B705),
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _colors[category]!;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Ink(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: selected ? color : color.withValues(alpha: 0.30),
+            width: selected ? 3 : 1.4,
+          ),
+          color: selected ? color.withValues(alpha: 0.16) : Colors.white,
+        ),
+        child: Row(
+          children: [
+            Icon(_icons[category], color: color, size: 28),
+            const SizedBox(width: 8),
+            Expanded(
+              child: UpperText(
+                category.label,
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LevelCard extends StatelessWidget {
+  const _LevelCard({
     required this.title,
     required this.subtitle,
+    required this.icon,
     required this.selected,
-    required this.locked,
+    required this.color,
     required this.onTap,
   });
 
   final String title;
   final String subtitle;
+  final IconData icon;
   final bool selected;
-  final bool locked;
+  final Color color;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: locked ? null : onTap,
-      borderRadius: BorderRadius.circular(14),
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
       child: Ink(
+        padding: const EdgeInsets.all(13),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: selected
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.outlineVariant,
-            width: selected ? 3 : 1,
+            color: selected ? color : color.withValues(alpha: 0.30),
+            width: selected ? 3 : 1.3,
           ),
-          color: locked ? Colors.grey.shade200 : null,
+          color: selected ? color.withValues(alpha: 0.16) : Colors.white,
         ),
-        padding: const EdgeInsets.all(14),
         child: Row(
           children: [
-            Icon(locked ? Icons.lock : Icons.check_circle_outline),
+            Icon(icon, color: color, size: 34),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  UpperText(title),
-                  const SizedBox(height: 4),
+                  UpperText(
+                    title,
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                  ),
+                  const SizedBox(height: 2),
                   UpperText(
                     subtitle,
-                    style: Theme.of(context).textTheme.bodySmall,
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                   ),
                 ],
               ),
+            ),
+            Icon(
+              selected ? Icons.check_circle_rounded : Icons.arrow_forward_ios_rounded,
+              color: color,
+              size: selected ? 24 : 18,
             ),
           ],
         ),

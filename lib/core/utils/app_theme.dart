@@ -16,7 +16,7 @@ ThemeData buildAppTheme(AppSettings settings) {
           onSurface: Color(0xFF000000),
         )
       : ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2A7E67),
+          seedColor: const Color(0xFF1F9D8B),
           brightness: Brightness.light,
         );
 
@@ -65,10 +65,42 @@ ThemeData buildAppTheme(AppSettings settings) {
         ),
       ),
     ),
+    appBarTheme: AppBarTheme(
+      centerTitle: true,
+      backgroundColor: settings.highContrast ? Colors.white : const Color(0xFFEAF7F3),
+      foregroundColor: colorScheme.onSurface,
+      elevation: 0,
+      titleTextStyle: textTheme.titleLarge?.copyWith(
+        fontSize: 24,
+        fontWeight: FontWeight.w800,
+      ),
+    ),
+    chipTheme: ChipThemeData(
+      selectedColor: colorScheme.primaryContainer,
+      labelStyle: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+        side: BorderSide(
+          color: settings.highContrast
+              ? Colors.black
+              : colorScheme.primary.withValues(alpha: 0.20),
+        ),
+      ),
+    ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
         minimumSize: const Size.fromHeight(56),
-        textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+        backgroundColor: settings.highContrast ? Colors.black : const Color(0xFF146C5B),
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+      ),
+    ),
+    segmentedButtonTheme: SegmentedButtonThemeData(
+      style: ButtonStyle(
+        textStyle: WidgetStatePropertyAll(
+          textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+        ),
       ),
     ),
   );

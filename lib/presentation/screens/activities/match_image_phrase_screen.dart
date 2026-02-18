@@ -185,9 +185,111 @@ class _MatchImagePhraseScreenState
     }
   }
 
+  Item? _nextUnmatchedItem() {
+    for (final item in _items) {
+      if (!_matchedByItem.containsKey(item.id)) {
+        return item;
+      }
+    }
+    return null;
+  }
+
+  Widget _buildItemCard({
+    required BuildContext context,
+    required Item item,
+    required bool showHints,
+    required double imageHeight,
+  }) {
+    final matched = _matchedByItem[item.id];
+    final expected = _expectedPhraseByItem[item.id] ?? '';
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          children: [
+            SizedBox(
+              height: imageHeight,
+              child: ActivityAssetImage(
+                assetPath: item.imageAsset,
+                semanticsLabel: expected,
+              ),
+            ),
+            const SizedBox(height: 8),
+            if (matched != null)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.green.shade100,
+                  border: Border.all(color: Colors.green.shade700),
+                ),
+                child: UpperText(
+                  matched,
+                  textAlign: TextAlign.center,
+                ),
+              )
+            else
+              DragTarget<String>(
+                onWillAcceptWithDetails: (details) {
+                  return details.data.isNotEmpty;
+                },
+                onAcceptWithDetails: (details) {
+                  _handleDrop(item, details.data);
+                },
+                builder: (context, candidateData, rejected) {
+                  return Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        width: 2,
+                        color: candidateData.isNotEmpty
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.outline,
+                      ),
+                    ),
+                    child: const UpperText(
+                      'SUELTA AQUÍ',
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                },
+              ),
+            if (showHints && matched == null)
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: UpperText(
+                  'PISTA: ${countWords(expected)} PALABRAS',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsViewModelProvider);
+    final width = MediaQuery.sizeOf(context).width;
+    final isMobile = width < 900;
+    final isDesktop = width >= 1000;
+    final contentWidth = isDesktop ? 1180.0 : 900.0;
+    final maxColumnsByWidth = width >= 1450
+        ? 4
+        : width >= 1180
+        ? 3
+        : 2;
+    final desiredColumns = _items.length >= 4 ? (_items.length / 2).ceil() : 2;
+    final crossAxisCount = desiredColumns.clamp(2, maxColumnsByWidth).toInt();
+    final imageHeight = isDesktop ? 155.0 : 190.0;
+    final gridItemExtent = isDesktop ? 325.0 : 370.0;
 
     return Scaffold(
       appBar: AppBar(title: const UpperText('RELACIONAR FRASES CON IMÁGENES')),
@@ -195,10 +297,13 @@ class _MatchImagePhraseScreenState
           ? const Center(child: CircularProgressIndicator())
           : _items.isEmpty
           ? const Center(child: UpperText('NO HAY CONTENIDO DISPONIBLE'))
-          : Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
+          : Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: contentWidth),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(12),
@@ -213,98 +318,51 @@ class _MatchImagePhraseScreenState
                   ),
                   const SizedBox(height: 10),
                   Expanded(
-                    child: GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                            childAspectRatio: 0.9,
-                          ),
-                      itemCount: _items.length,
-                      itemBuilder: (context, index) {
-                        final item = _items[index];
-                        final matched = _matchedByItem[item.id];
-                        final expected = _expectedPhraseByItem[item.id] ?? '';
-
-                        return Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: ActivityAssetImage(
-                                    assetPath: item.imageAsset,
-                                    semanticsLabel: expected,
+                    child: isMobile
+                        ? Builder(
+                            builder: (context) {
+                              final nextItem = _nextUnmatchedItem();
+                              if (nextItem == null) {
+                                return const Center(
+                                  child: UpperText('COMPLETANDO...'),
+                                );
+                              }
+                              return ListView(
+                                children: [
+                                  UpperText(
+                                    'ARRASTRA LA FRASE A LA IMAGEN',
+                                    style: Theme.of(context).textTheme.titleLarge,
+                                    textAlign: TextAlign.center,
                                   ),
-                                ),
-                                const SizedBox(height: 8),
-                                if (matched != null)
-                                  Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      color: Colors.green.shade100,
-                                      border: Border.all(
-                                        color: Colors.green.shade700,
-                                      ),
-                                    ),
-                                    child: UpperText(
-                                      matched,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  )
-                                else
-                                  DragTarget<String>(
-                                    onWillAcceptWithDetails: (details) {
-                                      return details.data.isNotEmpty;
-                                    },
-                                    onAcceptWithDetails: (details) {
-                                      _handleDrop(item, details.data);
-                                    },
-                                    builder:
-                                        (context, candidateData, rejected) {
-                                          return Container(
-                                            width: double.infinity,
-                                            padding: const EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              border: Border.all(
-                                                width: 2,
-                                                color: candidateData.isNotEmpty
-                                                    ? Theme.of(
-                                                        context,
-                                                      ).colorScheme.primary
-                                                    : Theme.of(
-                                                        context,
-                                                      ).colorScheme.outline,
-                                              ),
-                                            ),
-                                            child: const UpperText(
-                                              'SUELTA AQUÍ',
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          );
-                                        },
+                                  const SizedBox(height: 8),
+                                  _buildItemCard(
+                                    context: context,
+                                    item: nextItem,
+                                    showHints: settings.showHints,
+                                    imageHeight: 210,
                                   ),
-                                if (settings.showHints && matched == null)
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 6),
-                                    child: UpperText(
-                                      'PISTA: ${countWords(expected)} PALABRAS',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.bodySmall,
-                                    ),
-                                  ),
-                              ],
+                                ],
+                              );
+                            },
+                          )
+                        : GridView.builder(
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: crossAxisCount,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                              mainAxisExtent: gridItemExtent,
                             ),
+                            itemCount: _items.length,
+                            itemBuilder: (context, index) {
+                              final item = _items[index];
+                              return _buildItemCard(
+                                context: context,
+                                item: item,
+                                showHints: settings.showHints,
+                                imageHeight: imageHeight,
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
                   ),
                   const SizedBox(height: 10),
                   Align(
@@ -357,7 +415,9 @@ class _MatchImagePhraseScreenState
                         )
                         .toList(),
                   ),
-                ],
+                    ],
+                  ),
+                ),
               ),
             ),
     );
