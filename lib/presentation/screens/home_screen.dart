@@ -258,6 +258,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         onTap: () =>
                             selectionVm.setGame(ActivityType.letraObjetivo),
                       ),
+                      const SizedBox(height: 8),
+                      _GameCard(
+                        title: ActivityType.discriminacion.label,
+                        subtitle: 'ELIGE LA OPCIÓN CORRECTA',
+                        icon: Icons.filter_center_focus_rounded,
+                        selected: selection.game == ActivityType.discriminacion,
+                        color: const Color(0xFF00996B),
+                        onTap: () =>
+                            selectionVm.setGame(ActivityType.discriminacion),
+                      ),
+                      const SizedBox(height: 8),
+                      _GameCard(
+                        title: ActivityType.discriminacionInversa.label,
+                        subtitle: 'ENCUENTRA LA OPCIÓN INTRUSA',
+                        icon: Icons.find_replace_rounded,
+                        selected:
+                            selection.game == ActivityType.discriminacionInversa,
+                        color: const Color(0xFFB66A15),
+                        onTap: () => selectionVm.setGame(
+                          ActivityType.discriminacionInversa,
+                        ),
+                      ),
                     ],
                   ),
                 ),

@@ -5,6 +5,8 @@ import '../../domain/models/category.dart';
 import '../../domain/models/difficulty.dart';
 import '../../domain/models/level.dart';
 import '../widgets/upper_text.dart';
+import 'activities/discrimination_screen.dart';
+import 'activities/inverse_discrimination_screen.dart';
 import 'activities/letter_target_screen.dart';
 import 'activities/match_image_phrase_screen.dart';
 import 'activities/match_image_word_screen.dart';
@@ -129,20 +131,33 @@ class _ActivitySelectionScreenState extends State<ActivitySelectionScreen> {
   List<int> _levelsForGame(ActivityType activityType) {
     return switch (activityType) {
       ActivityType.letraObjetivo => [1, 2, 3],
+      ActivityType.discriminacion => [1, 2, 3],
+      ActivityType.discriminacionInversa => [1, 2, 3],
       _ => [1],
     };
   }
 
   String _levelDescription(ActivityType activityType, int level) {
-    if (activityType != ActivityType.letraObjetivo) {
-      return 'ESTE JUEGO TIENE UN NIVEL ACTIVO POR AHORA';
-    }
-
-    return switch (level) {
-      1 => 'VOCALES Y PALABRAS CORTAS',
-      2 => 'LETRAS FRECUENTES Y PALABRAS MEDIAS',
-      3 => 'LETRAS MIXTAS Y PALABRAS MÁS LARGAS',
-      _ => 'NIVEL BASE',
+    return switch (activityType) {
+      ActivityType.letraObjetivo => switch (level) {
+        1 => 'VOCALES Y PALABRAS CORTAS',
+        2 => 'LETRAS FRECUENTES Y PALABRAS MEDIAS',
+        3 => 'LETRAS MIXTAS Y PALABRAS MÁS LARGAS',
+        _ => 'NIVEL BASE',
+      },
+      ActivityType.discriminacion => switch (level) {
+        1 => 'POCAS OPCIONES Y APOYO VISUAL',
+        2 => 'MÁS OPCIONES Y MENOS PISTAS',
+        3 => 'MÁXIMA DIFICULTAD Y MÁS RONDAS',
+        _ => 'NIVEL BASE',
+      },
+      ActivityType.discriminacionInversa => switch (level) {
+        1 => 'ENCUENTRA LA INTRUSA ENTRE POCAS OPCIONES',
+        2 => 'MÁS OPCIONES Y MÁS ATENCIÓN',
+        3 => 'INTRUSA CON DISTRACCIONES ALTAS',
+        _ => 'NIVEL BASE',
+      },
+      _ => 'ESTE JUEGO TIENE UN NIVEL ACTIVO POR AHORA',
     };
   }
 
@@ -192,6 +207,28 @@ class _ActivitySelectionScreenState extends State<ActivitySelectionScreen> {
         Navigator.of(context).push(
           MaterialPageRoute<void>(
             builder: (_) => LetterTargetScreen(
+              category: widget.category,
+              difficulty: widget.difficulty,
+              level: AppLevelX.fromInt(gameLevel),
+            ),
+          ),
+        );
+        return;
+      case ActivityType.discriminacion:
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => DiscriminationScreen(
+              category: widget.category,
+              difficulty: widget.difficulty,
+              level: AppLevelX.fromInt(gameLevel),
+            ),
+          ),
+        );
+        return;
+      case ActivityType.discriminacionInversa:
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => InverseDiscriminationScreen(
               category: widget.category,
               difficulty: widget.difficulty,
               level: AppLevelX.fromInt(gameLevel),

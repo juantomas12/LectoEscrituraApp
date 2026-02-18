@@ -4,6 +4,8 @@ enum ActivityType {
   palabraPalabra,
   imagenFrase,
   letraObjetivo,
+  discriminacion,
+  discriminacionInversa,
 }
 
 extension ActivityTypeX on ActivityType {
@@ -13,6 +15,8 @@ extension ActivityTypeX on ActivityType {
     ActivityType.palabraPalabra => 'PALABRA_PALABRA',
     ActivityType.imagenFrase => 'IMAGEN_FRASE',
     ActivityType.letraObjetivo => 'LETRA_OBJETIVO',
+    ActivityType.discriminacion => 'DISCRIMINACION',
+    ActivityType.discriminacionInversa => 'DISCRIMINACION_INVERSA',
   };
 
   String get label => switch (this) {
@@ -21,6 +25,8 @@ extension ActivityTypeX on ActivityType {
     ActivityType.palabraPalabra => 'RELACIONAR PALABRAS CON PALABRAS',
     ActivityType.imagenFrase => 'RELACIONAR FRASES CON IMÁGENES',
     ActivityType.letraObjetivo => 'LETRA OBJETIVO CON PALABRAS E IMÁGENES',
+    ActivityType.discriminacion => 'DISCRIMINACIÓN VISUAL',
+    ActivityType.discriminacionInversa => 'DISCRIMINACIÓN INVERSA',
   };
 
   static ActivityType fromKey(String key) {
