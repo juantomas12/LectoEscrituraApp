@@ -28,6 +28,57 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final settings = ref.watch(settingsViewModelProvider);
     final profile = ref.watch(localProfileProvider);
     final colorScheme = Theme.of(context).colorScheme;
+    final games = <_GameOption>[
+      _GameOption(
+        type: ActivityType.imagenPalabra,
+        subtitle: 'UNE PALABRA CON SU IMAGEN',
+        icon: Icons.link_rounded,
+        color: const Color(0xFF2F9E8A),
+        levelHint: 'NIVEL 1',
+      ),
+      _GameOption(
+        type: ActivityType.escribirPalabra,
+        subtitle: 'COPIA, SEMICOPIA O DICTADO',
+        icon: Icons.keyboard_alt_rounded,
+        color: const Color(0xFFF29F05),
+        levelHint: 'NIVEL 1',
+      ),
+      _GameOption(
+        type: ActivityType.palabraPalabra,
+        subtitle: 'UNE PALABRAS IGUALES O RELACIONADAS',
+        icon: Icons.compare_arrows_rounded,
+        color: const Color(0xFF6E77E5),
+        levelHint: 'NIVEL 1',
+      ),
+      _GameOption(
+        type: ActivityType.imagenFrase,
+        subtitle: 'UNE CADA FRASE CON SU IMAGEN',
+        icon: Icons.text_snippet_rounded,
+        color: const Color(0xFF00A5B5),
+        levelHint: 'NIVEL 1',
+      ),
+      _GameOption(
+        type: ActivityType.letraObjetivo,
+        subtitle: 'BUSCA LA LETRA DENTRO DE PALABRAS',
+        icon: Icons.spellcheck_rounded,
+        color: const Color(0xFFDA5E2A),
+        levelHint: 'NIVELES 1, 2 Y 3',
+      ),
+      _GameOption(
+        type: ActivityType.discriminacion,
+        subtitle: 'ELIGE LA OPCIÓN CORRECTA',
+        icon: Icons.filter_center_focus_rounded,
+        color: const Color(0xFF00996B),
+        levelHint: 'NIVELES 1, 2 Y 3',
+      ),
+      _GameOption(
+        type: ActivityType.discriminacionInversa,
+        subtitle: 'ENCUENTRA LA OPCIÓN INTRUSA',
+        icon: Icons.find_replace_rounded,
+        color: const Color(0xFFB66A15),
+        levelHint: 'NIVELES 1, 2 Y 3',
+      ),
+    ];
 
     if (!_didSyncSettings) {
       _didSyncSettings = true;
@@ -210,75 +261,40 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 10),
-                      _GameCard(
-                        title: ActivityType.imagenPalabra.label,
-                        subtitle: 'UNE PALABRA CON SU IMAGEN',
-                        icon: Icons.link_rounded,
-                        selected: selection.game == ActivityType.imagenPalabra,
-                        color: const Color(0xFF2F9E8A),
-                        onTap: () =>
-                            selectionVm.setGame(ActivityType.imagenPalabra),
-                      ),
-                      const SizedBox(height: 8),
-                      _GameCard(
-                        title: ActivityType.escribirPalabra.label,
-                        subtitle: 'COPIA, SEMICOPIA O DICTADO',
-                        icon: Icons.keyboard_alt_rounded,
-                        selected: selection.game == ActivityType.escribirPalabra,
-                        color: const Color(0xFFF29F05),
-                        onTap: () =>
-                            selectionVm.setGame(ActivityType.escribirPalabra),
-                      ),
-                      const SizedBox(height: 8),
-                      _GameCard(
-                        title: ActivityType.palabraPalabra.label,
-                        subtitle: 'UNE PALABRAS IGUALES O RELACIONADAS',
-                        icon: Icons.compare_arrows_rounded,
-                        selected: selection.game == ActivityType.palabraPalabra,
-                        color: const Color(0xFF6E77E5),
-                        onTap: () =>
-                            selectionVm.setGame(ActivityType.palabraPalabra),
-                      ),
-                      const SizedBox(height: 8),
-                      _GameCard(
-                        title: ActivityType.imagenFrase.label,
-                        subtitle: 'UNE CADA FRASE CON SU IMAGEN',
-                        icon: Icons.text_snippet_rounded,
-                        selected: selection.game == ActivityType.imagenFrase,
-                        color: const Color(0xFF00A5B5),
-                        onTap: () => selectionVm.setGame(ActivityType.imagenFrase),
-                      ),
-                      const SizedBox(height: 8),
-                      _GameCard(
-                        title: ActivityType.letraObjetivo.label,
-                        subtitle: 'MISMO JUEGO CON NIVELES 1, 2 Y 3',
-                        icon: Icons.spellcheck_rounded,
-                        selected: selection.game == ActivityType.letraObjetivo,
-                        color: const Color(0xFFDA5E2A),
-                        onTap: () =>
-                            selectionVm.setGame(ActivityType.letraObjetivo),
-                      ),
-                      const SizedBox(height: 8),
-                      _GameCard(
-                        title: ActivityType.discriminacion.label,
-                        subtitle: 'ELIGE LA OPCIÓN CORRECTA',
-                        icon: Icons.filter_center_focus_rounded,
-                        selected: selection.game == ActivityType.discriminacion,
-                        color: const Color(0xFF00996B),
-                        onTap: () =>
-                            selectionVm.setGame(ActivityType.discriminacion),
-                      ),
-                      const SizedBox(height: 8),
-                      _GameCard(
-                        title: ActivityType.discriminacionInversa.label,
-                        subtitle: 'ENCUENTRA LA OPCIÓN INTRUSA',
-                        icon: Icons.find_replace_rounded,
-                        selected:
-                            selection.game == ActivityType.discriminacionInversa,
-                        color: const Color(0xFFB66A15),
-                        onTap: () => selectionVm.setGame(
-                          ActivityType.discriminacionInversa,
-                        ),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final maxWidth = constraints.maxWidth;
+                          final crossAxisCount = maxWidth >= 1120
+                              ? 4
+                              : maxWidth >= 760
+                              ? 3
+                              : 2;
+
+                          return GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: games.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: crossAxisCount,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                              childAspectRatio: 1,
+                            ),
+                            itemBuilder: (context, index) {
+                              final game = games[index];
+                              return _GameCard(
+                                title: game.type.label,
+                                subtitle: game.subtitle,
+                                levelHint: game.levelHint,
+                                icon: game.icon,
+                                selected: selection.game == game.type,
+                                color: game.color,
+                                onTap: () => selectionVm.setGame(game.type),
+                              );
+                            },
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -409,6 +425,7 @@ class _GameCard extends StatelessWidget {
   const _GameCard({
     required this.title,
     required this.subtitle,
+    required this.levelHint,
     required this.icon,
     required this.selected,
     required this.color,
@@ -417,6 +434,7 @@ class _GameCard extends StatelessWidget {
 
   final String title;
   final String subtitle;
+  final String levelHint;
   final IconData icon;
   final bool selected;
   final Color color;
@@ -428,7 +446,7 @@ class _GameCard extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Ink(
-        padding: const EdgeInsets.all(13),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
@@ -437,34 +455,78 @@ class _GameCard extends StatelessWidget {
           ),
           color: selected ? color.withValues(alpha: 0.16) : Colors.white,
         ),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: color, size: 34),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  UpperText(
-                    title,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  const SizedBox(height: 2),
-                  UpperText(
-                    subtitle,
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                  ),
-                ],
-              ),
+                  child: Icon(icon, color: color, size: 28),
+                ),
+                const Spacer(),
+                Icon(
+                  selected
+                      ? Icons.check_circle_rounded
+                      : Icons.radio_button_unchecked_rounded,
+                  color: color,
+                  size: selected ? 24 : 20,
+                ),
+              ],
             ),
-            Icon(
-              selected ? Icons.check_circle_rounded : Icons.arrow_forward_ios_rounded,
-              color: color,
-              size: selected ? 24 : 18,
+            const SizedBox(height: 10),
+            UpperText(
+              title,
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 4),
+            UpperText(
+              subtitle,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: UpperText(
+                levelHint,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w900,
+                  color: color,
+                ),
+              ),
             ),
           ],
         ),
       ),
     );
   }
+}
+
+class _GameOption {
+  const _GameOption({
+    required this.type,
+    required this.subtitle,
+    required this.icon,
+    required this.color,
+    required this.levelHint,
+  });
+
+  final ActivityType type;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+  final String levelHint;
 }
