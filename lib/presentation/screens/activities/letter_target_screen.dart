@@ -14,6 +14,7 @@ import '../../../domain/models/item.dart';
 import '../../../domain/models/level.dart';
 import '../../viewmodels/progress_view_model.dart';
 import '../../widgets/activity_asset_image.dart';
+import '../../widgets/routine_steps.dart';
 import '../../widgets/upper_text.dart';
 import '../results_screen.dart';
 
@@ -39,13 +40,14 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
   List<Item> _items = [];
   final Map<String, bool> _classifiedByItem = {};
   String _targetLetter = 'A';
-  String _feedback = 'ARRASTRA CADA TARJETA A SU CAJA';
+  String _feedback = 'ARRASTRA A LA CAJA CORRECTA';
   bool _isLoading = true;
 
   int _correct = 0;
   int _incorrect = 0;
   int _streak = 0;
   int _bestStreak = 0;
+  int _consecutiveErrors = 0;
   DateTime _startedAt = DateTime.now();
 
   @override
@@ -97,7 +99,23 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
     final candidateLetters = switch (widget.level) {
       AppLevel.uno => ['A', 'E', 'I', 'O', 'U'],
       AppLevel.dos => ['A', 'E', 'I', 'O', 'U', 'L', 'M', 'N', 'P', 'R', 'S'],
-      _ => ['A', 'E', 'I', 'O', 'U', 'L', 'M', 'N', 'P', 'R', 'S', 'T', 'C', 'D', 'B'],
+      _ => [
+        'A',
+        'E',
+        'I',
+        'O',
+        'U',
+        'L',
+        'M',
+        'N',
+        'P',
+        'R',
+        'S',
+        'T',
+        'C',
+        'D',
+        'B',
+      ],
     };
 
     String selectedLetter = candidateLetters.first;
@@ -146,11 +164,12 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
       _items = selectedItems;
       _targetLetter = selectedLetter;
       _classifiedByItem.clear();
-      _feedback = 'ARRASTRA CADA TARJETA A SU CAJA';
+      _feedback = 'ARRASTRA A LA CAJA CORRECTA';
       _correct = 0;
       _incorrect = 0;
       _streak = 0;
       _bestStreak = 0;
+      _consecutiveErrors = 0;
       _startedAt = DateTime.now();
       _isLoading = false;
     });
@@ -181,6 +200,7 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
         _classifiedByItem[item.id] = toHasLetter;
         _correct++;
         _streak++;
+        _consecutiveErrors = 0;
         _bestStreak = max(_bestStreak, _streak);
         _feedback = PedagogicalFeedback.positive(
           streak: _streak,
@@ -193,6 +213,7 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
           attemptsOnCurrent: _incorrect,
           hint: 'PIENSA SI SUENA LA LETRA $_targetLetter',
         );
+        _consecutiveErrors++;
       }
     });
 
@@ -238,18 +259,30 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
 
   Widget _buildDropZone({
     required BuildContext context,
-    required String title,
     required bool toHasLetter,
     required List<Item> accepted,
   }) {
     return DragTarget<Item>(
       onWillAcceptWithDetails: (details) =>
-          details.data.word != null && !_classifiedByItem.containsKey(details.data.id),
+          details.data.word != null &&
+          !_classifiedByItem.containsKey(details.data.id),
       onAcceptWithDetails: (details) {
         _handleDrop(details.data, toHasLetter: toHasLetter);
       },
       builder: (context, candidateData, rejectedData) {
         final hovering = candidateData.isNotEmpty;
+        final zoneColor = toHasLetter
+            ? Colors.green.shade700
+            : Colors.red.shade700;
+        final zoneBgColor = toHasLetter
+            ? Colors.green.shade50
+            : Colors.red.shade50;
+        final zoneIcon = toHasLetter
+            ? Icons.check_circle_rounded
+            : Icons.cancel_rounded;
+        final zoneTitle = toHasLetter ? _targetLetter : 'NO $_targetLetter';
+        final zoneSubtitle = toHasLetter ? 'CON LETRA' : 'SIN LETRA';
+
         return AnimatedContainer(
           duration: const Duration(milliseconds: 130),
           width: double.infinity,
@@ -269,9 +302,39 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              UpperText(
-                title,
-                style: Theme.of(context).textTheme.titleLarge,
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: zoneBgColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Icon(zoneIcon, color: zoneColor, size: 30),
+                    const SizedBox(width: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        UpperText(
+                          zoneTitle,
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(
+                                color: zoneColor,
+                                fontWeight: FontWeight.w800,
+                              ),
+                        ),
+                        UpperText(
+                          zoneSubtitle,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 6),
               UpperText('ACERTADAS: ${accepted.length}'),
@@ -325,6 +388,8 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                 child: ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
+                    RoutineSteps(currentStep: nextItem == null ? 4 : 2),
+                    const SizedBox(height: 10),
                     Card(
                       child: Padding(
                         padding: const EdgeInsets.all(12),
@@ -332,17 +397,16 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             UpperText(
-                              switch (widget.level) {
-                                AppLevel.uno =>
-                                  'NIVEL 1: BUSCA VOCALES EN PALABRAS CORTAS CON LA LETRA $_targetLetter',
-                                AppLevel.dos =>
-                                  'NIVEL 2: BUSCA LETRAS FRECUENTES EN PALABRAS MEDIAS CON LA LETRA $_targetLetter',
-                                _ =>
-                                  'NIVEL 3: BUSCA LETRAS EN PALABRAS LARGAS CON LA LETRA $_targetLetter',
-                              },
+                              'SEPARA LAS TARJETAS',
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(height: 8),
+                            UpperText(
+                              'LETRA: $_targetLetter',
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(fontWeight: FontWeight.w800),
+                            ),
+                            const SizedBox(height: 6),
                             UpperText(_feedback),
                           ],
                         ),
@@ -354,14 +418,12 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                         children: [
                           _buildDropZone(
                             context: context,
-                            title: 'TIENE LA LETRA $_targetLetter',
                             toHasLetter: true,
                             accepted: withLetter,
                           ),
                           const SizedBox(height: 10),
                           _buildDropZone(
                             context: context,
-                            title: 'NO TIENE LA LETRA $_targetLetter',
                             toHasLetter: false,
                             accepted: withoutLetter,
                           ),
@@ -373,7 +435,6 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                           Expanded(
                             child: _buildDropZone(
                               context: context,
-                              title: 'TIENE LA LETRA $_targetLetter',
                               toHasLetter: true,
                               accepted: withLetter,
                             ),
@@ -382,13 +443,38 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                           Expanded(
                             child: _buildDropZone(
                               context: context,
-                              title: 'NO TIENE LA LETRA $_targetLetter',
                               toHasLetter: false,
                               accepted: withoutLetter,
                             ),
                           ),
                         ],
                       ),
+                    if (_consecutiveErrors >= 2 && nextItem != null) ...[
+                      const SizedBox(height: 10),
+                      Card(
+                        color: Colors.amber.shade50,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.lightbulb_rounded,
+                                color: Colors.amber.shade800,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: UpperText(
+                                  'AYUDA: ${nextItem.word} VA EN ${containsLetter(nextItem.word ?? '', _targetLetter) ? _targetLetter : 'NO $_targetLetter'}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 14),
                     UpperText(
                       isMobile ? 'TARJETA ACTUAL' : 'TARJETAS',
@@ -405,14 +491,23 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                                 color: Colors.transparent,
                                 child: SizedBox(
                                   width: 220,
-                                  child: _LetterCard(item: nextItem, mobileLarge: true),
+                                  child: _LetterCard(
+                                    item: nextItem,
+                                    mobileLarge: true,
+                                  ),
                                 ),
                               ),
                               childWhenDragging: Opacity(
                                 opacity: 0.3,
-                                child: _LetterCard(item: nextItem, mobileLarge: true),
+                                child: _LetterCard(
+                                  item: nextItem,
+                                  mobileLarge: true,
+                                ),
                               ),
-                              child: _LetterCard(item: nextItem, mobileLarge: true),
+                              child: _LetterCard(
+                                item: nextItem,
+                                mobileLarge: true,
+                              ),
                             )
                           else
                             const UpperText('NO QUEDAN TARJETAS'),
@@ -441,7 +536,9 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                                       children: [
                                         SizedBox(
                                           height: 78,
-                                          child: ActivityAssetImage(assetPath: item.imageAsset),
+                                          child: ActivityAssetImage(
+                                            assetPath: item.imageAsset,
+                                          ),
                                         ),
                                         const SizedBox(height: 6),
                                         UpperText(item.word ?? ''),
@@ -495,10 +592,7 @@ class _LetterCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 6),
-              UpperText(
-                item.word ?? '',
-                textAlign: TextAlign.center,
-              ),
+              UpperText(item.word ?? '', textAlign: TextAlign.center),
             ],
           ),
         ),

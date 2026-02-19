@@ -13,6 +13,7 @@ import '../../../domain/models/item.dart';
 import '../../../domain/models/level.dart';
 import '../../viewmodels/progress_view_model.dart';
 import '../../widgets/activity_asset_image.dart';
+import '../../widgets/routine_steps.dart';
 import '../../widgets/upper_text.dart';
 import '../results_screen.dart';
 
@@ -52,6 +53,7 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
   int _incorrect = 0;
   int _streak = 0;
   int _bestStreak = 0;
+  int _consecutiveErrors = 0;
   DateTime _startedAt = DateTime.now();
 
   @override
@@ -113,6 +115,7 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
       _incorrect = 0;
       _streak = 0;
       _bestStreak = 0;
+      _consecutiveErrors = 0;
       _feedback = 'TOCA LA IMAGEN CORRECTA';
       _startedAt = DateTime.now();
     });
@@ -127,9 +130,7 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
     }
 
     final target = _roundTargets[_currentRound];
-    final distractors = _pool
-        .where((item) => item.id != target.id)
-        .toList()
+    final distractors = _pool.where((item) => item.id != target.id).toList()
       ..shuffle(_random);
 
     final options = <Item>[target, ...distractors.take(_optionsCount - 1)]
@@ -167,6 +168,7 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
       if (isCorrect) {
         _correct++;
         _streak++;
+        _consecutiveErrors = 0;
         _bestStreak = max(_bestStreak, _streak);
         _feedback = PedagogicalFeedback.positive(
           streak: _streak,
@@ -179,6 +181,7 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
           attemptsOnCurrent: _incorrect,
           hint: _target?.word,
         );
+        _consecutiveErrors++;
       }
     });
   }
@@ -251,6 +254,8 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
                 child: ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
+                    RoutineSteps(currentStep: _answered ? 4 : 2),
+                    const SizedBox(height: 10),
                     Card(
                       child: Padding(
                         padding: const EdgeInsets.all(14),
@@ -269,6 +274,32 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
                         ),
                       ),
                     ),
+                    if (!_answered && _consecutiveErrors >= 2) ...[
+                      const SizedBox(height: 10),
+                      Card(
+                        color: Colors.amber.shade50,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.lightbulb_rounded,
+                                color: Colors.amber.shade800,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: UpperText(
+                                  'AYUDA: TOCA ${_target?.word ?? ''}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 12),
                     GridView.builder(
                       shrinkWrap: true,
@@ -285,7 +316,12 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
                         final isSelected = _selectedId == option.id;
                         final isCorrectOption = _target!.id == option.id;
                         final showGood = _answered && isCorrectOption;
-                        final showBad = _answered && isSelected && !isCorrectOption;
+                        final showBad =
+                            _answered && isSelected && !isCorrectOption;
+                        final showAssist =
+                            !_answered &&
+                            _consecutiveErrors >= 2 &&
+                            isCorrectOption;
 
                         return InkWell(
                           onTap: _answered ? null : () => _answer(option),
@@ -298,13 +334,19 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
                                     ? Colors.green.shade700
                                     : showBad
                                     ? Colors.red.shade700
+                                    : showAssist
+                                    ? Colors.blue.shade700
                                     : Theme.of(context).colorScheme.outline,
-                                width: showGood || showBad ? 3 : 1.4,
+                                width: showGood || showBad || showAssist
+                                    ? 3
+                                    : 1.4,
                               ),
                               color: showGood
                                   ? Colors.green.shade50
                                   : showBad
                                   ? Colors.red.shade50
+                                  : showAssist
+                                  ? Colors.blue.shade50
                                   : Theme.of(context).colorScheme.surface,
                             ),
                             child: Padding(

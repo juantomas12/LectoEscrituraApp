@@ -5,12 +5,14 @@ import '../../application/providers/app_providers.dart';
 import '../../domain/models/activity_type.dart';
 import '../../domain/models/category.dart';
 import '../../domain/models/difficulty.dart';
+import '../utils/category_visuals.dart';
 import '../viewmodels/home_selection_view_model.dart';
 import '../viewmodels/settings_view_model.dart';
 import '../widgets/upper_text.dart';
 import 'activity_selection_screen.dart';
 import 'progress_dashboard_screen.dart';
 import 'settings_screen.dart';
+import 'therapist_panel_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -113,6 +115,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             icon: const Icon(Icons.insights_rounded),
           ),
           IconButton(
+            tooltip: 'PANEL ADULTO',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const TherapistPanelScreen(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.analytics_outlined),
+          ),
+          IconButton(
             tooltip: 'AJUSTES',
             onPressed: () {
               Navigator.of(context).push(
@@ -166,7 +179,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   children: [
                     const Row(
                       children: [
-                        Icon(Icons.auto_stories_rounded, color: Colors.white, size: 34),
+                        Icon(
+                          Icons.auto_stories_rounded,
+                          color: Colors.white,
+                          size: 34,
+                        ),
                         SizedBox(width: 10),
                         Expanded(
                           child: UpperText(
@@ -259,7 +276,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 child: _CategoryCard(
                                   category: category,
                                   selected: selection.category == category,
-                                  onTap: () => selectionVm.setCategory(category),
+                                  onTap: () =>
+                                      selectionVm.setCategory(category),
                                 ),
                               );
                             }).toList(),
@@ -300,11 +318,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             itemCount: games.length,
                             gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: crossAxisCount,
-                              crossAxisSpacing: 10,
-                              mainAxisSpacing: 10,
-                              childAspectRatio: compact ? 2.8 : 1,
-                            ),
+                                  crossAxisCount: crossAxisCount,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10,
+                                  childAspectRatio: compact ? 2.8 : 1,
+                                ),
                             itemBuilder: (context, index) {
                               final game = games[index];
                               return _GameCard(
@@ -371,10 +389,7 @@ class _ColorBubble extends StatelessWidget {
       child: Container(
         width: size,
         height: size,
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
-        ),
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
       ),
     );
   }
@@ -391,31 +406,9 @@ class _CategoryCard extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  static const _icons = <AppCategory, IconData>{
-    AppCategory.mixta: Icons.shuffle_rounded,
-    AppCategory.cosasDeCasa: Icons.chair_alt_rounded,
-    AppCategory.comida: Icons.restaurant_rounded,
-    AppCategory.dinero: Icons.paid_rounded,
-    AppCategory.bano: Icons.shower_rounded,
-    AppCategory.profesiones: Icons.work_rounded,
-    AppCategory.salud: Icons.favorite_rounded,
-    AppCategory.emociones: Icons.mood_rounded,
-  };
-
-  static const _colors = <AppCategory, Color>{
-    AppCategory.mixta: Color(0xFF1A7D95),
-    AppCategory.cosasDeCasa: Color(0xFF2F9E8A),
-    AppCategory.comida: Color(0xFFE8871E),
-    AppCategory.dinero: Color(0xFF3AA356),
-    AppCategory.bano: Color(0xFF3A8CE0),
-    AppCategory.profesiones: Color(0xFF8D62DA),
-    AppCategory.salud: Color(0xFFE75B74),
-    AppCategory.emociones: Color(0xFFF2B705),
-  };
-
   @override
   Widget build(BuildContext context) {
-    final color = _colors[category]!;
+    final color = category.color;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -431,12 +424,15 @@ class _CategoryCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(_icons[category], color: color, size: 28),
+            Icon(category.icon, color: color, size: 28),
             const SizedBox(width: 8),
             Expanded(
               child: UpperText(
                 category.label,
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -502,7 +498,10 @@ class _GameCard extends StatelessWidget {
                       children: [
                         UpperText(
                           title,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -558,7 +557,10 @@ class _GameCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   UpperText(
                     subtitle,
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -572,7 +574,10 @@ class _GameCard extends StatelessWidget {
                   ),
                   const Spacer(),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 5,
+                    ),
                     decoration: BoxDecoration(
                       color: color.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(999),

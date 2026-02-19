@@ -44,6 +44,10 @@ class SettingsViewModel extends Notifier<AppSettings> {
   Future<void> setUnlockThreshold(int value) {
     return _save(state.copyWith(unlockThreshold: value));
   }
+
+  Future<void> setAutoAdjustLevel(bool value) {
+    return _save(state.copyWith(autoAdjustLevel: value));
+  }
 }
 
 final settingsViewModelProvider =

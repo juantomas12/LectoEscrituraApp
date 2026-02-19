@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/models/activity_type.dart';
 import '../../domain/models/category.dart';
 import '../../domain/models/difficulty.dart';
 import '../../domain/models/level.dart';
+import '../utils/category_visuals.dart';
+import '../viewmodels/progress_view_model.dart';
+import '../viewmodels/settings_view_model.dart';
 import '../widgets/upper_text.dart';
 import 'activities/discrimination_screen.dart';
 import 'activities/inverse_discrimination_screen.dart';
@@ -13,7 +17,7 @@ import 'activities/match_image_word_screen.dart';
 import 'activities/match_word_word_screen.dart';
 import 'activities/write_word_screen.dart';
 
-class ActivitySelectionScreen extends StatefulWidget {
+class ActivitySelectionScreen extends ConsumerStatefulWidget {
   const ActivitySelectionScreen({
     super.key,
     required this.category,
@@ -26,18 +30,34 @@ class ActivitySelectionScreen extends StatefulWidget {
   final Difficulty difficulty;
 
   @override
-  State<ActivitySelectionScreen> createState() => _ActivitySelectionScreenState();
+  ConsumerState<ActivitySelectionScreen> createState() =>
+      _ActivitySelectionScreenState();
 }
 
-class _ActivitySelectionScreenState extends State<ActivitySelectionScreen> {
+class _ActivitySelectionScreenState
+    extends ConsumerState<ActivitySelectionScreen> {
   int _selectedGameLevel = 1;
+  bool _didApplyAutoLevel = false;
 
   @override
   Widget build(BuildContext context) {
     final levels = _levelsForGame(widget.activityType);
+    final settings = ref.watch(settingsViewModelProvider);
+    final progressVm = ref.read(progressViewModelProvider.notifier);
 
     if (!levels.contains(_selectedGameLevel)) {
       _selectedGameLevel = levels.first;
+    }
+
+    if (!_didApplyAutoLevel && settings.autoAdjustLevel && levels.length > 1) {
+      _didApplyAutoLevel = true;
+      final recommended = progressVm.recommendedLevelForGame(
+        widget.activityType,
+        maxLevel: levels.last,
+      );
+      _selectedGameLevel = levels.contains(recommended)
+          ? recommended
+          : levels.first;
     }
 
     return Scaffold(
@@ -70,7 +90,16 @@ class _ActivitySelectionScreenState extends State<ActivitySelectionScreen> {
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 6),
-                      UpperText(widget.category.label),
+                      Row(
+                        children: [
+                          Icon(
+                            widget.category.icon,
+                            color: widget.category.color,
+                          ),
+                          const SizedBox(width: 6),
+                          UpperText(widget.category.label),
+                        ],
+                      ),
                       const SizedBox(height: 6),
                       UpperText('DIFICULTAD: ${widget.difficulty.label}'),
                     ],
@@ -106,7 +135,21 @@ class _ActivitySelectionScreenState extends State<ActivitySelectionScreen> {
                         }).toList(),
                       ),
                       const SizedBox(height: 10),
-                      UpperText(_levelDescription(widget.activityType, _selectedGameLevel)),
+                      UpperText(
+                        _levelDescription(
+                          widget.activityType,
+                          _selectedGameLevel,
+                        ),
+                      ),
+                      if (settings.autoAdjustLevel && levels.length > 1)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: UpperText(
+                            'NIVEL SUGERIDO AUTOMÁTICO: $_selectedGameLevel',
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(fontWeight: FontWeight.w800),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -161,7 +204,11 @@ class _ActivitySelectionScreenState extends State<ActivitySelectionScreen> {
     };
   }
 
-  void _openActivity(BuildContext context, ActivityType activity, int gameLevel) {
+  void _openActivity(
+    BuildContext context,
+    ActivityType activity,
+    int gameLevel,
+  ) {
     switch (activity) {
       case ActivityType.imagenPalabra:
         Navigator.of(context).push(

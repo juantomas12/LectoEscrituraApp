@@ -247,9 +247,7 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
                                   width: 3,
                                 ),
                                 color: isHovering
-                                    ? Theme.of(context)
-                                          .colorScheme
-                                          .primary
+                                    ? Theme.of(context).colorScheme.primary
                                           .withValues(alpha: 0.08)
                                     : Colors.transparent,
                               ),
@@ -264,7 +262,9 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
                                     vertical: 4,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: UpperText(
@@ -287,16 +287,16 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
             if (matchedWord != null)
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   color: Colors.green.shade100,
                   border: Border.all(color: Colors.green.shade600),
                 ),
-                child: UpperText(
-                  matchedWord,
-                  textAlign: TextAlign.center,
-                ),
+                child: UpperText(matchedWord, textAlign: TextAlign.center),
               )
             else
               DragTarget<String>(
@@ -309,7 +309,10 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
                 builder: (context, candidateData, rejected) {
                   return Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
@@ -331,9 +334,9 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
                 padding: const EdgeInsets.only(top: 6),
                 child: UpperText(
                   'PISTA: ${item.word?.substring(0, 1) ?? ''}...',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
               ),
           ],
@@ -346,9 +349,14 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsViewModelProvider);
     final width = MediaQuery.sizeOf(context).width;
-    final isMobile = width < 900;
-    final isDesktop = width >= 1000;
-    final contentWidth = isDesktop ? 1180.0 : 900.0;
+    final isPhone = width < 700;
+    final isTablet = width >= 700 && width < 1100;
+    final isDesktop = width >= 1100;
+    final contentWidth = isDesktop
+        ? 1180.0
+        : isTablet
+        ? 1020.0
+        : 920.0;
     final maxColumnsByWidth = width >= 1450
         ? 4
         : width >= 1180
@@ -356,8 +364,22 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
         : 2;
     final desiredColumns = _items.length >= 4 ? (_items.length / 2).ceil() : 2;
     final crossAxisCount = desiredColumns.clamp(2, maxColumnsByWidth).toInt();
-    final imageHeight = isDesktop ? 175.0 : 190.0;
-    final gridItemExtent = isDesktop ? 295.0 : 360.0;
+    final imageHeight = isDesktop
+        ? 175.0
+        : isTablet
+        ? 165.0
+        : 200.0;
+    final gridItemExtent = isDesktop
+        ? 295.0
+        : isTablet
+        ? 300.0
+        : 350.0;
+    final wordChipFontSize = isPhone
+        ? 22.0
+        : isTablet
+        ? 20.0
+        : 17.0;
+    final nextItem = _nextUnmatchedItem();
 
     return Scaffold(
       appBar: AppBar(
@@ -375,104 +397,134 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
           : Center(
               child: ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: contentWidth),
-                child: Padding(
+                child: ListView(
                   padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.info_outline),
-                          const SizedBox(width: 10),
-                          Expanded(child: UpperText(_feedback)),
-                        ],
+                  children: [
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.info_outline),
+                            const SizedBox(width: 10),
+                            Expanded(child: UpperText(_feedback)),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Expanded(
-                    child: isMobile
-                        ? Builder(
-                            builder: (context) {
-                              final nextItem = _nextUnmatchedItem();
-                              if (nextItem == null) {
-                                return const Center(
-                                  child: UpperText('COMPLETANDO...'),
-                                );
-                              }
-                              return ListView(
-                                children: [
-                                  UpperText(
-                                    'ARRASTRA LA PALABRA HASTA LA IMAGEN',
-                                    style: Theme.of(context).textTheme.titleLarge,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  _buildItemCard(
-                                    context: context,
-                                    item: nextItem,
-                                    showHints: settings.showHints,
-                                    imageHeight: 210,
-                                    compactDesktop: false,
-                                  ),
-                                ],
-                              );
-                            },
-                          )
-                        : GridView.builder(
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: crossAxisCount,
-                              mainAxisSpacing: 10,
-                              crossAxisSpacing: 10,
-                              mainAxisExtent: gridItemExtent,
-                            ),
-                            itemCount: _items.length,
-                            itemBuilder: (context, index) {
-                              final item = _items[index];
-                              return _buildItemCard(
-                                context: context,
-                                item: item,
-                                showHints: settings.showHints,
-                                imageHeight: imageHeight,
-                                compactDesktop: isDesktop,
-                              );
-                            },
-                          ),
-                  ),
-                  const SizedBox(height: 10),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: UpperText(
-                      'PALABRAS DISPONIBLES',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: _words
-                        .where((word) => !_matchedByItem.values.contains(word))
-                        .map(
-                          (word) => Draggable<String>(
-                            data: word,
-                            feedback: Material(
-                              color: Colors.transparent,
-                              child: Chip(label: UpperText(word)),
-                            ),
-                            childWhenDragging: Opacity(
-                              opacity: 0.35,
-                              child: Chip(label: UpperText(word)),
-                            ),
-                            child: Chip(label: UpperText(word)),
-                          ),
+                    const SizedBox(height: 10),
+                    if (isPhone) ...[
+                      UpperText(
+                        'ARRASTRA LA PALABRA HASTA LA IMAGEN',
+                        style: Theme.of(context).textTheme.titleLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      if (nextItem == null)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          child: UpperText('COMPLETANDO...'),
                         )
-                        .toList(),
-                  ),
-                    ],
-                  ),
+                      else
+                        _buildItemCard(
+                          context: context,
+                          item: nextItem,
+                          showHints: settings.showHints,
+                          imageHeight: 210,
+                          compactDesktop: false,
+                        ),
+                      const SizedBox(height: 12),
+                    ] else
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: crossAxisCount,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                          mainAxisExtent: gridItemExtent,
+                        ),
+                        itemCount: _items.length,
+                        itemBuilder: (context, index) {
+                          final item = _items[index];
+                          return _buildItemCard(
+                            context: context,
+                            item: item,
+                            showHints: settings.showHints,
+                            imageHeight: imageHeight,
+                            compactDesktop: isDesktop,
+                          );
+                        },
+                      ),
+                    const SizedBox(height: 10),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: UpperText(
+                        'PALABRAS DISPONIBLES',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: _words
+                          .where(
+                            (word) => !_matchedByItem.values.contains(word),
+                          )
+                          .map(
+                            (word) => Draggable<String>(
+                              data: word,
+                              feedback: Material(
+                                color: Colors.transparent,
+                                child: Chip(
+                                  label: UpperText(
+                                    word,
+                                    style: TextStyle(
+                                      fontSize: wordChipFontSize,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                ),
+                              ),
+                              childWhenDragging: Opacity(
+                                opacity: 0.35,
+                                child: Chip(
+                                  label: UpperText(
+                                    word,
+                                    style: TextStyle(
+                                      fontSize: wordChipFontSize,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                ),
+                              ),
+                              child: Chip(
+                                label: UpperText(
+                                  word,
+                                  style: TextStyle(
+                                    fontSize: wordChipFontSize,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ],
                 ),
               ),
             ),

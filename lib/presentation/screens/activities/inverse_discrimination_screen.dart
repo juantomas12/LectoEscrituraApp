@@ -11,8 +11,10 @@ import '../../../domain/models/category.dart';
 import '../../../domain/models/difficulty.dart';
 import '../../../domain/models/item.dart';
 import '../../../domain/models/level.dart';
+import '../../utils/category_visuals.dart';
 import '../../viewmodels/progress_view_model.dart';
 import '../../widgets/activity_asset_image.dart';
+import '../../widgets/routine_steps.dart';
 import '../../widgets/upper_text.dart';
 import '../results_screen.dart';
 
@@ -44,16 +46,18 @@ class _InverseDiscriminationScreenState
   int _roundCount = 5;
   bool _isLoading = true;
   bool _answered = false;
-  String _feedback = 'TOCA LA QUE NO PERTENECE';
+  String _feedback = 'TOCA LA DIFERENTE';
 
   List<Item> _options = [];
   Item? _odd;
   String? _selectedId;
+  AppCategory? _focusCategory;
 
   int _correct = 0;
   int _incorrect = 0;
   int _streak = 0;
   int _bestStreak = 0;
+  int _consecutiveErrors = 0;
   DateTime _startedAt = DateTime.now();
 
   int get _optionsCount {
@@ -75,15 +79,16 @@ class _InverseDiscriminationScreenState
     final all = dataset.getAllItems();
     _poolByCategory.clear();
     for (final category in AppCategoryLists.reales) {
-      final items = all
-          .where(
-            (item) =>
-                item.category == category &&
-                item.activityType == ActivityType.imagenPalabra &&
-                (item.word ?? '').isNotEmpty,
-          )
-          .toList()
-        ..shuffle(_random);
+      final items =
+          all
+              .where(
+                (item) =>
+                    item.category == category &&
+                    item.activityType == ActivityType.imagenPalabra &&
+                    (item.word ?? '').isNotEmpty,
+              )
+              .toList()
+            ..shuffle(_random);
       _poolByCategory[category] = items;
     }
 
@@ -104,7 +109,9 @@ class _InverseDiscriminationScreenState
       _incorrect = 0;
       _streak = 0;
       _bestStreak = 0;
-      _feedback = 'TOCA LA QUE NO PERTENECE';
+      _consecutiveErrors = 0;
+      _feedback = 'TOCA LA DIFERENTE';
+      _focusCategory = null;
       _startedAt = DateTime.now();
     });
 
@@ -122,7 +129,9 @@ class _InverseDiscriminationScreenState
         : widget.category;
     _focusCategory = focusCategory;
 
-    final insidePool = List<Item>.from(_poolByCategory[focusCategory] ?? const []);
+    final insidePool = List<Item>.from(
+      _poolByCategory[focusCategory] ?? const [],
+    );
     final outsidePool = _poolByCategory.entries
         .where((entry) => entry.key != focusCategory)
         .expand((entry) => entry.value)
@@ -135,15 +144,73 @@ class _InverseDiscriminationScreenState
 
     final odd = outsidePool[_random.nextInt(outsidePool.length)];
     final insiders = insidePool..shuffle(_random);
-    final options = <Item>[odd, ...insiders.take(_optionsCount - 1)]..shuffle(_random);
+    final options = <Item>[odd, ...insiders.take(_optionsCount - 1)]
+      ..shuffle(_random);
 
     setState(() {
       _odd = odd;
       _options = options;
       _selectedId = null;
       _answered = false;
-      _feedback = 'TOCA LA QUE NO ES DE ${focusCategory.label}';
+      _focusCategory = focusCategory;
+      _feedback = 'TOCA LA DIFERENTE';
     });
+  }
+
+  Widget _buildPrompt(BuildContext context) {
+    final category = _focusCategory;
+    if (category == null) {
+      return UpperText(
+        _feedback,
+        style: Theme.of(context).textTheme.titleLarge,
+      );
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.red.shade50,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.cancel_rounded, color: Colors.red.shade700, size: 34),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                UpperText(
+                  'NO ${category.label}',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: Colors.red.shade700,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(
+                      category.icon,
+                      size: 18,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: UpperText(
+                        category.label,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   AppCategory _randomAvailableCategory() {
@@ -184,6 +251,7 @@ class _InverseDiscriminationScreenState
       if (isCorrect) {
         _correct++;
         _streak++;
+        _consecutiveErrors = 0;
         _bestStreak = max(_bestStreak, _streak);
         _feedback = PedagogicalFeedback.positive(
           streak: _streak,
@@ -196,6 +264,7 @@ class _InverseDiscriminationScreenState
           attemptsOnCurrent: _incorrect,
           hint: 'BUSCA LA QUE NO ES DE ${_focusCategory.label}',
         );
+        _consecutiveErrors++;
       }
     });
   }
@@ -268,22 +337,64 @@ class _InverseDiscriminationScreenState
                 child: ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
+                    RoutineSteps(currentStep: _answered ? 4 : 2),
+                    const SizedBox(height: 10),
                     Card(
                       child: Padding(
                         padding: const EdgeInsets.all(14),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            UpperText('RONDA ${_currentRound + 1} DE $_roundCount'),
-                            const SizedBox(height: 8),
                             UpperText(
-                              _feedback,
-                              style: Theme.of(context).textTheme.titleLarge,
+                              'RONDA ${_currentRound + 1} DE $_roundCount',
                             ),
+                            const SizedBox(height: 8),
+                            if (_answered)
+                              UpperText(
+                                _feedback,
+                                style: Theme.of(context).textTheme.titleLarge
+                                    ?.copyWith(
+                                      color: _feedback == 'CORRECTO'
+                                          ? Colors.green.shade700
+                                          : _feedback == 'INTÉNTALO DE NUEVO'
+                                          ? Colors.red.shade700
+                                          : null,
+                                    ),
+                              )
+                            else
+                              _buildPrompt(context),
                           ],
                         ),
                       ),
                     ),
+                    if (!_answered &&
+                        _consecutiveErrors >= 2 &&
+                        _odd != null) ...[
+                      const SizedBox(height: 10),
+                      Card(
+                        color: Colors.amber.shade50,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.lightbulb_rounded,
+                                color: Colors.amber.shade800,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: UpperText(
+                                  'AYUDA: LA DIFERENTE ES ${_odd!.word ?? ''}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 12),
                     GridView.builder(
                       shrinkWrap: true,
@@ -301,6 +412,8 @@ class _InverseDiscriminationScreenState
                         final isOdd = _odd!.id == option.id;
                         final showGood = _answered && isOdd;
                         final showBad = _answered && isSelected && !isOdd;
+                        final showAssist =
+                            !_answered && _consecutiveErrors >= 2 && isOdd;
 
                         return InkWell(
                           onTap: _answered ? null : () => _answer(option),
@@ -313,13 +426,19 @@ class _InverseDiscriminationScreenState
                                     ? Colors.green.shade700
                                     : showBad
                                     ? Colors.red.shade700
+                                    : showAssist
+                                    ? Colors.blue.shade700
                                     : Theme.of(context).colorScheme.outline,
-                                width: showGood || showBad ? 3 : 1.4,
+                                width: showGood || showBad || showAssist
+                                    ? 3
+                                    : 1.4,
                               ),
                               color: showGood
                                   ? Colors.green.shade50
                                   : showBad
                                   ? Colors.red.shade50
+                                  : showAssist
+                                  ? Colors.blue.shade50
                                   : Theme.of(context).colorScheme.surface,
                             ),
                             child: Padding(

@@ -9,6 +9,7 @@ class AppSettings {
     this.showHints = true,
     this.defaultDifficulty = Difficulty.primaria,
     this.unlockThreshold = 0,
+    this.autoAdjustLevel = true,
   });
 
   final bool audioEnabled;
@@ -18,6 +19,7 @@ class AppSettings {
   final bool showHints;
   final Difficulty defaultDifficulty;
   final int unlockThreshold;
+  final bool autoAdjustLevel;
 
   AppSettings copyWith({
     bool? audioEnabled,
@@ -27,6 +29,7 @@ class AppSettings {
     bool? showHints,
     Difficulty? defaultDifficulty,
     int? unlockThreshold,
+    bool? autoAdjustLevel,
   }) {
     return AppSettings(
       audioEnabled: audioEnabled ?? this.audioEnabled,
@@ -36,6 +39,7 @@ class AppSettings {
       showHints: showHints ?? this.showHints,
       defaultDifficulty: defaultDifficulty ?? this.defaultDifficulty,
       unlockThreshold: unlockThreshold ?? this.unlockThreshold,
+      autoAdjustLevel: autoAdjustLevel ?? this.autoAdjustLevel,
     );
   }
 
@@ -48,6 +52,7 @@ class AppSettings {
       'showHints': showHints,
       'defaultDifficulty': defaultDifficulty.name,
       'unlockThreshold': unlockThreshold,
+      'autoAdjustLevel': autoAdjustLevel,
     };
   }
 
@@ -66,6 +71,7 @@ class AppSettings {
           ? Difficulty.secundaria
           : Difficulty.primaria,
       unlockThreshold: map['unlockThreshold'] as int? ?? 0,
+      autoAdjustLevel: map['autoAdjustLevel'] as bool? ?? true,
     );
   }
 }
