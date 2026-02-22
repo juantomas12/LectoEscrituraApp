@@ -1,20 +1,25 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/models/activity_type.dart';
 import '../../domain/models/category.dart';
 import '../../domain/models/difficulty.dart';
+import '../../domain/models/letter_match_mode.dart';
 import '../../domain/models/level.dart';
 import '../utils/category_visuals.dart';
 import '../viewmodels/progress_view_model.dart';
 import '../viewmodels/settings_view_model.dart';
 import '../widgets/upper_text.dart';
 import 'activities/discrimination_screen.dart';
+import 'activities/exact_change_store_screen.dart';
 import 'activities/inverse_discrimination_screen.dart';
 import 'activities/letter_target_screen.dart';
 import 'activities/match_image_phrase_screen.dart';
 import 'activities/match_image_word_screen.dart';
 import 'activities/match_word_word_screen.dart';
+import 'activities/roulette_letters_screen.dart';
 import 'activities/write_word_screen.dart';
 
 class ActivitySelectionScreen extends ConsumerStatefulWidget {
@@ -36,11 +41,17 @@ class ActivitySelectionScreen extends ConsumerStatefulWidget {
 
 class _ActivitySelectionScreenState
     extends ConsumerState<ActivitySelectionScreen> {
+  static const _vowels = ['A', 'E', 'I', 'O', 'U'];
+  final Random _random = Random();
+
   int _selectedGameLevel = 1;
   bool _didApplyAutoLevel = false;
+  String _selectedVowelMode = 'A';
 
   @override
   Widget build(BuildContext context) {
+    final isLetterVowelsGame =
+        widget.activityType == ActivityType.letraObjetivo;
     final levels = _levelsForGame(widget.activityType);
     final settings = ref.watch(settingsViewModelProvider);
     final progressVm = ref.read(progressViewModelProvider.notifier);
@@ -49,7 +60,10 @@ class _ActivitySelectionScreenState
       _selectedGameLevel = levels.first;
     }
 
-    if (!_didApplyAutoLevel && settings.autoAdjustLevel && levels.length > 1) {
+    if (!isLetterVowelsGame &&
+        !_didApplyAutoLevel &&
+        settings.autoAdjustLevel &&
+        levels.length > 1) {
       _didApplyAutoLevel = true;
       final recommended = progressVm.recommendedLevelForGame(
         widget.activityType,
@@ -110,48 +124,91 @@ class _ActivitySelectionScreenState
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      UpperText(
-                        'NIVELES DEL JUEGO',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 10),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: levels.map((level) {
-                          final selected = _selectedGameLevel == level;
-                          return ChoiceChip(
-                            selected: selected,
-                            label: UpperText('NIVEL $level'),
-                            onSelected: (_) {
-                              setState(() {
-                                _selectedGameLevel = level;
-                              });
-                            },
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 10),
-                      UpperText(
-                        _levelDescription(
-                          widget.activityType,
-                          _selectedGameLevel,
+                  child: isLetterVowelsGame
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            UpperText(
+                              'VOCALES DEL JUEGO',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            const SizedBox(height: 10),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                ..._vowels.map((vowel) {
+                                  return ChoiceChip(
+                                    selected: _selectedVowelMode == vowel,
+                                    label: UpperText('VOCAL $vowel'),
+                                    onSelected: (_) {
+                                      setState(() {
+                                        _selectedVowelMode = vowel;
+                                      });
+                                    },
+                                  );
+                                }),
+                                ChoiceChip(
+                                  selected: _selectedVowelMode == 'RANDOM',
+                                  label: const UpperText('TODAS ALEATORIO'),
+                                  onSelected: (_) {
+                                    setState(() {
+                                      _selectedVowelMode = 'RANDOM';
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            UpperText(
+                              _selectedVowelMode == 'RANDOM'
+                                  ? 'SE ELEGIRÁ UNA VOCAL ALEATORIA EN CADA PARTIDA'
+                                  : 'SE JUGARÁ SOLO CON LA VOCAL $_selectedVowelMode',
+                            ),
+                          ],
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            UpperText(
+                              'NIVELES DEL JUEGO',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            const SizedBox(height: 10),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: levels.map((level) {
+                                final selected = _selectedGameLevel == level;
+                                return ChoiceChip(
+                                  selected: selected,
+                                  label: UpperText('NIVEL $level'),
+                                  onSelected: (_) {
+                                    setState(() {
+                                      _selectedGameLevel = level;
+                                    });
+                                  },
+                                );
+                              }).toList(),
+                            ),
+                            const SizedBox(height: 10),
+                            UpperText(
+                              _levelDescription(
+                                widget.activityType,
+                                _selectedGameLevel,
+                              ),
+                            ),
+                            if (settings.autoAdjustLevel && levels.length > 1)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: UpperText(
+                                  'NIVEL SUGERIDO AUTOMÁTICO: $_selectedGameLevel',
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(fontWeight: FontWeight.w800),
+                                ),
+                              ),
+                          ],
                         ),
-                      ),
-                      if (settings.autoAdjustLevel && levels.length > 1)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: UpperText(
-                            'NIVEL SUGERIDO AUTOMÁTICO: $_selectedGameLevel',
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(fontWeight: FontWeight.w800),
-                          ),
-                        ),
-                    ],
-                  ),
                 ),
               ),
               const SizedBox(height: 14),
@@ -174,6 +231,8 @@ class _ActivitySelectionScreenState
   List<int> _levelsForGame(ActivityType activityType) {
     return switch (activityType) {
       ActivityType.letraObjetivo => [1, 2, 3],
+      ActivityType.cambioExacto => [1, 2, 3],
+      ActivityType.ruletaLetras => [1],
       ActivityType.discriminacion => [1, 2, 3],
       ActivityType.discriminacionInversa => [1, 2, 3],
       _ => [1],
@@ -186,6 +245,16 @@ class _ActivitySelectionScreenState
         1 => 'VOCALES Y PALABRAS CORTAS',
         2 => 'LETRAS FRECUENTES Y PALABRAS MEDIAS',
         3 => 'LETRAS MIXTAS Y PALABRAS MÁS LARGAS',
+        _ => 'NIVEL BASE',
+      },
+      ActivityType.ruletaLetras => switch (level) {
+        1 => 'LA RULETA DEFINE LA LETRA Y EL RETO',
+        _ => 'NIVEL BASE',
+      },
+      ActivityType.cambioExacto => switch (level) {
+        1 => 'PRECIOS SIMPLES Y MONEDAS BÁSICAS',
+        2 => 'MÁS MONEDAS Y PRECIOS INTERMEDIOS',
+        3 => 'MAYOR RETO CON COMBINACIONES COMPLEJAS',
         _ => 'NIVEL BASE',
       },
       ActivityType.discriminacion => switch (level) {
@@ -251,9 +320,36 @@ class _ActivitySelectionScreenState
         );
         return;
       case ActivityType.letraObjetivo:
+        final letter = _selectedVowelMode == 'RANDOM'
+            ? _vowels[_random.nextInt(_vowels.length)]
+            : _selectedVowelMode;
         Navigator.of(context).push(
           MaterialPageRoute<void>(
             builder: (_) => LetterTargetScreen(
+              category: widget.category,
+              difficulty: widget.difficulty,
+              level: AppLevel.uno,
+              targetLetter: letter,
+              matchMode: LetterMatchMode.contiene,
+              customTitle: 'LETRAS Y VOCALES',
+            ),
+          ),
+        );
+        return;
+      case ActivityType.ruletaLetras:
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => RouletteLettersScreen(
+              category: widget.category,
+              difficulty: widget.difficulty,
+            ),
+          ),
+        );
+        return;
+      case ActivityType.cambioExacto:
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => ExactChangeStoreScreen(
               category: widget.category,
               difficulty: widget.difficulty,
               level: AppLevelX.fromInt(gameLevel),

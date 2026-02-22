@@ -11,6 +11,7 @@ import '../../../domain/models/activity_type.dart';
 import '../../../domain/models/category.dart';
 import '../../../domain/models/difficulty.dart';
 import '../../../domain/models/item.dart';
+import '../../../domain/models/letter_match_mode.dart';
 import '../../../domain/models/level.dart';
 import '../../viewmodels/progress_view_model.dart';
 import '../../widgets/activity_asset_image.dart';
@@ -24,11 +25,17 @@ class LetterTargetScreen extends ConsumerStatefulWidget {
     required this.category,
     required this.difficulty,
     required this.level,
+    this.targetLetter,
+    this.matchMode = LetterMatchMode.contiene,
+    this.customTitle,
   });
 
   final AppCategory category;
   final Difficulty difficulty;
   final AppLevel level;
+  final String? targetLetter;
+  final LetterMatchMode matchMode;
+  final String? customTitle;
 
   @override
   ConsumerState<LetterTargetScreen> createState() => _LetterTargetScreenState();
@@ -49,6 +56,24 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
   int _bestStreak = 0;
   int _consecutiveErrors = 0;
   DateTime _startedAt = DateTime.now();
+
+  bool _matchesWord(String word, String letter) {
+    return switch (widget.matchMode) {
+      LetterMatchMode.contiene => containsLetter(word, letter),
+      LetterMatchMode.inicia => startsWithLetter(word, letter),
+      LetterMatchMode.medio => containsLetterInMiddle(word, letter),
+      LetterMatchMode.termina => endsWithLetter(word, letter),
+    };
+  }
+
+  String _hintForMode() {
+    return switch (widget.matchMode) {
+      LetterMatchMode.contiene => 'PIENSA SI SUENA LA LETRA $_targetLetter',
+      LetterMatchMode.inicia => 'PIENSA SI EMPIEZA CON $_targetLetter',
+      LetterMatchMode.medio => 'PIENSA SI $_targetLetter SUENA EN MEDIO',
+      LetterMatchMode.termina => 'PIENSA SI TERMINA EN $_targetLetter',
+    };
+  }
 
   @override
   void initState() {
@@ -118,16 +143,20 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
       ],
     };
 
-    String selectedLetter = candidateLetters.first;
+    final selectedCandidates = widget.targetLetter != null
+        ? [widget.targetLetter!.toUpperCase()]
+        : candidateLetters;
+
+    String selectedLetter = selectedCandidates.first;
     List<Item> positives = [];
     List<Item> negatives = [];
 
-    for (final letter in candidateLetters) {
+    for (final letter in selectedCandidates) {
       final withLetter = candidatesPool
-          .where((item) => containsLetter(item.word ?? '', letter))
+          .where((item) => _matchesWord(item.word ?? '', letter))
           .toList();
       final withoutLetter = candidatesPool
-          .where((item) => !containsLetter(item.word ?? '', letter))
+          .where((item) => !_matchesWord(item.word ?? '', letter))
           .toList();
 
       if (withLetter.length >= half && withoutLetter.length >= half) {
@@ -139,12 +168,12 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
     }
 
     if (positives.isEmpty || negatives.isEmpty) {
-      selectedLetter = 'A';
+      selectedLetter = selectedCandidates.first;
       positives = candidatesPool
-          .where((item) => containsLetter(item.word ?? '', selectedLetter))
+          .where((item) => _matchesWord(item.word ?? '', selectedLetter))
           .toList();
       negatives = candidatesPool
-          .where((item) => !containsLetter(item.word ?? '', selectedLetter))
+          .where((item) => !_matchesWord(item.word ?? '', selectedLetter))
           .toList();
     }
 
@@ -211,7 +240,7 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
         _streak = 0;
         _feedback = PedagogicalFeedback.retry(
           attemptsOnCurrent: _incorrect,
-          hint: 'PIENSA SI SUENA LA LETRA $_targetLetter',
+          hint: _hintForMode(),
         );
         _consecutiveErrors++;
       }
@@ -280,8 +309,11 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
         final zoneIcon = toHasLetter
             ? Icons.check_circle_rounded
             : Icons.cancel_rounded;
-        final zoneTitle = toHasLetter ? _targetLetter : 'NO $_targetLetter';
-        final zoneSubtitle = toHasLetter ? 'CON LETRA' : 'SIN LETRA';
+        final zonePrefix = widget.matchMode.label;
+        final zoneTitle = toHasLetter
+            ? '$zonePrefix $_targetLetter'
+            : 'NO $zonePrefix $_targetLetter';
+        final zoneSubtitle = 'ARRASTRA AQUÍ';
 
         return AnimatedContainer(
           duration: const Duration(milliseconds: 130),
@@ -356,7 +388,9 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-    final isMobile = width < 900;
+    final isPhone = width < 700;
+    final isTablet = width >= 700 && width < 1200;
+    final useVerticalDropZones = isPhone || isTablet;
 
     final remainingItems = _items
         .where((item) => !_classifiedByItem.containsKey(item.id))
@@ -372,7 +406,9 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
         .toList();
 
     return Scaffold(
-      appBar: AppBar(title: const UpperText('NIVEL LETRAS Y VOCALES')),
+      appBar: AppBar(
+        title: UpperText(widget.customTitle ?? 'LETRAS Y VOCALES'),
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _items.isEmpty
@@ -413,7 +449,7 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    if (isMobile)
+                    if (useVerticalDropZones)
                       Column(
                         children: [
                           _buildDropZone(
@@ -464,7 +500,7 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: UpperText(
-                                  'AYUDA: ${nextItem.word} VA EN ${containsLetter(nextItem.word ?? '', _targetLetter) ? _targetLetter : 'NO $_targetLetter'}',
+                                  'AYUDA: ${nextItem.word} VA EN ${_matchesWord(nextItem.word ?? '', _targetLetter) ? _targetLetter : 'NO $_targetLetter'}',
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w800,
                                   ),
@@ -477,11 +513,11 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                     ],
                     const SizedBox(height: 14),
                     UpperText(
-                      isMobile ? 'TARJETA ACTUAL' : 'TARJETAS',
+                      isPhone ? 'TARJETA ACTUAL' : 'TARJETAS',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 8),
-                    if (isMobile)
+                    if (isPhone)
                       Column(
                         children: [
                           if (nextItem != null)
@@ -517,6 +553,32 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                             style: Theme.of(context).textTheme.bodyLarge,
                           ),
                         ],
+                      )
+                    else if (isTablet)
+                      Column(
+                        children: remainingItems.map((item) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: Draggable<Item>(
+                              data: item,
+                              feedback: Material(
+                                color: Colors.transparent,
+                                child: _LetterCard(
+                                  item: item,
+                                  tabletLarge: true,
+                                ),
+                              ),
+                              childWhenDragging: Opacity(
+                                opacity: 0.3,
+                                child: _LetterCard(
+                                  item: item,
+                                  tabletLarge: true,
+                                ),
+                              ),
+                              child: _LetterCard(item: item, tabletLarge: true),
+                            ),
+                          );
+                        }).toList(),
                       )
                     else
                       Wrap(
@@ -565,15 +627,23 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
 }
 
 class _LetterCard extends StatelessWidget {
-  const _LetterCard({required this.item, this.mobileLarge = false});
+  const _LetterCard({
+    required this.item,
+    this.mobileLarge = false,
+    this.tabletLarge = false,
+  });
 
   final Item item;
   final bool mobileLarge;
+  final bool tabletLarge;
 
   @override
   Widget build(BuildContext context) {
+    final isLarge = mobileLarge || tabletLarge;
     final cardWidth = mobileLarge
         ? min(MediaQuery.sizeOf(context).width - 40, 280.0)
+        : tabletLarge
+        ? min(MediaQuery.sizeOf(context).width - 56, 360.0)
         : MediaQuery.sizeOf(context).width < 900
         ? 150.0
         : 176.0;
@@ -585,14 +655,21 @@ class _LetterCard extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(
-                height: mobileLarge ? 120 : 88,
+                height: isLarge ? 128 : 88,
                 child: ActivityAssetImage(
                   assetPath: item.imageAsset,
                   semanticsLabel: item.word,
                 ),
               ),
               const SizedBox(height: 6),
-              UpperText(item.word ?? '', textAlign: TextAlign.center),
+              UpperText(
+                item.word ?? '',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  fontSize: tabletLarge ? 28 : null,
+                ),
+              ),
             ],
           ),
         ),

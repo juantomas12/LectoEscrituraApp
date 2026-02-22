@@ -10,6 +10,7 @@ import '../viewmodels/home_selection_view_model.dart';
 import '../viewmodels/settings_view_model.dart';
 import '../widgets/upper_text.dart';
 import 'activity_selection_screen.dart';
+import 'ai_resource_studio_screen.dart';
 import 'progress_dashboard_screen.dart';
 import 'settings_screen.dart';
 import 'therapist_panel_screen.dart';
@@ -67,9 +68,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _GameOption(
         type: ActivityType.letraObjetivo,
         title: 'LETRAS Y VOCALES',
-        subtitle: 'BUSCA LA LETRA DENTRO DE PALABRAS',
+        subtitle: 'ELIGE VOCAL FIJA O VOCAL ALEATORIA',
         icon: Icons.spellcheck_rounded,
         color: const Color(0xFFDA5E2A),
+        levelHint: 'MODO VOCAL',
+      ),
+      _GameOption(
+        type: ActivityType.cambioExacto,
+        title: 'TIENDA DE CHUCHES',
+        subtitle: 'PAGA CON MONEDAS EL CAMBIO EXACTO',
+        icon: Icons.point_of_sale_rounded,
+        color: const Color(0xFFC74990),
+        levelHint: 'NIVELES 1, 2 Y 3',
+      ),
+      _GameOption(
+        type: ActivityType.ruletaLetras,
+        title: 'RULETA DE LETRAS',
+        subtitle: 'GIRA Y JUEGA POR INICIO, MEDIO O FINAL',
+        icon: Icons.casino_rounded,
+        color: const Color(0xFF8E5CD7),
         levelHint: 'NIVELES 1, 2 Y 3',
       ),
       _GameOption(
@@ -106,9 +123,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute<void>(
-                  builder: (_) => ProgressDashboardScreen(
-                    category: selection.category,
-                  ),
+                  builder: (_) =>
+                      ProgressDashboardScreen(category: selection.category),
                 ),
               );
             },
@@ -124,6 +140,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               );
             },
             icon: const Icon(Icons.analytics_outlined),
+          ),
+          IconButton(
+            tooltip: 'CREAR RECURSO IA',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const AiResourceStudioScreen(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.auto_awesome_rounded),
           ),
           IconButton(
             tooltip: 'AJUSTES',

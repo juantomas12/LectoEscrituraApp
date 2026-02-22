@@ -10,6 +10,8 @@ class AppSettings {
     this.defaultDifficulty = Difficulty.primaria,
     this.unlockThreshold = 0,
     this.autoAdjustLevel = true,
+    this.openAiApiKey = '',
+    this.openAiModel = 'gpt-4o-mini',
   });
 
   final bool audioEnabled;
@@ -20,6 +22,8 @@ class AppSettings {
   final Difficulty defaultDifficulty;
   final int unlockThreshold;
   final bool autoAdjustLevel;
+  final String openAiApiKey;
+  final String openAiModel;
 
   AppSettings copyWith({
     bool? audioEnabled,
@@ -30,6 +34,8 @@ class AppSettings {
     Difficulty? defaultDifficulty,
     int? unlockThreshold,
     bool? autoAdjustLevel,
+    String? openAiApiKey,
+    String? openAiModel,
   }) {
     return AppSettings(
       audioEnabled: audioEnabled ?? this.audioEnabled,
@@ -40,6 +46,8 @@ class AppSettings {
       defaultDifficulty: defaultDifficulty ?? this.defaultDifficulty,
       unlockThreshold: unlockThreshold ?? this.unlockThreshold,
       autoAdjustLevel: autoAdjustLevel ?? this.autoAdjustLevel,
+      openAiApiKey: openAiApiKey ?? this.openAiApiKey,
+      openAiModel: openAiModel ?? this.openAiModel,
     );
   }
 
@@ -53,6 +61,8 @@ class AppSettings {
       'defaultDifficulty': defaultDifficulty.name,
       'unlockThreshold': unlockThreshold,
       'autoAdjustLevel': autoAdjustLevel,
+      'openAiApiKey': openAiApiKey,
+      'openAiModel': openAiModel,
     };
   }
 
@@ -72,6 +82,8 @@ class AppSettings {
           : Difficulty.primaria,
       unlockThreshold: map['unlockThreshold'] as int? ?? 0,
       autoAdjustLevel: map['autoAdjustLevel'] as bool? ?? true,
+      openAiApiKey: (map['openAiApiKey'] ?? '').toString(),
+      openAiModel: (map['openAiModel'] ?? 'gpt-4o-mini').toString(),
     );
   }
 }

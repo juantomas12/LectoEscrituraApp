@@ -345,40 +345,74 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
     );
   }
 
+  Chip _buildWordChip(BuildContext context, String word, double fontSize) {
+    return Chip(
+      label: SizedBox(
+        width: double.infinity,
+        child: UpperText(
+          word,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: fontSize,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 0.6,
+          ),
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      side: BorderSide(color: Theme.of(context).colorScheme.primary),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsViewModelProvider);
-    final width = MediaQuery.sizeOf(context).width;
+    final mediaSize = MediaQuery.sizeOf(context);
+    final width = mediaSize.width;
+    final orientation = MediaQuery.orientationOf(context);
+    final isLandscape = orientation == Orientation.landscape;
+
     final isPhone = width < 700;
-    final isTablet = width >= 700 && width < 1100;
-    final isDesktop = width >= 1100;
+    final isTablet = width >= 700 && width < 1200;
+    final isDesktop = width >= 1200;
+
     final contentWidth = isDesktop
-        ? 1180.0
+        ? 1320.0
         : isTablet
-        ? 1020.0
+        ? (isLandscape ? 1120.0 : 980.0)
         : 920.0;
-    final maxColumnsByWidth = width >= 1450
-        ? 4
-        : width >= 1180
-        ? 3
-        : 2;
-    final desiredColumns = _items.length >= 4 ? (_items.length / 2).ceil() : 2;
-    final crossAxisCount = desiredColumns.clamp(2, maxColumnsByWidth).toInt();
+
+    final crossAxisCount = isPhone
+        ? 1
+        : isDesktop
+        ? (isLandscape ? 4 : 3)
+        : (isLandscape ? 3 : 2);
+
     final imageHeight = isDesktop
-        ? 175.0
+        ? 170.0
         : isTablet
-        ? 165.0
-        : 200.0;
+        ? (isLandscape ? 155.0 : 165.0)
+        : 210.0;
+
     final gridItemExtent = isDesktop
-        ? 295.0
-        : isTablet
         ? 300.0
-        : 350.0;
-    final wordChipFontSize = isPhone
-        ? 22.0
         : isTablet
-        ? 20.0
-        : 17.0;
+        ? (isLandscape ? 270.0 : 300.0)
+        : 360.0;
+
+    final wordChipFontSize = isPhone
+        ? 28.0
+        : isTablet
+        ? 34.0
+        : 30.0;
+    final wordChipMinWidth = isPhone
+        ? 170.0
+        : isTablet
+        ? 230.0
+        : 210.0;
+
     final nextItem = _nextUnmatchedItem();
 
     return Scaffold(
@@ -457,17 +491,22 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
                         },
                       ),
                     const SizedBox(height: 10),
-                    Align(
-                      alignment: Alignment.centerLeft,
+                    Center(
                       child: UpperText(
                         'PALABRAS DISPONIBLES',
-                        style: Theme.of(context).textTheme.titleLarge,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w900,
+                          fontSize: isPhone ? 30 : 34,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 8),
                     Wrap(
+                      alignment: WrapAlignment.center,
+                      runAlignment: WrapAlignment.center,
                       spacing: 8,
-                      runSpacing: 8,
+                      runSpacing: 12,
                       children: _words
                           .where(
                             (word) => !_matchedByItem.values.contains(word),
@@ -477,47 +516,38 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
                               data: word,
                               feedback: Material(
                                 color: Colors.transparent,
-                                child: Chip(
-                                  label: UpperText(
-                                    word,
-                                    style: TextStyle(
-                                      fontSize: wordChipFontSize,
-                                      fontWeight: FontWeight.w800,
-                                    ),
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    minWidth: wordChipMinWidth,
                                   ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 8,
+                                  child: _buildWordChip(
+                                    context,
+                                    word,
+                                    wordChipFontSize,
                                   ),
                                 ),
                               ),
                               childWhenDragging: Opacity(
                                 opacity: 0.35,
-                                child: Chip(
-                                  label: UpperText(
-                                    word,
-                                    style: TextStyle(
-                                      fontSize: wordChipFontSize,
-                                      fontWeight: FontWeight.w800,
-                                    ),
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    minWidth: wordChipMinWidth,
                                   ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 8,
+                                  child: _buildWordChip(
+                                    context,
+                                    word,
+                                    wordChipFontSize,
                                   ),
                                 ),
                               ),
-                              child: Chip(
-                                label: UpperText(
-                                  word,
-                                  style: TextStyle(
-                                    fontSize: wordChipFontSize,
-                                    fontWeight: FontWeight.w800,
-                                  ),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minWidth: wordChipMinWidth,
                                 ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
+                                child: _buildWordChip(
+                                  context,
+                                  word,
+                                  wordChipFontSize,
                                 ),
                               ),
                             ),

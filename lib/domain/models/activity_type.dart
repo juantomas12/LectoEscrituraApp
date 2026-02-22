@@ -4,6 +4,8 @@ enum ActivityType {
   palabraPalabra,
   imagenFrase,
   letraObjetivo,
+  cambioExacto,
+  ruletaLetras,
   discriminacion,
   discriminacionInversa,
 }
@@ -15,6 +17,8 @@ extension ActivityTypeX on ActivityType {
     ActivityType.palabraPalabra => 'PALABRA_PALABRA',
     ActivityType.imagenFrase => 'IMAGEN_FRASE',
     ActivityType.letraObjetivo => 'LETRA_OBJETIVO',
+    ActivityType.cambioExacto => 'CAMBIO_EXACTO',
+    ActivityType.ruletaLetras => 'RULETA_LETRAS',
     ActivityType.discriminacion => 'DISCRIMINACION',
     ActivityType.discriminacionInversa => 'DISCRIMINACION_INVERSA',
   };
@@ -25,6 +29,8 @@ extension ActivityTypeX on ActivityType {
     ActivityType.palabraPalabra => 'RELACIONAR PALABRAS CON PALABRAS',
     ActivityType.imagenFrase => 'RELACIONAR FRASES CON IMÁGENES',
     ActivityType.letraObjetivo => 'LETRA OBJETIVO CON PALABRAS E IMÁGENES',
+    ActivityType.cambioExacto => 'LA TIENDA DE CHUCHES: CAMBIO EXACTO',
+    ActivityType.ruletaLetras => 'RULETA DE LETRAS Y VOCALES',
     ActivityType.discriminacion => 'DISCRIMINACIÓN VISUAL',
     ActivityType.discriminacionInversa => 'DISCRIMINACIÓN INVERSA',
   };

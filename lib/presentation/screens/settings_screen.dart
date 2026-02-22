@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/models/difficulty.dart';
+import 'ai_resource_studio_screen.dart';
 import 'image_manager_screen.dart';
+import 'session_workspace_screen.dart';
 import 'therapist_panel_screen.dart';
 import '../viewmodels/settings_view_model.dart';
 import '../widgets/upper_text.dart';
@@ -66,6 +68,68 @@ class SettingsScreen extends ConsumerWidget {
                     title: const UpperText('AJUSTE AUTOMÁTICO DE NIVEL'),
                     value: settings.autoAdjustLevel,
                     onChanged: vm.setAutoAdjustLevel,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  UpperText(
+                    'WORKSPACE DE SESIONES',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  const UpperText(
+                    'GENERA SESIONES DESDE RECURSOS IA Y VISUALÍZALAS EN FORMATO PANEL',
+                  ),
+                  const SizedBox(height: 10),
+                  FilledButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const SessionWorkspaceScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.view_kanban_rounded),
+                    label: const UpperText('ABRIR WORKSPACE'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  UpperText(
+                    'CREADOR IA DE RECURSOS',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  const UpperText(
+                    'GENERA SITUACIONES DE APRENDIZAJE, PREGUNTAS Y MINI-JUEGOS EN LA MISMA PANTALLA Y GUARDA EL RESULTADO',
+                  ),
+                  const SizedBox(height: 10),
+                  FilledButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const AiResourceStudioScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.auto_awesome_rounded),
+                    label: const UpperText('ABRIR CREADOR IA'),
                   ),
                 ],
               ),

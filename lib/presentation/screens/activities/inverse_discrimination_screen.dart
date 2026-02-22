@@ -40,7 +40,7 @@ class _InverseDiscriminationScreenState
   final Random _random = Random();
 
   final Map<AppCategory, List<Item>> _poolByCategory = {};
-  AppCategory _focusCategory = AppCategory.cosasDeCasa;
+  AppCategory? _focusCategory;
 
   int _currentRound = 0;
   int _roundCount = 5;
@@ -51,7 +51,6 @@ class _InverseDiscriminationScreenState
   List<Item> _options = [];
   Item? _odd;
   String? _selectedId;
-  AppCategory? _focusCategory;
 
   int _correct = 0;
   int _incorrect = 0;
@@ -262,7 +261,7 @@ class _InverseDiscriminationScreenState
         _streak = 0;
         _feedback = PedagogicalFeedback.retry(
           attemptsOnCurrent: _incorrect,
-          hint: 'BUSCA LA QUE NO ES DE ${_focusCategory.label}',
+          hint: 'BUSCA LA QUE NO ES DE ${_focusCategory?.label ?? 'LA CATEGORÍA'}',
         );
         _consecutiveErrors++;
       }

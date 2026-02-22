@@ -166,6 +166,37 @@ bool containsLetter(String word, String letter) {
   return normalizedWord.contains(normalizedLetter);
 }
 
+bool startsWithLetter(String word, String letter) {
+  final normalizedWord = normalizeWordForLetters(word);
+  final normalizedLetter = normalizeWordForLetters(letter);
+  if (normalizedWord.isEmpty || normalizedLetter.isEmpty) {
+    return false;
+  }
+  return normalizedWord.startsWith(normalizedLetter);
+}
+
+bool endsWithLetter(String word, String letter) {
+  final normalizedWord = normalizeWordForLetters(word);
+  final normalizedLetter = normalizeWordForLetters(letter);
+  if (normalizedWord.isEmpty || normalizedLetter.isEmpty) {
+    return false;
+  }
+  return normalizedWord.endsWith(normalizedLetter);
+}
+
+bool containsLetterInMiddle(String word, String letter) {
+  final normalizedWord = normalizeWordForLetters(word);
+  final normalizedLetter = normalizeWordForLetters(letter);
+  if (normalizedWord.length < 3 || normalizedLetter.isEmpty) {
+    return false;
+  }
+  final index = normalizedWord.indexOf(normalizedLetter);
+  if (index <= 0) {
+    return false;
+  }
+  return index + normalizedLetter.length < normalizedWord.length;
+}
+
 int estimateSpanishSyllables(String rawWord) {
   final word = normalizeWordForLetters(
     rawWord,

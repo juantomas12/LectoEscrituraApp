@@ -48,6 +48,14 @@ class SettingsViewModel extends Notifier<AppSettings> {
   Future<void> setAutoAdjustLevel(bool value) {
     return _save(state.copyWith(autoAdjustLevel: value));
   }
+
+  Future<void> setOpenAiApiKey(String value) {
+    return _save(state.copyWith(openAiApiKey: value.trim()));
+  }
+
+  Future<void> setOpenAiModel(String value) {
+    return _save(state.copyWith(openAiModel: value.trim()));
+  }
 }
 
 final settingsViewModelProvider =

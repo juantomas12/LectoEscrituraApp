@@ -39,6 +39,8 @@ dependencies:
   hive_flutter: ^1.1.0
   flutter_tts: ^4.2.3
   flutter_svg: ^2.2.1
+  http: ^1.6.0
+  flutter_dotenv: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +65,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - .env
     - assets/data/
     - assets/images/cosas_de_casa/
     - assets/images/comida/

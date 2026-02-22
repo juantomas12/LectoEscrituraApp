@@ -14,10 +14,7 @@ import '../viewmodels/progress_view_model.dart';
 import '../widgets/upper_text.dart';
 
 class ProgressDashboardScreen extends ConsumerWidget {
-  const ProgressDashboardScreen({
-    super.key,
-    required this.category,
-  });
+  const ProgressDashboardScreen({super.key, required this.category});
 
   final AppCategory category;
 
@@ -27,6 +24,8 @@ class ProgressDashboardScreen extends ConsumerWidget {
     ActivityType.palabraPalabra,
     ActivityType.imagenFrase,
     ActivityType.letraObjetivo,
+    ActivityType.cambioExacto,
+    ActivityType.ruletaLetras,
     ActivityType.discriminacion,
     ActivityType.discriminacionInversa,
   ];
@@ -35,7 +34,9 @@ class ProgressDashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(progressViewModelProvider);
 
-    final results = ref.read(progressViewModelProvider.notifier).getAllResults();
+    final results = ref
+        .read(progressViewModelProvider.notifier)
+        .getAllResults();
     final gameItemProgress = ref.watch(gameItemProgressMapProvider);
     final dataset = ref.read(datasetRepositoryProvider);
     final allItems = dataset.getAllItems();
@@ -65,7 +66,9 @@ class ProgressDashboardScreen extends ConsumerWidget {
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 8),
-                      UpperText('SESIONES REGISTRADAS: ${filteredResults.length}'),
+                      UpperText(
+                        'SESIONES REGISTRADAS: ${filteredResults.length}',
+                      ),
                     ],
                   ),
                 ),
@@ -80,10 +83,11 @@ class ProgressDashboardScreen extends ConsumerWidget {
                 )
               else
                 ..._trackedGames.map((game) {
-                  final gameResults = filteredResults
-                      .where((result) => result.activityType == game)
-                      .toList()
-                    ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
+                  final gameResults =
+                      filteredResults
+                          .where((result) => result.activityType == game)
+                          .toList()
+                        ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
                   final letters = _computeProblemLetters(
                     game: game,
@@ -149,10 +153,9 @@ class ProgressDashboardScreen extends ConsumerWidget {
         continue;
       }
 
-      final letters = normalizeWordForLetters(word)
-          .split('')
-          .where((char) => RegExp(r'[A-ZÑ]').hasMatch(char))
-          .toSet();
+      final letters = normalizeWordForLetters(
+        word,
+      ).split('').where((char) => RegExp(r'[A-ZÑ]').hasMatch(char)).toSet();
 
       for (final letter in letters) {
         scoreByLetter[letter] = (scoreByLetter[letter] ?? 0) + diff;
@@ -179,9 +182,18 @@ class _GameProgressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final totalCorrect = results.fold<int>(0, (sum, result) => sum + result.correct);
-    final totalIncorrect = results.fold<int>(0, (sum, result) => sum + result.incorrect);
-    final totalTime = results.fold<int>(0, (sum, result) => sum + result.durationInSeconds);
+    final totalCorrect = results.fold<int>(
+      0,
+      (sum, result) => sum + result.correct,
+    );
+    final totalIncorrect = results.fold<int>(
+      0,
+      (sum, result) => sum + result.incorrect,
+    );
+    final totalTime = results.fold<int>(
+      0,
+      (sum, result) => sum + result.durationInSeconds,
+    );
     final totalAttempts = totalCorrect + totalIncorrect;
     final accuracy = totalAttempts == 0 ? 0.0 : totalCorrect / totalAttempts;
 
@@ -208,7 +220,10 @@ class _GameProgressCard extends StatelessWidget {
                 _MetricChip(label: 'ACIERTOS', value: '$totalCorrect'),
                 _MetricChip(label: 'FALLOS', value: '$totalIncorrect'),
                 _MetricChip(label: 'TIEMPO', value: '$totalTime S'),
-                _MetricChip(label: 'PRECISIÓN', value: '${(accuracy * 100).round()}%'),
+                _MetricChip(
+                  label: 'PRECISIÓN',
+                  value: '${(accuracy * 100).round()}%',
+                ),
               ],
             ),
             const SizedBox(height: 12),
@@ -233,10 +248,7 @@ class _GameProgressCard extends StatelessWidget {
 }
 
 class _MetricChip extends StatelessWidget {
-  const _MetricChip({
-    required this.label,
-    required this.value,
-  });
+  const _MetricChip({required this.label, required this.value});
 
   final String label;
   final String value;
@@ -252,14 +264,8 @@ class _MetricChip extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          UpperText(
-            label,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          UpperText(
-            value,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+          UpperText(label, style: Theme.of(context).textTheme.bodySmall),
+          UpperText(value, style: Theme.of(context).textTheme.titleMedium),
         ],
       ),
     );
