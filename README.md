@@ -50,8 +50,14 @@ NOTA: CON 7 CATEGORÍAS, NIVEL 1 QUEDA EN 84 PALABRAS TOTALES.
 ## EJECUCIÓN
 
 ```bash
-flutter pub get
-flutter run
+# Recomendado: usa el wrapper del repo (Flutter local en .tools/flutter)
+./flutter-local pub get
+./flutter-local devices
+./flutter-local run -d chrome
+
+# Alternativa: usa el flutter del sistema
+# flutter pub get
+# flutter run
 ```
 
 ## CÓMO AÑADIR NUEVOS ÍTEMS (SIN TOCAR CÓDIGO)
