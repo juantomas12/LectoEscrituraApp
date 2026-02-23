@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../../domain/models/session_block.dart';
@@ -29,15 +30,17 @@ class OpenAiSessionCopilotService {
   final http.Client _client;
 
   static const _defaultModel = 'gpt-4o-mini';
+  static const _webProxyPath = '/lectorEscrituraapp/api/openai_proxy.php';
 
   Future<SessionCopilotResult> continueConversation({
-    required String apiKey,
+    String? apiKey,
     required String model,
     required SessionPlan session,
     required String userMessage,
     required List<CopilotChatMessage> history,
   }) async {
-    if (apiKey.trim().isEmpty) {
+    final normalizedApiKey = (apiKey ?? '').trim();
+    if (!kIsWeb && normalizedApiKey.isEmpty) {
       throw StateError(
         'FALTA API KEY. CONFIGÚRALA EN AJUSTES O EN PANTALLA IA.',
       );
@@ -54,7 +57,7 @@ class OpenAiSessionCopilotService {
     String modelJson;
     try {
       final map = await _callResponsesApi(
-        apiKey: apiKey,
+        apiKey: normalizedApiKey,
         model: normalizedModel,
         systemPrompt: systemPrompt,
         userPrompt: userPrompt,
@@ -62,7 +65,7 @@ class OpenAiSessionCopilotService {
       modelJson = _extractTextFromResponses(map);
     } catch (_) {
       final map = await _callChatCompletionsApi(
-        apiKey: apiKey,
+        apiKey: normalizedApiKey,
         model: normalizedModel,
         systemPrompt: systemPrompt,
         userPrompt: userPrompt,
@@ -240,6 +243,21 @@ class OpenAiSessionCopilotService {
     required String systemPrompt,
     required String userPrompt,
   }) async {
+    if (kIsWeb) {
+      return _postToWebProxy(
+        endpoint: 'responses',
+        body: {
+          'model': model,
+          'input': [
+            {'role': 'system', 'content': systemPrompt},
+            {'role': 'user', 'content': userPrompt},
+          ],
+          'response_format': {'type': 'json_object'},
+          'temperature': 0.35,
+        },
+      );
+    }
+
     final response = await _client.post(
       Uri.parse('https://api.openai.com/v1/responses'),
       headers: {
@@ -275,6 +293,21 @@ class OpenAiSessionCopilotService {
     required String systemPrompt,
     required String userPrompt,
   }) async {
+    if (kIsWeb) {
+      return _postToWebProxy(
+        endpoint: 'chat_completions',
+        body: {
+          'model': model,
+          'messages': [
+            {'role': 'system', 'content': systemPrompt},
+            {'role': 'user', 'content': userPrompt},
+          ],
+          'response_format': {'type': 'json_object'},
+          'temperature': 0.35,
+        },
+      );
+    }
+
     final response = await _client.post(
       Uri.parse('https://api.openai.com/v1/chat/completions'),
       headers: {
@@ -300,6 +333,25 @@ class OpenAiSessionCopilotService {
     final decoded = jsonDecode(response.body);
     if (decoded is! Map<String, dynamic>) {
       throw const FormatException('RESPUESTA CHAT COMPLETIONS INVÁLIDA.');
+    }
+    return decoded;
+  }
+
+  Future<Map<String, dynamic>> _postToWebProxy({
+    required String endpoint,
+    required Map<String, dynamic> body,
+  }) async {
+    final response = await _client.post(
+      Uri.parse(_webProxyPath),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'endpoint': endpoint, 'body': body}),
+    );
+    if (response.statusCode >= 400) {
+      throw StateError('PROXY API ${response.statusCode}: ${response.body}');
+    }
+    final decoded = jsonDecode(response.body);
+    if (decoded is! Map<String, dynamic>) {
+      throw const FormatException('RESPUESTA PROXY INVÁLIDA.');
     }
     return decoded;
   }

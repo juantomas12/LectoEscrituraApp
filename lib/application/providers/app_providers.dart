@@ -11,7 +11,6 @@ import '../../data/repositories/settings_repository.dart';
 import '../../data/services/openai_resource_generator_service.dart';
 import '../../data/services/openai_session_copilot_service.dart';
 import '../../data/services/tts_service.dart';
-import '../../core/config/env_config.dart';
 import '../../domain/models/user_profile.dart';
 
 final datasetRepositoryProvider = Provider<DatasetRepository>((ref) {
@@ -75,18 +74,6 @@ final appStartupProvider = FutureProvider<void>((ref) async {
   final ttsService = ref.read(ttsServiceProvider);
 
   await settingsRepository.init();
-  final currentSettings = settingsRepository.loadSettings();
-  if (currentSettings.openAiApiKey.trim().isEmpty &&
-      EnvConfig.openAiApiKey.isNotEmpty) {
-    await settingsRepository.saveSettings(
-      currentSettings.copyWith(
-        openAiApiKey: EnvConfig.openAiApiKey,
-        openAiModel: currentSettings.openAiModel.trim().isEmpty
-            ? EnvConfig.openAiModel
-            : currentSettings.openAiModel,
-      ),
-    );
-  }
   await imageOverrideRepository.init();
   await profileRepository.init();
   await progressRepository.init();

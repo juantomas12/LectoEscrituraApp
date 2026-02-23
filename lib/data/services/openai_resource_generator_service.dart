@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../../core/utils/text_utils.dart';
@@ -15,6 +16,7 @@ class OpenAiResourceGeneratorService {
   final Random _random = Random();
 
   static const _defaultModel = 'gpt-4o-mini';
+  static const _webProxyPath = '/lectorEscrituraapp/api/openai_proxy.php';
 
   Future<AiResource> generateResource({
     required String instruction,
@@ -23,11 +25,12 @@ class OpenAiResourceGeneratorService {
     required String mode,
     required String categoryLabel,
     required String difficultyLabel,
-    required String apiKey,
+    String? apiKey,
     required List<String> allowedWords,
     String? model,
   }) async {
-    if (apiKey.trim().isEmpty) {
+    final normalizedApiKey = (apiKey ?? '').trim();
+    if (!kIsWeb && normalizedApiKey.isEmpty) {
       throw StateError('FALTA API KEY. INTRODÚCELA EN LA PANTALLA DE IA.');
     }
 
@@ -49,7 +52,7 @@ class OpenAiResourceGeneratorService {
     String modelJson;
     try {
       final map = await _callResponsesApi(
-        apiKey: apiKey,
+        apiKey: normalizedApiKey,
         model: normalizedModel,
         systemPrompt: systemPrompt,
         userPrompt: userPrompt,
@@ -57,7 +60,7 @@ class OpenAiResourceGeneratorService {
       modelJson = _extractTextFromResponses(map);
     } catch (_) {
       final map = await _callChatCompletionsApi(
-        apiKey: apiKey,
+        apiKey: normalizedApiKey,
         model: normalizedModel,
         systemPrompt: systemPrompt,
         userPrompt: userPrompt,
@@ -118,6 +121,27 @@ class OpenAiResourceGeneratorService {
     required String systemPrompt,
     required String userPrompt,
   }) async {
+    if (kIsWeb) {
+      return _postToWebProxy(
+        endpoint: 'responses',
+        body: {
+          'model': model,
+          'input': [
+            {'role': 'system', 'content': systemPrompt},
+            {'role': 'user', 'content': userPrompt},
+          ],
+          'text': {
+            'format': {
+              'type': 'json_schema',
+              'name': 'learning_resource',
+              'schema': _resourceSchema,
+            },
+          },
+          'temperature': 0.4,
+        },
+      );
+    }
+
     final response = await _client.post(
       Uri.parse('https://api.openai.com/v1/responses'),
       headers: {
@@ -159,6 +183,21 @@ class OpenAiResourceGeneratorService {
     required String systemPrompt,
     required String userPrompt,
   }) async {
+    if (kIsWeb) {
+      return _postToWebProxy(
+        endpoint: 'chat_completions',
+        body: {
+          'model': model,
+          'messages': [
+            {'role': 'system', 'content': systemPrompt},
+            {'role': 'user', 'content': userPrompt},
+          ],
+          'response_format': {'type': 'json_object'},
+          'temperature': 0.4,
+        },
+      );
+    }
+
     final response = await _client.post(
       Uri.parse('https://api.openai.com/v1/chat/completions'),
       headers: {
@@ -184,6 +223,25 @@ class OpenAiResourceGeneratorService {
     final decoded = jsonDecode(response.body);
     if (decoded is! Map<String, dynamic>) {
       throw const FormatException('RESPUESTA CHAT COMPLETIONS INVÁLIDA.');
+    }
+    return decoded;
+  }
+
+  Future<Map<String, dynamic>> _postToWebProxy({
+    required String endpoint,
+    required Map<String, dynamic> body,
+  }) async {
+    final response = await _client.post(
+      Uri.parse(_webProxyPath),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'endpoint': endpoint, 'body': body}),
+    );
+    if (response.statusCode >= 400) {
+      throw StateError('PROXY API ${response.statusCode}: ${response.body}');
+    }
+    final decoded = jsonDecode(response.body);
+    if (decoded is! Map<String, dynamic>) {
+      throw const FormatException('RESPUESTA PROXY INVÁLIDA.');
     }
     return decoded;
   }

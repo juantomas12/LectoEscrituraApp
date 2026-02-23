@@ -514,16 +514,33 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
                           .map(
                             (word) => Draggable<String>(
                               data: word,
+                              dragAnchorStrategy: pointerDragAnchorStrategy,
                               feedback: Material(
                                 color: Colors.transparent,
-                                child: ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                    minWidth: wordChipMinWidth,
-                                  ),
-                                  child: _buildWordChip(
-                                    context,
-                                    word,
-                                    wordChipFontSize,
+                                child: Transform.translate(
+                                  offset: const Offset(0, -28),
+                                  child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.22,
+                                          ),
+                                          blurRadius: 14,
+                                          offset: const Offset(0, 8),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        minWidth: wordChipMinWidth,
+                                      ),
+                                      child: _buildWordChip(
+                                        context,
+                                        word,
+                                        wordChipFontSize,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),

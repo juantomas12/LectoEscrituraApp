@@ -58,7 +58,7 @@ class AiResourceStudioViewModel extends Notifier<AiResourceStudioState> {
     required String mode,
     required String categoryLabel,
     required String difficultyLabel,
-    required String apiKey,
+    String? apiKey,
     required List<String> allowedWords,
     String? model,
   }) async {

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -98,7 +99,8 @@ class _AiResourceStudioScreenState
     final settingsVm = ref.read(settingsViewModelProvider.notifier);
     final settings = ref.read(settingsViewModelProvider);
 
-    if (_apiKeyController.text.trim().isNotEmpty &&
+    if (!kIsWeb &&
+        _apiKeyController.text.trim().isNotEmpty &&
         _apiKeyController.text.trim() != settings.openAiApiKey) {
       await settingsVm.setOpenAiApiKey(_apiKeyController.text.trim());
     }
@@ -109,9 +111,7 @@ class _AiResourceStudioScreenState
 
     final apiKey = _apiKeyController.text.trim().isNotEmpty
         ? _apiKeyController.text.trim()
-        : settings.openAiApiKey.isNotEmpty
-        ? settings.openAiApiKey
-        : EnvConfig.openAiApiKey;
+        : settings.openAiApiKey;
 
     final generated = await ref
         .read(aiResourceStudioViewModelProvider.notifier)
@@ -324,23 +324,25 @@ class _AiResourceStudioScreenState
                           }).toList(),
                         ),
                         const SizedBox(height: 8),
-                        TextField(
-                          controller: _apiKeyController,
-                          obscureText: true,
-                          onChanged: (value) {
-                            ref
-                                .read(settingsViewModelProvider.notifier)
-                                .setOpenAiApiKey(value);
-                          },
-                          decoration: InputDecoration(
-                            labelText:
-                                'OPENAI API KEY (SE GUARDA SOLO EN ESTE DISPOSITIVO)',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
+                        if (!kIsWeb) ...[
+                          TextField(
+                            controller: _apiKeyController,
+                            obscureText: true,
+                            onChanged: (value) {
+                              ref
+                                  .read(settingsViewModelProvider.notifier)
+                                  .setOpenAiApiKey(value);
+                            },
+                            decoration: InputDecoration(
+                              labelText:
+                                  'OPENAI API KEY (SE GUARDA SOLO EN ESTE DISPOSITIVO)',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
+                          const SizedBox(height: 8),
+                        ],
                         TextField(
                           controller: _modelController,
                           onChanged: (value) {
@@ -357,11 +359,11 @@ class _AiResourceStudioScreenState
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          EnvConfig.openAiApiKey.isNotEmpty
-                              ? 'Se detectó OPENAI_API_KEY en entorno.'
+                          kIsWeb
+                              ? 'En web la API key se usa solo en servidor.'
                               : settings.openAiApiKey.isNotEmpty
                               ? 'Usando API key guardada en ajustes locales.'
-                              : 'Si no pones key aquí, usa el archivo .env con OPENAI_API_KEY.',
+                              : 'Introduce tu API key para usar funciones IA en este dispositivo.',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],

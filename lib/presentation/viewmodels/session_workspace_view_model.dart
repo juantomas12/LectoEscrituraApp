@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/app_providers.dart';
-import '../../core/config/env_config.dart';
 import '../../data/services/openai_session_copilot_service.dart';
 import '../../domain/models/ai_resource.dart';
 import '../../domain/models/session_block.dart';
@@ -308,12 +307,9 @@ class SessionWorkspaceViewModel extends Notifier<SessionWorkspaceState> {
     }
 
     final settings = ref.read(settingsViewModelProvider);
-    final apiKey = settings.openAiApiKey.trim().isNotEmpty
-        ? settings.openAiApiKey.trim()
-        : EnvConfig.openAiApiKey;
     final model = settings.openAiModel.trim().isNotEmpty
         ? settings.openAiModel.trim()
-        : EnvConfig.openAiModel;
+        : 'gpt-4o-mini';
     final now = DateTime.now();
     final newMessages = [
       ...state.copilotMessages,
@@ -329,7 +325,7 @@ class SessionWorkspaceViewModel extends Notifier<SessionWorkspaceState> {
       final result = await ref
           .read(openAiSessionCopilotServiceProvider)
           .continueConversation(
-            apiKey: apiKey,
+            apiKey: settings.openAiApiKey.trim(),
             model: model,
             session: active,
             userMessage: prompt,
