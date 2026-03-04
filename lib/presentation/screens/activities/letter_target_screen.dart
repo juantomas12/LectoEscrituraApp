@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../application/providers/app_providers.dart';
@@ -19,7 +20,9 @@ import '../../widgets/activity_asset_image.dart';
 import '../../widgets/game_style.dart';
 import '../../widgets/routine_steps.dart';
 import '../../widgets/upper_text.dart';
+import '../progress_dashboard_screen.dart';
 import '../results_screen.dart';
+import '../settings_screen.dart';
 
 class LetterTargetScreen extends ConsumerStatefulWidget {
   const LetterTargetScreen({
@@ -51,6 +54,8 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
   String _targetLetter = 'A';
   String _feedback = 'ARRASTRA A LA CAJA CORRECTA';
   bool _isLoading = true;
+  String? _lastFailedItemId;
+  String? _lastFailedMessage;
 
   int _correct = 0;
   int _incorrect = 0;
@@ -196,6 +201,8 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
       _targetLetter = selectedLetter;
       _classifiedByItem.clear();
       _feedback = 'ARRASTRA A LA CAJA CORRECTA';
+      _lastFailedItemId = null;
+      _lastFailedMessage = null;
       _correct = 0;
       _incorrect = 0;
       _streak = 0;
@@ -206,12 +213,20 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
     });
   }
 
+  Future<void> _playFailureSound() async {
+    final settings = ref.read(settingsViewModelProvider);
+    if (!settings.audioEnabled) {
+      return;
+    }
+    await SystemSound.play(SystemSoundType.alert);
+  }
+
   Future<void> _handleDrop(Item item, {required bool toHasLetter}) async {
     if (_classifiedByItem.containsKey(item.id)) {
       return;
     }
 
-    final actualHasLetter = containsLetter(item.word ?? '', _targetLetter);
+    final actualHasLetter = _matchesWord(item.word ?? '', _targetLetter);
     final isCorrect = actualHasLetter == toHasLetter;
 
     await ref
@@ -226,6 +241,10 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
       return;
     }
 
+    if (!isCorrect) {
+      await _playFailureSound();
+    }
+
     setState(() {
       if (isCorrect) {
         _classifiedByItem[item.id] = toHasLetter;
@@ -237,9 +256,19 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
           streak: _streak,
           totalCorrect: _correct,
         );
+        if (_lastFailedItemId == item.id) {
+          _lastFailedItemId = null;
+          _lastFailedMessage = null;
+        }
       } else {
         _incorrect++;
         _streak = 0;
+        _lastFailedItemId = item.id;
+        final expectedZone = actualHasLetter
+            ? '${widget.matchMode.label} $_targetLetter'
+            : 'NO ${widget.matchMode.label} $_targetLetter';
+        _lastFailedMessage =
+            '${item.word ?? 'ESTE OBJETO'} VA EN $expectedZone';
         _feedback = PedagogicalFeedback.retry(
           attemptsOnCurrent: _incorrect,
           hint: _hintForMode(),
@@ -369,6 +398,75 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildFailureBanner(BuildContext context, {bool desktop = false}) {
+    if (_lastFailedMessage == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: desktop ? 18 : 12,
+        vertical: desktop ? 14 : 10,
+      ),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFECEC),
+        borderRadius: BorderRadius.circular(desktop ? 22 : 14),
+        border: Border.all(color: const Color(0xFFF28A8A), width: 2),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.error_rounded, color: Color(0xFFCF3535), size: 30),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                UpperText(
+                  'ÚLTIMO FALLO',
+                  style: TextStyle(
+                    fontSize: desktop ? 18 : 14,
+                    fontWeight: FontWeight.w900,
+                    color: const Color(0xFFB82929),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                UpperText(
+                  _lastFailedMessage!,
+                  style: TextStyle(
+                    fontSize: desktop ? 16 : 13,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFFB82929),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: desktop ? 14 : 10,
+              vertical: desktop ? 10 : 6,
+            ),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFD7D7),
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(color: const Color(0xFFF28A8A)),
+            ),
+            child: UpperText(
+              'FALLOS: $_incorrect',
+              style: TextStyle(
+                fontSize: desktop ? 14 : 12,
+                fontWeight: FontWeight.w900,
+                color: const Color(0xFFB82929),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -615,20 +713,41 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                       ),
                     ),
                     const SizedBox(height: 18),
-                    const _DesktopSidebarItem(
+                    _DesktopSidebarItem(
                       icon: Icons.menu_book_rounded,
                       label: 'APRENDER',
                       active: true,
+                      onTap: () {
+                        Navigator.of(
+                          context,
+                        ).popUntil((route) => route.isFirst);
+                      },
                     ),
                     const SizedBox(height: 12),
-                    const _DesktopSidebarItem(
+                    _DesktopSidebarItem(
                       icon: Icons.bar_chart_rounded,
                       label: 'MI PROGRESO',
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => ProgressDashboardScreen(
+                              category: widget.category,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 12),
-                    const _DesktopSidebarItem(
+                    _DesktopSidebarItem(
                       icon: Icons.settings_rounded,
                       label: 'AJUSTES',
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const SettingsScreen(),
+                          ),
+                        );
+                      },
                     ),
                     const Spacer(),
                     Container(
@@ -745,6 +864,10 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                         ),
                       ],
                     ),
+                    if (_lastFailedMessage != null) ...[
+                      const SizedBox(height: 14),
+                      _buildFailureBanner(context, desktop: true),
+                    ],
                     const SizedBox(height: 18),
                     Expanded(
                       child: remainingItems.isEmpty
@@ -772,6 +895,8 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                                       width: 220,
                                       child: _DesktopLetterCard(
                                         item: item,
+                                        isErrorMarked:
+                                            item.id == _lastFailedItemId,
                                         onSpeak: () =>
                                             _speakWord(item.word ?? ''),
                                       ),
@@ -781,12 +906,15 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                                     opacity: 0.3,
                                     child: _DesktopLetterCard(
                                       item: item,
+                                      isErrorMarked:
+                                          item.id == _lastFailedItemId,
                                       onSpeak: () =>
                                           _speakWord(item.word ?? ''),
                                     ),
                                   ),
                                   child: _DesktopLetterCard(
                                     item: item,
+                                    isErrorMarked: item.id == _lastFailedItemId,
                                     onSpeak: () => _speakWord(item.word ?? ''),
                                   ),
                                 );
@@ -963,6 +1091,10 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                           ),
                         ],
                       ),
+                    if (_lastFailedMessage != null) ...[
+                      const SizedBox(height: 10),
+                      _buildFailureBanner(context),
+                    ],
                     if (_consecutiveErrors >= 2 && nextItem != null) ...[
                       const SizedBox(height: 10),
                       GamePanel(
@@ -1009,6 +1141,8 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                                     child: _LetterCard(
                                       item: nextItem,
                                       tabletLarge: true,
+                                      isErrorMarked:
+                                          nextItem.id == _lastFailedItemId,
                                       onSpeak: () =>
                                           _speakWord(nextItem.word ?? ''),
                                     ),
@@ -1019,6 +1153,8 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                                   child: _LetterCard(
                                     item: nextItem,
                                     tabletLarge: true,
+                                    isErrorMarked:
+                                        nextItem.id == _lastFailedItemId,
                                     onSpeak: () =>
                                         _speakWord(nextItem.word ?? ''),
                                   ),
@@ -1026,6 +1162,8 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                                 child: _LetterCard(
                                   item: nextItem,
                                   tabletLarge: true,
+                                  isErrorMarked:
+                                      nextItem.id == _lastFailedItemId,
                                   onSpeak: () =>
                                       _speakWord(nextItem.word ?? ''),
                                 ),
@@ -1056,6 +1194,8 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                                         mobileLarge: isPhone,
                                         tabletLarge:
                                             isTablet && !isTabletLandscape,
+                                        isErrorMarked:
+                                            item.id == _lastFailedItemId,
                                         onSpeak: () =>
                                             _speakWord(item.word ?? ''),
                                       ),
@@ -1068,6 +1208,8 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                                       mobileLarge: isPhone,
                                       tabletLarge:
                                           isTablet && !isTabletLandscape,
+                                      isErrorMarked:
+                                          item.id == _lastFailedItemId,
                                       onSpeak: () =>
                                           _speakWord(item.word ?? ''),
                                     ),
@@ -1076,6 +1218,7 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                                     item: item,
                                     mobileLarge: isPhone,
                                     tabletLarge: isTablet && !isTabletLandscape,
+                                    isErrorMarked: item.id == _lastFailedItemId,
                                     onSpeak: () => _speakWord(item.word ?? ''),
                                   ),
                                 );
@@ -1122,11 +1265,13 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                               opacity: 0.3,
                               child: _LetterCard(
                                 item: item,
+                                isErrorMarked: item.id == _lastFailedItemId,
                                 onSpeak: () => _speakWord(item.word ?? ''),
                               ),
                             ),
                             child: _LetterCard(
                               item: item,
+                              isErrorMarked: item.id == _lastFailedItemId,
                               onSpeak: () => _speakWord(item.word ?? ''),
                             ),
                           );
@@ -1145,12 +1290,14 @@ class _LetterCard extends StatelessWidget {
     required this.item,
     this.mobileLarge = false,
     this.tabletLarge = false,
+    this.isErrorMarked = false,
     this.onSpeak,
   });
 
   final Item item;
   final bool mobileLarge;
   final bool tabletLarge;
+  final bool isErrorMarked;
   final VoidCallback? onSpeak;
 
   @override
@@ -1166,10 +1313,43 @@ class _LetterCard extends StatelessWidget {
     return SizedBox(
       width: cardWidth,
       child: Card(
+        color: isErrorMarked ? const Color(0xFFFFF6F6) : null,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: isErrorMarked
+                ? const Color(0xFFE86A6A)
+                : const Color(0xFFDDE3EE),
+            width: isErrorMarked ? 2.4 : 1.2,
+          ),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Column(
             children: [
+              if (isErrorMarked)
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(bottom: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFE3E3),
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: const Color(0xFFF28A8A)),
+                  ),
+                  child: const UpperText(
+                    'REVISA ESTA TARJETA',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFFB82929),
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
               SizedBox(
                 height: isLarge ? 128 : 88,
                 child: ActivityAssetImage(
@@ -1207,61 +1387,103 @@ class _DesktopSidebarItem extends StatelessWidget {
     required this.icon,
     required this.label,
     this.active = false,
+    this.onTap,
   });
 
   final IconData icon;
   final String label;
   final bool active;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: active ? kGameAccent : Colors.transparent,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            icon,
-            color: active ? Colors.white : const Color(0xFF51607C),
-            size: 24,
+        child: Ink(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: active ? kGameAccent : Colors.transparent,
+            borderRadius: BorderRadius.circular(999),
           ),
-          const SizedBox(width: 10),
-          UpperText(
-            label,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: active ? Colors.white : const Color(0xFF1D2A49),
-            ),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                color: active ? Colors.white : const Color(0xFF51607C),
+                size: 24,
+              ),
+              const SizedBox(width: 10),
+              UpperText(
+                label,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: active ? Colors.white : const Color(0xFF1D2A49),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 }
 
 class _DesktopLetterCard extends StatelessWidget {
-  const _DesktopLetterCard({required this.item, this.onSpeak});
+  const _DesktopLetterCard({
+    required this.item,
+    this.isErrorMarked = false,
+    this.onSpeak,
+  });
 
   final Item item;
+  final bool isErrorMarked;
   final VoidCallback? onSpeak;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isErrorMarked ? const Color(0xFFFFF6F6) : Colors.white,
         borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: const Color(0xFFE0E5EF), width: 2),
+        border: Border.all(
+          color: isErrorMarked
+              ? const Color(0xFFE86A6A)
+              : const Color(0xFFE0E5EF),
+          width: isErrorMarked ? 2.8 : 2,
+        ),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
         child: Column(
           children: [
+            if (isErrorMarked)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFE3E3),
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(color: const Color(0xFFF28A8A)),
+                ),
+                child: const UpperText(
+                  'ÚLTIMO FALLO',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFFB82929),
+                  ),
+                ),
+              ),
             Expanded(
               child: Container(
                 width: double.infinity,

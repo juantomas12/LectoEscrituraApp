@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/app_providers.dart';
+import '../screens/progress_dashboard_screen.dart';
+import '../screens/settings_screen.dart';
+import '../viewmodels/home_selection_view_model.dart';
 import '../viewmodels/settings_view_model.dart';
 import 'upper_text.dart';
 
@@ -103,6 +106,25 @@ class GameScaffold extends ConsumerWidget {
     await ref.read(ttsServiceProvider).speak(text);
   }
 
+  void _openLearnHome(BuildContext context) {
+    Navigator.of(context).popUntil((route) => route.isFirst);
+  }
+
+  void _openProgress(BuildContext context, WidgetRef ref) {
+    final category = ref.read(homeSelectionViewModelProvider).category;
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ProgressDashboardScreen(category: category),
+      ),
+    );
+  }
+
+  void _openSettings(BuildContext context) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const SettingsScreen()));
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final hasInstruction = (instructionText ?? '').trim().isNotEmpty;
@@ -196,20 +218,23 @@ class GameScaffold extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const _GameDesktopSidebarItem(
+                      _GameDesktopSidebarItem(
                         icon: Icons.menu_book_rounded,
                         label: 'APRENDER',
                         active: true,
+                        onTap: () => _openLearnHome(context),
                       ),
                       const SizedBox(height: 10),
-                      const _GameDesktopSidebarItem(
+                      _GameDesktopSidebarItem(
                         icon: Icons.bar_chart_rounded,
                         label: 'MI PROGRESO',
+                        onTap: () => _openProgress(context, ref),
                       ),
                       const SizedBox(height: 10),
-                      const _GameDesktopSidebarItem(
+                      _GameDesktopSidebarItem(
                         icon: Icons.settings_rounded,
                         label: 'AJUSTES',
+                        onTap: () => _openSettings(context),
                       ),
                       const Spacer(),
                       Container(
@@ -362,34 +387,46 @@ class _GameDesktopSidebarItem extends StatelessWidget {
     required this.icon,
     required this.label,
     this.active = false,
+    this.onTap,
   });
 
   final IconData icon;
   final String label;
   final bool active;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: active ? kGameAccent : Colors.transparent,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: active ? Colors.white : const Color(0xFF51607C)),
-          const SizedBox(width: 10),
-          UpperText(
-            label,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              color: active ? Colors.white : const Color(0xFF1D2A49),
-            ),
+        child: Ink(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: active ? kGameAccent : Colors.transparent,
+            borderRadius: BorderRadius.circular(999),
           ),
-        ],
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                color: active ? Colors.white : const Color(0xFF51607C),
+              ),
+              const SizedBox(width: 10),
+              UpperText(
+                label,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: active ? Colors.white : const Color(0xFF1D2A49),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
