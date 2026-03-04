@@ -4,14 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers/app_providers.dart';
 import '../../domain/models/app_settings.dart';
 import '../../domain/models/activity_type.dart';
+import '../../domain/models/ai_resource.dart';
 import '../../domain/models/category.dart';
 import '../utils/category_visuals.dart';
+import '../viewmodels/ai_resource_studio_view_model.dart';
 import '../viewmodels/home_selection_view_model.dart';
 import '../viewmodels/progress_view_model.dart';
 import '../viewmodels/settings_view_model.dart';
 import 'activity_selection_screen.dart';
 import 'ai_play_screen.dart';
 import 'ai_resource_studio_screen.dart';
+import 'generated_session_game_screen.dart';
 import 'progress_dashboard_screen.dart';
 import 'settings_screen.dart';
 import 'therapist_panel_screen.dart';
@@ -51,6 +54,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       iconColor: Color(0xFFE4AE00),
       backgroundColor: Color(0xFFFFF6C8),
       gameType: ActivityType.imagenPalabra,
+    ),
+    _QuickTrack(
+      title: 'Escritura',
+      subtitle: 'Copia, semícopia y dictado',
+      icon: Icons.edit_rounded,
+      iconColor: Color(0xFFEA8A00),
+      backgroundColor: Color(0xFFFFEED9),
+      gameType: ActivityType.escribirPalabra,
+    ),
+    _QuickTrack(
+      title: 'Frases',
+      subtitle: 'Relaciona imagen y comprensión',
+      icon: Icons.text_snippet_rounded,
+      iconColor: Color(0xFF0D9BB3),
+      backgroundColor: Color(0xFFDDF6FA),
+      gameType: ActivityType.imagenFrase,
+    ),
+    _QuickTrack(
+      title: 'Ruleta',
+      subtitle: 'Retos por inicio, medio y final',
+      icon: Icons.rotate_right_rounded,
+      iconColor: Color(0xFF7F56D9),
+      backgroundColor: Color(0xFFECE3FF),
+      gameType: ActivityType.ruletaLetras,
+    ),
+    _QuickTrack(
+      title: 'Discriminación',
+      subtitle: 'Encuentra la opción correcta',
+      icon: Icons.center_focus_strong_rounded,
+      iconColor: Color(0xFF0E9667),
+      backgroundColor: Color(0xFFDDF8EF),
+      gameType: ActivityType.discriminacion,
+    ),
+    _QuickTrack(
+      title: 'Inversa',
+      subtitle: 'Detecta la opción intrusa',
+      icon: Icons.search_rounded,
+      iconColor: Color(0xFFB86115),
+      backgroundColor: Color(0xFFFFECDC),
+      gameType: ActivityType.discriminacionInversa,
+    ),
+    _QuickTrack(
+      title: 'Tienda',
+      subtitle: 'Practica monedas y cambio',
+      icon: Icons.shopping_bag_rounded,
+      iconColor: Color(0xFFC33D8A),
+      backgroundColor: Color(0xFFFFE2F1),
+      gameType: ActivityType.cambioExacto,
     ),
   ];
 
@@ -189,12 +240,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     selectionVm.setCategory(picked, optionId: picked.id);
   }
 
-  void _openAiScreen() {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (_) => const AiPlayScreen()));
-  }
-
   void _openAllGamesSheet({
     required HomeSelectionState selection,
     required HomeSelectionViewModel selectionVm,
@@ -229,7 +274,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     subtitle: 'Genera recursos y juega preguntas IA',
                     onTap: () {
                       Navigator.of(context).pop();
-                      _openAiScreen();
+                      setState(() => _currentTab = 1);
                     },
                   ),
                   _QuickActionTile(
@@ -309,6 +354,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  void _openGeneratedGame(AiResource resource) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => GeneratedSessionGameScreen(
+          resourceId: resource.id,
+          sessionTitle: resource.title,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.watch(progressViewModelProvider);
@@ -318,6 +374,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final settings = ref.watch(settingsViewModelProvider);
     final settingsVm = ref.read(settingsViewModelProvider.notifier);
     final profile = ref.watch(localProfileProvider);
+    final aiState = ref.watch(aiResourceStudioViewModelProvider);
+    final savedResources =
+        aiState.resources.where((resource) => resource.isFavorite).toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
     if (!_didSyncSettings) {
       _didSyncSettings = true;
@@ -329,73 +389,77 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFEDEFF3),
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 220),
-                child: switch (_currentTab) {
-                  1 => _ProgressTab(
-                    key: const ValueKey('progress-tab'),
-                    selection: selection,
-                    progressVm: progressVm,
-                    onOpenDashboard: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => ProgressDashboardScreen(
-                            category: selection.category,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  2 => _SettingsTab(
-                    key: const ValueKey('settings-tab'),
-                    settings: settings,
-                    settingsVm: settingsVm,
-                    onOpenSettings: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => const SettingsScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  _ => _HomeTab(
-                    key: const ValueKey('home-tab'),
-                    profileName: profile.displayName,
-                    category: selection.category,
-                    progressVm: progressVm,
-                    onMenuTap: () => _openAllGamesSheet(
-                      selection: selection,
-                      selectionVm: selectionVm,
-                    ),
-                    onProfileTap: _openAiScreen,
-                    onPickCategory: () => _openCategoryPicker(
-                      selectionVm: selectionVm,
-                      selected: selection.category,
-                    ),
-                    onTrackTap: (track) => _startActivity(
-                      selection: selection,
-                      selectionVm: selectionVm,
-                      type: track.gameType,
-                    ),
-                    onOpenAi: _openAiScreen,
-                    onOpenProgress: () {
-                      setState(() => _currentTab = 1);
-                    },
-                  ),
-                },
-              ),
+        bottom: false,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 220),
+          child: switch (_currentTab) {
+            1 => AiPlayScreen(
+              key: const ValueKey('ai-tab'),
+              embedded: true,
+              onOpenSettings: () => setState(() => _currentTab = 3),
             ),
-            _BottomNavBar(
-              index: _currentTab,
-              onChanged: (index) {
-                setState(() => _currentTab = index);
+            2 => _ProgressTab(
+              key: const ValueKey('progress-tab'),
+              selection: selection,
+              progressVm: progressVm,
+              onOpenDashboard: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) =>
+                        ProgressDashboardScreen(category: selection.category),
+                  ),
+                );
               },
             ),
-          ],
+            3 => _SettingsTab(
+              key: const ValueKey('settings-tab'),
+              settings: settings,
+              settingsVm: settingsVm,
+              onOpenSettings: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const SettingsScreen(),
+                  ),
+                );
+              },
+            ),
+            _ => _HomeTab(
+              key: const ValueKey('home-tab'),
+              profileName: profile.displayName,
+              category: selection.category,
+              progressVm: progressVm,
+              savedResources: savedResources,
+              onMenuTap: () => _openAllGamesSheet(
+                selection: selection,
+                selectionVm: selectionVm,
+              ),
+              onProfileTap: () => setState(() => _currentTab = 1),
+              onPickCategory: () => _openCategoryPicker(
+                selectionVm: selectionVm,
+                selected: selection.category,
+              ),
+              onTrackTap: (track) => _startActivity(
+                selection: selection,
+                selectionVm: selectionVm,
+                type: track.gameType,
+              ),
+              onOpenAi: () => setState(() => _currentTab = 1),
+              onOpenProgress: () => setState(() => _currentTab = 2),
+              onOpenSavedResource: _openGeneratedGame,
+              onToggleSavedResource: (resource) {
+                ref
+                    .read(aiResourceStudioViewModelProvider.notifier)
+                    .toggleFavorite(resource.id);
+              },
+            ),
+          },
         ),
+      ),
+      bottomNavigationBar: _BottomNavBar(
+        index: _currentTab,
+        onChanged: (index) {
+          setState(() => _currentTab = index);
+        },
       ),
     );
   }
@@ -407,27 +471,36 @@ class _HomeTab extends StatelessWidget {
     required this.profileName,
     required this.category,
     required this.progressVm,
+    required this.savedResources,
     required this.onMenuTap,
     required this.onProfileTap,
     required this.onPickCategory,
     required this.onTrackTap,
     required this.onOpenAi,
     required this.onOpenProgress,
+    required this.onOpenSavedResource,
+    required this.onToggleSavedResource,
   });
 
   final String profileName;
   final AppCategory category;
   final ProgressViewModel progressVm;
+  final List<AiResource> savedResources;
   final VoidCallback onMenuTap;
   final VoidCallback onProfileTap;
   final VoidCallback onPickCategory;
   final VoidCallback onOpenAi;
   final VoidCallback onOpenProgress;
   final ValueChanged<_QuickTrack> onTrackTap;
+  final ValueChanged<AiResource> onOpenSavedResource;
+  final ValueChanged<AiResource> onToggleSavedResource;
 
   @override
   Widget build(BuildContext context) {
     final rewards = progressVm.rewardsSummary();
+    final isTablet = MediaQuery.sizeOf(context).width >= 900;
+    final titleSize = isTablet ? 64.0 : 46.0;
+    final subtitleSize = isTablet ? 38.0 : 27.0;
     final nextMilestone = rewards.currentStreak >= 5
         ? '¡Racha excelente!'
         : 'Estás a ${(5 - rewards.currentStreak).clamp(1, 5)} juegos de una racha de 5';
@@ -462,23 +535,23 @@ class _HomeTab extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 26),
-        const Text(
+        const SizedBox(height: 22),
+        Text(
           '¡Aprende Jugando!',
           style: TextStyle(
-            fontSize: 52,
+            fontSize: titleSize,
             height: 1.02,
             fontWeight: FontWeight.w900,
-            color: Color(0xFF101A39),
+            color: const Color(0xFF101A39),
           ),
         ),
         const SizedBox(height: 6),
         Text(
           'Hola, ${profileName.split(' ').first}. ¿Qué quieres practicar hoy?',
-          style: const TextStyle(
-            fontSize: 31,
-            color: Color(0xFF6A7898),
-            fontWeight: FontWeight.w500,
+          style: TextStyle(
+            fontSize: subtitleSize,
+            color: const Color(0xFF6A7898),
+            fontWeight: FontWeight.w600,
             height: 1.15,
           ),
         ),
@@ -546,6 +619,15 @@ class _HomeTab extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 14),
+        const Text(
+          'Todos los juegos',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF203257),
+          ),
+        ),
+        const SizedBox(height: 14),
         ..._HomeScreenState._quickTracks.map((track) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 14),
@@ -559,6 +641,45 @@ class _HomeTab extends StatelessWidget {
           message: nextMilestone,
           onTap: onOpenProgress,
         ),
+        const SizedBox(height: 14),
+        const Text(
+          'Guardados IA',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF203257),
+          ),
+        ),
+        const SizedBox(height: 8),
+        if (savedResources.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFD8E0EE)),
+            ),
+            child: const Text(
+              'Todavía no tienes recursos guardados. En la pantalla IA pulsa "Guardar en inicio" para añadirlos aquí.',
+              style: TextStyle(
+                color: Color(0xFF5E7094),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          )
+        else
+          ...savedResources.take(5).map((resource) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: _SavedResourceCard(
+                resource: resource,
+                onPlay: resource.playableQuestions.isEmpty
+                    ? null
+                    : () => onOpenSavedResource(resource),
+                onToggleSaved: () => onToggleSavedResource(resource),
+              ),
+            );
+          }),
       ],
     );
   }
@@ -851,6 +972,11 @@ class _LearningCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = MediaQuery.sizeOf(context).width >= 900;
+    final iconBox = isTablet ? 110.0 : 94.0;
+    final titleSize = isTablet ? 30.0 : 24.0;
+    final subtitleSize = isTablet ? 19.0 : 16.0;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -873,13 +999,17 @@ class _LearningCard extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                width: 120,
-                height: 120,
+                width: iconBox,
+                height: iconBox,
                 decoration: BoxDecoration(
                   color: track.backgroundColor,
                   borderRadius: BorderRadius.circular(28),
                 ),
-                child: Icon(track.icon, color: track.iconColor, size: 62),
+                child: Icon(
+                  track.icon,
+                  color: track.iconColor,
+                  size: isTablet ? 52 : 46,
+                ),
               ),
               const SizedBox(width: 18),
               Expanded(
@@ -888,21 +1018,25 @@ class _LearningCard extends StatelessWidget {
                   children: [
                     Text(
                       track.title,
-                      style: const TextStyle(
-                        fontSize: 52,
+                      style: TextStyle(
+                        fontSize: titleSize,
                         fontWeight: FontWeight.w900,
-                        color: Color(0xFF111D3A),
+                        color: const Color(0xFF111D3A),
                         height: 1.0,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 6),
                     Text(
                       track.subtitle,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        color: Color(0xFF56698B),
+                      style: TextStyle(
+                        fontSize: subtitleSize,
+                        color: const Color(0xFF56698B),
                         height: 1.2,
                       ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -1070,6 +1204,146 @@ class _ProgressCard extends StatelessWidget {
   }
 }
 
+class _SavedResourceCard extends StatelessWidget {
+  const _SavedResourceCard({
+    required this.resource,
+    required this.onToggleSaved,
+    required this.onPlay,
+  });
+
+  final AiResource resource;
+  final VoidCallback onToggleSaved;
+  final VoidCallback? onPlay;
+
+  String _gameLabel(ActivityType type) {
+    return switch (type) {
+      ActivityType.imagenPalabra => 'Imagen y palabra',
+      ActivityType.escribirPalabra => 'Escribir palabra',
+      ActivityType.palabraPalabra => 'Palabra con palabra',
+      ActivityType.imagenFrase => 'Imagen y frase',
+      ActivityType.letraObjetivo => 'Letras y vocales',
+      ActivityType.cambioExacto => 'Tienda de chuches',
+      ActivityType.ruletaLetras => 'Ruleta de letras',
+      ActivityType.discriminacion => 'Discriminación',
+      ActivityType.discriminacionInversa => 'Discriminación inversa',
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final type = ActivityTypeX.fromKey(resource.requestedActivityTypeKey);
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFD8E0EE)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            resource.title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontWeight: FontWeight.w900,
+              color: Color(0xFF102041),
+              fontSize: 18,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _MiniBadge(
+                label: _gameLabel(type),
+                icon: Icons.sports_esports_rounded,
+              ),
+              _MiniBadge(
+                label: resource.categoryLabel,
+                icon: Icons.category_rounded,
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: onPlay,
+                  icon: const Icon(Icons.play_arrow_rounded),
+                  label: const Text('Jugar'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF2C7BEA),
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size.fromHeight(40),
+                    textStyle: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              OutlinedButton.icon(
+                onPressed: onToggleSaved,
+                icon: const Icon(Icons.bookmark_remove_rounded, size: 18),
+                label: const Text('Quitar'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFF2C7BEA),
+                  side: const BorderSide(color: Color(0xFF2C7BEA)),
+                  minimumSize: const Size(94, 40),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MiniBadge extends StatelessWidget {
+  const _MiniBadge({required this.label, required this.icon});
+
+  final String label;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF1F5FC),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: const Color(0xFF406196)),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF406196),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _MetricCard extends StatelessWidget {
   const _MetricCard({
     required this.title,
@@ -1191,17 +1465,25 @@ class _BottomNavBar extends StatelessWidget {
               Expanded(
                 child: _BottomNavItem(
                   selected: index == 1,
-                  icon: Icons.bar_chart_rounded,
-                  label: 'Progreso',
+                  icon: Icons.auto_awesome_rounded,
+                  label: 'IA',
                   onTap: () => onChanged(1),
                 ),
               ),
               Expanded(
                 child: _BottomNavItem(
                   selected: index == 2,
+                  icon: Icons.bar_chart_rounded,
+                  label: 'Progreso',
+                  onTap: () => onChanged(2),
+                ),
+              ),
+              Expanded(
+                child: _BottomNavItem(
+                  selected: index == 3,
                   icon: Icons.settings_rounded,
                   label: 'Ajustes',
-                  onTap: () => onChanged(2),
+                  onTap: () => onChanged(3),
                 ),
               ),
             ],
