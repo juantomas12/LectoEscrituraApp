@@ -336,6 +336,11 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
 
     return GameScaffold(
       title: 'RULETA DE OBJETOS Y VOCALES',
+      instructionText: _mode == _RouletteMode.vocal
+          ? 'GIRA LA RULETA Y PRACTICA OBJETOS POR VOCAL'
+          : 'GIRA LA RULETA Y PRACTICA OBJETOS POR NIVEL',
+      progressCurrent: solvedWords,
+      progressTotal: totalWords,
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1080),

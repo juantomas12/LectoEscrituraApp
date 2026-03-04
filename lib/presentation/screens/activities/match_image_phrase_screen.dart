@@ -339,6 +339,9 @@ class _MatchImagePhraseScreenState
 
     return GameScaffold(
       title: 'RELACIONAR FRASES CON IMÁGENES',
+      instructionText: 'ARRASTRA LA FRASE HASTA LA IMAGEN CORRECTA',
+      progressCurrent: solvedCount,
+      progressTotal: _items.length,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _items.isEmpty

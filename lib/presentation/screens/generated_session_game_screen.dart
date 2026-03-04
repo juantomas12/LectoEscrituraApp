@@ -71,6 +71,9 @@ class _GeneratedSessionGameScreenState
 
     return GameScaffold(
       title: 'JUEGO · ${widget.sessionTitle}',
+      instructionText: question.prompt,
+      progressCurrent: _index + (_answered ? 1 : 0),
+      progressTotal: totalQuestions,
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

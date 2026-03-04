@@ -342,6 +342,11 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
 
     return GameScaffold(
       title: 'IMAGEN CON PALABRA PARA ESCRIBIR',
+      instructionText: _mode == WriteMode.dictado
+          ? 'ESCUCHA Y ESCRIBE LA PALABRA CORRECTA'
+          : 'OBSERVA LA IMAGEN Y ESCRIBE LA PALABRA',
+      progressCurrent: solvedCount,
+      progressTotal: _items.length,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : current == null

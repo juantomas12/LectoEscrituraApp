@@ -411,6 +411,11 @@ class _InverseDiscriminationScreenState
 
     return GameScaffold(
       title: 'DISCRIMINACIÓN INVERSA',
+      instructionText: _odd == null
+          ? 'TOCA EL ELEMENTO DIFERENTE'
+          : 'TOCA EL ELEMENTO DIFERENTE DE ${_focusCategory?.label ?? 'LA CATEGORÍA'}',
+      progressCurrent: solvedCount,
+      progressTotal: _roundCount,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _odd == null

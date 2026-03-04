@@ -284,6 +284,11 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
 
     return GameScaffold(
       title: 'DISCRIMINACIÓN VISUAL',
+      instructionText: _target == null
+          ? 'TOCA LA IMAGEN CORRECTA'
+          : 'TOCA LA IMAGEN CORRECTA DE ${_target!.word ?? ''}',
+      progressCurrent: solvedCount,
+      progressTotal: _roundTargets.length,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _target == null

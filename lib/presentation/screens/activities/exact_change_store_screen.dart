@@ -314,6 +314,9 @@ class _ExactChangeStoreScreenState
 
     return GameScaffold(
       title: 'LA TIENDA DE CHUCHES',
+      instructionText: 'ELIGE MONEDAS HASTA LLEGAR AL PRECIO EXACTO',
+      progressCurrent: _round - 1,
+      progressTotal: _rounds,
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1260),

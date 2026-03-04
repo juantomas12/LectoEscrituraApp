@@ -863,6 +863,9 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
 
     return GameScaffold(
       title: widget.customTitle ?? 'LETRAS Y VOCALES',
+      instructionText: _instructionQuestion(),
+      progressCurrent: solvedCount,
+      progressTotal: _items.length,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _items.isEmpty

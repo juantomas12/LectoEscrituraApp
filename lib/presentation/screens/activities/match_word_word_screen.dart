@@ -277,6 +277,10 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
     final solvedCount = _matchedLeft.length;
     return GameScaffold(
       title: 'RELACIONAR PALABRAS CON PALABRAS',
+      instructionText:
+          'SELECCIONA UNA PALABRA EN COLUMNA A Y LUEGO SU PAREJA EN COLUMNA B',
+      progressCurrent: solvedCount,
+      progressTotal: _pairs.length,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _pairs.isEmpty

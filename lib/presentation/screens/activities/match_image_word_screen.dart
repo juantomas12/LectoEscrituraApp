@@ -453,6 +453,9 @@ class _MatchImageWordScreenState extends ConsumerState<MatchImageWordScreen> {
 
     return GameScaffold(
       title: 'RELACIONAR IMÁGENES CON PALABRAS',
+      instructionText: 'ARRASTRA LA PALABRA HASTA LA IMAGEN CORRECTA',
+      progressCurrent: solvedCount,
+      progressTotal: _items.length,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _items.isEmpty
