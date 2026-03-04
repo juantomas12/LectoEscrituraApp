@@ -15,6 +15,7 @@ import '../../../domain/models/level.dart';
 import '../../viewmodels/progress_view_model.dart';
 import '../../viewmodels/settings_view_model.dart';
 import '../../widgets/activity_asset_image.dart';
+import '../../widgets/game_style.dart';
 import '../../widgets/upper_text.dart';
 import '../results_screen.dart';
 
@@ -39,11 +40,14 @@ class _MatchImagePhraseScreenState
 
   List<Item> _items = [];
   final Map<String, String> _expectedPhraseByItem = {};
+  final Set<String> _failedItemIds = {};
+  final Map<String, int> _attemptsByItem = {};
   List<String> _phrases = [];
   final Map<String, String> _matchedByItem = {};
 
   bool _isLoading = true;
   String _feedback = 'UNE CADA FRASE CON SU IMAGEN';
+  bool _isReinforcementRound = false;
 
   int _correct = 0;
   int _incorrect = 0;
@@ -58,27 +62,11 @@ class _MatchImagePhraseScreenState
     _prepareActivity();
   }
 
-  Future<void> _prepareActivity() async {
-    final dataset = ref.read(datasetRepositoryProvider);
-    final progressMap = ref.read(itemProgressMapProvider);
-    final limit = widget.difficulty == Difficulty.primaria ? 4 : 6;
-
-    final items = dataset.getPrioritizedItems(
-      category: widget.category,
-      level: AppLevel.tres,
-      activityType: ActivityType.imagenFrase,
-      difficulty: widget.difficulty,
-      progressMap: progressMap,
-      limit: limit,
-    );
-
-    final selectedItems = items.isNotEmpty
-        ? items
-        : dataset.getItems(
-            category: widget.category,
-            level: AppLevel.tres,
-            activityType: ActivityType.imagenFrase,
-          );
+  Future<void> _prepareActivity({
+    List<Item>? customItems,
+    bool reinforcement = false,
+  }) async {
+    final selectedItems = customItems ?? await _loadItemsFromDataset();
 
     final phraseMap = <String, String>{};
     for (final item in selectedItems) {
@@ -106,7 +94,12 @@ class _MatchImagePhraseScreenState
         ..addAll(phraseMap);
       _phrases = phrases;
       _matchedByItem.clear();
-      _feedback = 'UNE CADA FRASE CON SU IMAGEN';
+      _failedItemIds.clear();
+      _attemptsByItem.clear();
+      _isReinforcementRound = reinforcement;
+      _feedback = reinforcement
+          ? 'MINI-RONDA: REFUERZA LAS FRASES FALLADAS'
+          : 'UNE CADA FRASE CON SU IMAGEN';
       _correct = 0;
       _incorrect = 0;
       _streak = 0;
@@ -116,6 +109,29 @@ class _MatchImagePhraseScreenState
     });
   }
 
+  Future<List<Item>> _loadItemsFromDataset() async {
+    final dataset = ref.read(datasetRepositoryProvider);
+    final progressMap = ref.read(itemProgressMapProvider);
+    final limit = widget.difficulty == Difficulty.primaria ? 4 : 6;
+
+    final items = dataset.getPrioritizedItems(
+      category: widget.category,
+      level: AppLevel.tres,
+      activityType: ActivityType.imagenFrase,
+      difficulty: widget.difficulty,
+      progressMap: progressMap,
+      limit: limit,
+    );
+    if (items.isNotEmpty) {
+      return items;
+    }
+    return dataset.getItems(
+      category: widget.category,
+      level: AppLevel.tres,
+      activityType: ActivityType.imagenFrase,
+    );
+  }
+
   Future<void> _handleDrop(Item item, String phrase) async {
     if (_matchedByItem.containsKey(item.id)) {
       return;
@@ -123,6 +139,7 @@ class _MatchImagePhraseScreenState
 
     final expected = _expectedPhraseByItem[item.id] ?? '';
     final isCorrect = phrase == expected;
+    final attemptsOnCurrent = (_attemptsByItem[item.id] ?? 0) + 1;
 
     await ref
         .read(progressViewModelProvider.notifier)
@@ -137,6 +154,7 @@ class _MatchImagePhraseScreenState
     }
 
     setState(() {
+      _attemptsByItem[item.id] = attemptsOnCurrent;
       if (isCorrect) {
         _matchedByItem[item.id] = phrase;
         _correct++;
@@ -149,8 +167,9 @@ class _MatchImagePhraseScreenState
       } else {
         _incorrect++;
         _streak = 0;
+        _failedItemIds.add(item.id);
         _feedback = PedagogicalFeedback.retry(
-          attemptsOnCurrent: _incorrect,
+          attemptsOnCurrent: attemptsOnCurrent,
           hint: 'LEE DESPACIO LA FRASE',
         );
       }
@@ -162,6 +181,9 @@ class _MatchImagePhraseScreenState
   }
 
   Future<void> _finishActivity() async {
+    final failedItems = _items
+        .where((item) => _failedItemIds.contains(item.id))
+        .toList();
     final result = ActivityResult(
       id: 'RES-${DateTime.now().millisecondsSinceEpoch}',
       category: widget.category,
@@ -181,7 +203,12 @@ class _MatchImagePhraseScreenState
     }
 
     final action = await Navigator.of(context).push<ResultAction>(
-      MaterialPageRoute(builder: (_) => ResultsScreen(result: result)),
+      MaterialPageRoute(
+        builder: (_) => ResultsScreen(
+          result: result,
+          canReinforceErrors: failedItems.isNotEmpty,
+        ),
+      ),
     );
 
     if (!mounted) {
@@ -191,9 +218,16 @@ class _MatchImagePhraseScreenState
     if (action == ResultAction.repetir) {
       setState(() => _isLoading = true);
       await _prepareActivity();
-    } else {
-      Navigator.of(context).pop();
+      return;
     }
+
+    if (action == ResultAction.reforzarErrores && failedItems.isNotEmpty) {
+      setState(() => _isLoading = true);
+      await _prepareActivity(customItems: failedItems, reinforcement: true);
+      return;
+    }
+
+    Navigator.of(context).pop();
   }
 
   Item? _nextUnmatchedItem() {
@@ -216,76 +250,71 @@ class _MatchImagePhraseScreenState
     final expected = _expectedPhraseByItem[item.id] ?? '';
     final imageZoom = compactDesktop ? 1.35 : 1.0;
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            SizedBox(
-              height: imageHeight,
-              child: Transform.scale(
-                scale: imageZoom,
-                child: ActivityAssetImage(
-                  assetPath: item.imageAsset,
-                  semanticsLabel: expected,
-                ),
+    return GamePanel(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        children: [
+          SizedBox(
+            height: imageHeight,
+            child: Transform.scale(
+              scale: imageZoom,
+              child: ActivityAssetImage(
+                assetPath: item.imageAsset,
+                semanticsLabel: expected,
               ),
             ),
-            const SizedBox(height: 8),
-            if (matched != null)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Colors.green.shade100,
-                  border: Border.all(color: Colors.green.shade700),
-                ),
-                child: UpperText(
-                  matched,
-                  textAlign: TextAlign.center,
-                ),
-              )
-            else
-              DragTarget<String>(
-                onWillAcceptWithDetails: (details) {
-                  return details.data.isNotEmpty;
-                },
-                onAcceptWithDetails: (details) {
-                  _handleDrop(item, details.data);
-                },
-                builder: (context, candidateData, rejected) {
-                  return Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        width: 2,
-                        color: candidateData.isNotEmpty
-                            ? Theme.of(context).colorScheme.primary
-                            : Theme.of(context).colorScheme.outline,
-                      ),
-                    ),
-                    child: const UpperText(
-                      'SUELTA AQUÍ',
-                      textAlign: TextAlign.center,
-                    ),
-                  );
-                },
+          ),
+          const SizedBox(height: 8),
+          if (matched != null)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Colors.green.shade100,
+                border: Border.all(color: Colors.green.shade700),
               ),
-            if (showHints && matched == null)
-              Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: UpperText(
-                  'PISTA: ${countWords(expected)} PALABRAS',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
+              child: UpperText(matched, textAlign: TextAlign.center),
+            )
+          else
+            DragTarget<String>(
+              onWillAcceptWithDetails: (details) {
+                return details.data.isNotEmpty;
+              },
+              onAcceptWithDetails: (details) {
+                _handleDrop(item, details.data);
+              },
+              builder: (context, candidateData, rejected) {
+                return Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      width: 2,
+                      color: candidateData.isNotEmpty
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.outline,
+                    ),
                   ),
-                ),
+                  child: const UpperText(
+                    'SUELTA AQUÍ',
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              },
+            ),
+          if (showHints && matched == null)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: UpperText(
+                'PISTA: ${countWords(expected)} PALABRAS',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }
@@ -306,9 +335,10 @@ class _MatchImagePhraseScreenState
     final crossAxisCount = desiredColumns.clamp(2, maxColumnsByWidth).toInt();
     final imageHeight = isDesktop ? 175.0 : 190.0;
     final gridItemExtent = isDesktop ? 305.0 : 370.0;
+    final solvedCount = _matchedByItem.length;
 
-    return Scaffold(
-      appBar: AppBar(title: const UpperText('RELACIONAR FRASES CON IMÁGENES')),
+    return GameScaffold(
+      title: 'RELACIONAR FRASES CON IMÁGENES',
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _items.isEmpty
@@ -320,119 +350,147 @@ class _MatchImagePhraseScreenState
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.info_outline),
-                          const SizedBox(width: 10),
-                          Expanded(child: UpperText(_feedback)),
-                        ],
+                      GameProgressHeader(
+                        label: 'TU PROGRESO',
+                        current: solvedCount,
+                        total: _items.length,
+                        trailingLabel: '⭐ $_correct',
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Expanded(
-                    child: isMobile
-                        ? Builder(
-                            builder: (context) {
-                              final nextItem = _nextUnmatchedItem();
-                              if (nextItem == null) {
-                                return const Center(
-                                  child: UpperText('COMPLETANDO...'),
-                                );
-                              }
-                              return ListView(
-                                children: [
-                                  UpperText(
-                                    'ARRASTRA LA FRASE A LA IMAGEN',
-                                    style: Theme.of(context).textTheme.titleLarge,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  _buildItemCard(
+                      const SizedBox(height: 10),
+                      if (_isReinforcementRound) ...[
+                        GamePanel(
+                          backgroundColor: Colors.orange.shade50,
+                          borderColor: Colors.orange.shade200,
+                          child: const Row(
+                            children: [
+                              Icon(Icons.fitness_center_rounded),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: UpperText(
+                                  'MINI-RONDA DE REFUERZO EN MARCHA',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                      GamePanel(
+                        child: Row(
+                          children: [
+                            const Icon(Icons.info_outline),
+                            const SizedBox(width: 10),
+                            Expanded(child: UpperText(_feedback)),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Expanded(
+                        child: isMobile
+                            ? Builder(
+                                builder: (context) {
+                                  final nextItem = _nextUnmatchedItem();
+                                  if (nextItem == null) {
+                                    return const Center(
+                                      child: UpperText('COMPLETANDO...'),
+                                    );
+                                  }
+                                  return ListView(
+                                    children: [
+                                      UpperText(
+                                        'ARRASTRA LA FRASE A LA IMAGEN',
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.titleLarge,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      _buildItemCard(
+                                        context: context,
+                                        item: nextItem,
+                                        showHints: settings.showHints,
+                                        imageHeight: 210,
+                                        compactDesktop: false,
+                                      ),
+                                    ],
+                                  );
+                                },
+                              )
+                            : GridView.builder(
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: crossAxisCount,
+                                      crossAxisSpacing: 10,
+                                      mainAxisSpacing: 10,
+                                      mainAxisExtent: gridItemExtent,
+                                    ),
+                                itemCount: _items.length,
+                                itemBuilder: (context, index) {
+                                  final item = _items[index];
+                                  return _buildItemCard(
                                     context: context,
-                                    item: nextItem,
+                                    item: item,
                                     showHints: settings.showHints,
-                                    imageHeight: 210,
-                                    compactDesktop: false,
+                                    imageHeight: imageHeight,
+                                    compactDesktop: isDesktop,
+                                  );
+                                },
+                              ),
+                      ),
+                      const SizedBox(height: 10),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: UpperText(
+                          'FRASES DISPONIBLES',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: _phrases
+                            .where(
+                              (phrase) =>
+                                  !_matchedByItem.values.contains(phrase),
+                            )
+                            .map(
+                              (phrase) => Draggable<String>(
+                                data: phrase,
+                                feedback: Material(
+                                  color: Colors.transparent,
+                                  child: ConstrainedBox(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 220,
+                                    ),
+                                    child: Chip(
+                                      label: UpperText(phrase, maxLines: 3),
+                                    ),
                                   ),
-                                ],
-                              );
-                            },
-                          )
-                        : GridView.builder(
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: crossAxisCount,
-                              crossAxisSpacing: 10,
-                              mainAxisSpacing: 10,
-                              mainAxisExtent: gridItemExtent,
-                            ),
-                            itemCount: _items.length,
-                            itemBuilder: (context, index) {
-                              final item = _items[index];
-                              return _buildItemCard(
-                                context: context,
-                                item: item,
-                                showHints: settings.showHints,
-                                imageHeight: imageHeight,
-                                compactDesktop: isDesktop,
-                              );
-                            },
-                          ),
-                  ),
-                  const SizedBox(height: 10),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: UpperText(
-                      'FRASES DISPONIBLES',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: _phrases
-                        .where(
-                          (phrase) => !_matchedByItem.values.contains(phrase),
-                        )
-                        .map(
-                          (phrase) => Draggable<String>(
-                            data: phrase,
-                            feedback: Material(
-                              color: Colors.transparent,
-                              child: ConstrainedBox(
-                                constraints: const BoxConstraints(
-                                  maxWidth: 220,
                                 ),
-                                child: Chip(
-                                  label: UpperText(phrase, maxLines: 3),
+                                childWhenDragging: Opacity(
+                                  opacity: 0.35,
+                                  child: ConstrainedBox(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 220,
+                                    ),
+                                    child: Chip(
+                                      label: UpperText(phrase, maxLines: 3),
+                                    ),
+                                  ),
+                                ),
+                                child: ConstrainedBox(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 220,
+                                  ),
+                                  child: Chip(
+                                    label: UpperText(phrase, maxLines: 3),
+                                  ),
                                 ),
                               ),
-                            ),
-                            childWhenDragging: Opacity(
-                              opacity: 0.35,
-                              child: ConstrainedBox(
-                                constraints: const BoxConstraints(
-                                  maxWidth: 220,
-                                ),
-                                child: Chip(
-                                  label: UpperText(phrase, maxLines: 3),
-                                ),
-                              ),
-                            ),
-                            child: ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 220),
-                              child: Chip(
-                                label: UpperText(phrase, maxLines: 3),
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
+                            )
+                            .toList(),
+                      ),
                     ],
                   ),
                 ),

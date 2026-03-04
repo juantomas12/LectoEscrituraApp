@@ -10,6 +10,7 @@ import '../../../domain/models/category.dart';
 import '../../../domain/models/difficulty.dart';
 import '../../../domain/models/level.dart';
 import '../../viewmodels/progress_view_model.dart';
+import '../../widgets/game_style.dart';
 import '../../widgets/upper_text.dart';
 import '../results_screen.dart';
 
@@ -165,6 +166,9 @@ class _ExactChangeStoreScreenState
     return '${value.toStringAsFixed(2)}€';
   }
 
+  String get _progressItemId =>
+      'CAMBIO-L${widget.level.value}-${_targetPrice.toStringAsFixed(2)}';
+
   void _undoCoin() {
     if (_droppedCoins.isEmpty) {
       return;
@@ -184,58 +188,80 @@ class _ExactChangeStoreScreenState
     if (_checking || _droppedCoins.isEmpty) {
       return;
     }
-    _checking = true;
-    final total = _currentTotal;
-    final diff = (total - _targetPrice).abs();
-    final ok = diff <= 0.001;
+    setState(() {
+      _checking = true;
+    });
 
-    if (ok) {
-      _correct++;
-      _streak++;
-      _bestStreak = max(_bestStreak, _streak);
-      _feedback = PedagogicalFeedback.positive(
-        streak: _streak,
-        totalCorrect: _correct,
-      );
-    } else {
-      _incorrect++;
-      _streak = 0;
-      _feedback = total < _targetPrice
-          ? 'TE FALTAN ${_formatEuro(_targetPrice - total)}'
-          : 'TE PASASTE ${_formatEuro(total - _targetPrice)}';
-    }
+    try {
+      final total = _currentTotal;
+      final diff = (total - _targetPrice).abs();
+      final ok = diff <= 0.001;
 
-    setState(() {});
-    await Future<void>.delayed(const Duration(milliseconds: 850));
-    if (!mounted) {
-      return;
-    }
+      await ref
+          .read(progressViewModelProvider.notifier)
+          .registerAttempt(
+            itemId: _progressItemId,
+            correct: ok,
+            activityType: ActivityType.cambioExacto,
+          );
 
-    if (!ok) {
+      if (!mounted) {
+        return;
+      }
+
+      if (ok) {
+        _correct++;
+        _streak++;
+        _bestStreak = max(_bestStreak, _streak);
+        _feedback = PedagogicalFeedback.positive(
+          streak: _streak,
+          totalCorrect: _correct,
+        );
+      } else {
+        _incorrect++;
+        _streak = 0;
+        _feedback = total < _targetPrice
+            ? 'TE FALTAN ${_formatEuro(_targetPrice - total)}'
+            : 'TE PASASTE ${_formatEuro(total - _targetPrice)}';
+      }
+
+      setState(() {});
+      await Future<void>.delayed(const Duration(milliseconds: 850));
+      if (!mounted) {
+        return;
+      }
+
+      if (!ok) {
+        setState(() {
+          _checking = false;
+        });
+        return;
+      }
+
+      if (_round >= _rounds) {
+        await _finish();
+        return;
+      }
+
       setState(() {
+        _round++;
         _checking = false;
       });
-      return;
+      _prepareRound();
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _checking = false;
+        _feedback = 'NO SE PUDO COMPROBAR. INTÉNTALO OTRA VEZ';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: UpperText('ERROR AL COMPROBAR. REVISA E INTENTA DE NUEVO'),
+        ),
+      );
     }
-
-    await ref
-        .read(progressViewModelProvider.notifier)
-        .registerAttempt(
-          itemId: 'CAMBIO-$_round-${DateTime.now().millisecondsSinceEpoch}',
-          correct: true,
-          activityType: ActivityType.cambioExacto,
-        );
-
-    if (_round >= _rounds) {
-      await _finish();
-      return;
-    }
-
-    setState(() {
-      _round++;
-      _checking = false;
-    });
-    _prepareRound();
   }
 
   Future<void> _finish() async {
@@ -280,70 +306,96 @@ class _ExactChangeStoreScreenState
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
     final width = media.size.width;
+    final height = media.size.height;
     final isTablet = width >= 720;
     final isLandscape = media.orientation == Orientation.landscape;
+    final isShortDisplay = height < 860;
+    final useCompactMetrics = !isLandscape || isShortDisplay;
 
-    return Scaffold(
-      appBar: AppBar(title: const UpperText('LA TIENDA DE CHUCHES')),
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1260),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: isTablet
-                  ? Column(
-                      children: [
+    return GameScaffold(
+      title: 'LA TIENDA DE CHUCHES',
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1260),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: isTablet
+                ? LayoutBuilder(
+                    builder: (context, constraints) {
+                      final enableDesktopScroll = constraints.maxHeight < 760;
+                      final row = Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            flex: isLandscape ? 60 : 58,
+                            child: _buildProductAndDrop(
+                              context,
+                              compact: useCompactMetrics,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            flex: isLandscape ? 40 : 42,
+                            child: _buildWallet(
+                              context,
+                              compact: useCompactMetrics,
+                            ),
+                          ),
+                        ],
+                      );
+
+                      final top = <Widget>[
+                        GameProgressHeader(
+                          label: 'TU PROGRESO',
+                          current: _round - 1,
+                          total: _rounds,
+                          trailingLabel: '⭐ $_correct',
+                        ),
+                        const SizedBox(height: 10),
                         _buildHeader(context),
                         const SizedBox(height: 10),
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: UpperText(_feedback),
-                          ),
-                        ),
+                        GamePanel(child: UpperText(_feedback)),
                         const SizedBox(height: 12),
-                        Expanded(
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Expanded(
-                                flex: isLandscape ? 60 : 58,
-                                child: _buildProductAndDrop(
-                                  context,
-                                  compact: !isLandscape,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                flex: isLandscape ? 40 : 42,
-                                child: _buildWallet(
-                                  context,
-                                  compact: !isLandscape,
-                                ),
-                              ),
-                            ],
-                          ),
+                      ];
+
+                      if (!enableDesktopScroll) {
+                        return Column(
+                          children: [
+                            ...top,
+                            Expanded(child: row),
+                          ],
+                        );
+                      }
+
+                      final rowHeight = isLandscape ? 620.0 : 700.0;
+                      return SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            ...top,
+                            SizedBox(height: rowHeight, child: row),
+                          ],
                         ),
-                      ],
-                    )
-                  : ListView(
-                      children: [
-                        _buildHeader(context),
-                        const SizedBox(height: 10),
-                        Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: UpperText(_feedback),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        _buildProductAndDrop(context, compact: true),
-                        const SizedBox(height: 12),
-                        _buildWallet(context, compact: true),
-                      ],
-                    ),
-            ),
+                      );
+                    },
+                  )
+                : ListView(
+                    children: [
+                      GameProgressHeader(
+                        label: 'TU PROGRESO',
+                        current: _round - 1,
+                        total: _rounds,
+                        trailingLabel: '⭐ $_correct',
+                      ),
+                      const SizedBox(height: 10),
+                      _buildHeader(context),
+                      const SizedBox(height: 10),
+                      GamePanel(child: UpperText(_feedback)),
+                      const SizedBox(height: 12),
+                      _buildProductAndDrop(context, compact: true),
+                      const SizedBox(height: 12),
+                      _buildWallet(context, compact: true),
+                    ],
+                  ),
           ),
         ),
       ),
@@ -392,170 +444,196 @@ class _ExactChangeStoreScreenState
   }
 
   Widget _buildProductAndDrop(BuildContext context, {required bool compact}) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        color: const Color(0xFFFFF3FB),
-        border: Border.all(color: const Color(0xFFFFD5EC)),
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(22),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
-                  blurRadius: 18,
-                  offset: const Offset(0, 8),
-                ),
-              ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final hasBoundedHeight = constraints.maxHeight.isFinite;
+        final isShortPanel = hasBoundedHeight && constraints.maxHeight < 560;
+        final useCompactMetrics = compact || isShortPanel;
+
+        final panelContent = Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(22),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 18,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  UpperText(
+                    _productEmoji,
+                    style: TextStyle(fontSize: useCompactMetrics ? 46 : 64),
+                  ),
+                  const SizedBox(height: 6),
+                  UpperText(
+                    _productName,
+                    style: TextStyle(
+                      fontSize: useCompactMetrics ? 30 : 40,
+                      color: const Color(0xFFE03595),
+                      fontWeight: FontWeight.w900,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFF0AE),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: const Color(0xFFEDD070),
+                        width: 2,
+                      ),
+                    ),
+                    child: UpperText(
+                      _formatEuro(_targetPrice),
+                      style: TextStyle(
+                        fontSize: useCompactMetrics ? 34 : 48,
+                        fontWeight: FontWeight.w900,
+                        color: const Color(0xFF985E00),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            child: Column(
-              children: [
-                UpperText(
-                  _productEmoji,
-                  style: TextStyle(fontSize: compact ? 56 : 68),
-                ),
-                const SizedBox(height: 6),
-                UpperText(
-                  _productName,
-                  style: TextStyle(
-                    fontSize: compact ? 34 : 42,
-                    color: const Color(0xFFE03595),
-                    fontWeight: FontWeight.w900,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 6),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 18,
-                    vertical: 8,
-                  ),
+            const SizedBox(height: 10),
+            DragTarget<double>(
+              onAcceptWithDetails: (details) {
+                setState(() {
+                  _droppedCoins.add(details.data);
+                });
+              },
+              builder: (context, candidateData, rejected) {
+                final hovering = candidateData.isNotEmpty;
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 120),
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFF0AE),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(18),
+                    color: hovering
+                        ? Colors.green.shade50
+                        : const Color(0xFFFFF8D8),
                     border: Border.all(
-                      color: const Color(0xFFEDD070),
+                      color: hovering
+                          ? Colors.green.shade700
+                          : const Color(0xFFE8DFA9),
                       width: 2,
                     ),
                   ),
-                  child: UpperText(
-                    _formatEuro(_targetPrice),
-                    style: TextStyle(
-                      fontSize: compact ? 38 : 50,
-                      fontWeight: FontWeight.w900,
-                      color: const Color(0xFF985E00),
-                    ),
+                  child: Column(
+                    children: [
+                      UpperText(
+                        'BANDEJA DE PAGO',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      UpperText(
+                        _formatEuro(_currentTotal),
+                        style: TextStyle(
+                          fontSize: useCompactMetrics ? 32 : 40,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFF1D6E37),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      if (_droppedCoins.isEmpty)
+                        const UpperText('ARRASTRA MONEDAS AQUÍ')
+                      else
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: _droppedCoins
+                              .map(
+                                (coin) => _coinBubble(
+                                  context,
+                                  coin,
+                                  diameter: useCompactMetrics ? 42 : 52,
+                                  fontSize: useCompactMetrics ? 19 : 24,
+                                ),
+                              )
+                              .toList(),
+                        ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _droppedCoins.isEmpty || _checking
+                        ? null
+                        : _undoCoin,
+                    icon: const Icon(Icons.undo_rounded),
+                    label: UpperText(useCompactMetrics ? 'DESH.' : 'DESHACER'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _droppedCoins.isEmpty || _checking
+                        ? null
+                        : _clearCoins,
+                    icon: const Icon(Icons.delete_outline_rounded),
+                    label: const UpperText('LIMPIAR'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 2,
+                  child: FilledButton.icon(
+                    onPressed: _droppedCoins.isEmpty || _checking
+                        ? null
+                        : _checkAnswer,
+                    icon: _checking
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.check_circle_rounded),
+                    label: UpperText(_checking ? 'COMPROBANDO' : 'COMPROBAR'),
                   ),
                 ),
               ],
             ),
+          ],
+        );
+
+        return Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(22),
+            color: const Color(0xFFFFF3FB),
+            border: Border.all(color: const Color(0xFFFFD5EC)),
           ),
-          const SizedBox(height: 10),
-          DragTarget<double>(
-            onAcceptWithDetails: (details) {
-              setState(() {
-                _droppedCoins.add(details.data);
-              });
-            },
-            builder: (context, candidateData, rejected) {
-              final hovering = candidateData.isNotEmpty;
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 120),
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(18),
-                  color: hovering
-                      ? Colors.green.shade50
-                      : const Color(0xFFFFF8D8),
-                  border: Border.all(
-                    color: hovering
-                        ? Colors.green.shade700
-                        : const Color(0xFFE8DFA9),
-                    width: 2,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    UpperText(
-                      'BANDEJA DE PAGO',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    UpperText(
-                      _formatEuro(_currentTotal),
-                      style: TextStyle(
-                        fontSize: compact ? 34 : 42,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFF1D6E37),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    if (_droppedCoins.isEmpty)
-                      const UpperText('ARRASTRA MONEDAS AQUÍ')
-                    else
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 6,
-                        runSpacing: 6,
-                        children: _droppedCoins
-                            .map(
-                              (coin) => _coinBubble(
-                                context,
-                                coin,
-                                diameter: compact ? 44 : 52,
-                                fontSize: compact ? 20 : 24,
-                              ),
-                            )
-                            .toList(),
-                      ),
-                  ],
-                ),
-              );
-            },
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: _droppedCoins.isEmpty ? null : _undoCoin,
-                  icon: const Icon(Icons.undo_rounded),
-                  label: UpperText(compact ? 'DESH.' : 'DESHACER'),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: _droppedCoins.isEmpty ? null : _clearCoins,
-                  icon: const Icon(Icons.delete_outline_rounded),
-                  label: const UpperText('LIMPIAR'),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                flex: 2,
-                child: FilledButton.icon(
-                  onPressed: _droppedCoins.isEmpty || _checking
-                      ? null
-                      : _checkAnswer,
-                  icon: const Icon(Icons.check_circle_rounded),
-                  label: const UpperText('COMPROBAR'),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+          child: hasBoundedHeight
+              ? Scrollbar(
+                  thumbVisibility: true,
+                  child: SingleChildScrollView(child: panelContent),
+                )
+              : panelContent,
+        );
+      },
     );
   }
 
@@ -563,16 +641,63 @@ class _ExactChangeStoreScreenState
     return LayoutBuilder(
       builder: (context, constraints) {
         const crossAxisCount = 2;
-        final rows = (_wallet.length / crossAxisCount).ceil();
+        final rows = max(1, (_wallet.length / crossAxisCount).ceil());
+        final hasBoundedHeight = constraints.maxHeight.isFinite;
         final spacing = compact ? 8.0 : 10.0;
         final headerHeight = compact ? 56.0 : 64.0;
+        final availableHeight = hasBoundedHeight
+            ? constraints.maxHeight
+            : (compact ? 360.0 : 440.0);
         final usableHeight =
-            constraints.maxHeight - headerHeight - (rows - 1) * spacing;
+            availableHeight - headerHeight - (rows - 1) * spacing;
         final coinDiameter = (usableHeight / rows).clamp(
           54.0,
           compact ? 76.0 : 90.0,
         );
         final fontSize = (coinDiameter * 0.34).clamp(18.0, 32.0);
+        final gridHeight = rows * coinDiameter + (rows - 1) * spacing;
+
+        final grid = GridView.builder(
+          shrinkWrap: !hasBoundedHeight,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            mainAxisSpacing: spacing,
+            crossAxisSpacing: spacing,
+            mainAxisExtent: coinDiameter,
+          ),
+          itemCount: _wallet.length,
+          itemBuilder: (context, index) {
+            final coin = _wallet[index];
+            return Draggable<double>(
+              data: coin,
+              feedback: Material(
+                color: Colors.transparent,
+                child: _coinBubble(
+                  context,
+                  coin,
+                  diameter: coinDiameter + 16,
+                  fontSize: fontSize + 3,
+                ),
+              ),
+              childWhenDragging: Opacity(
+                opacity: 0.25,
+                child: _coinBubble(
+                  context,
+                  coin,
+                  diameter: coinDiameter,
+                  fontSize: fontSize,
+                ),
+              ),
+              child: _coinBubble(
+                context,
+                coin,
+                diameter: coinDiameter,
+                fontSize: fontSize,
+              ),
+            );
+          },
+        );
 
         return Container(
           padding: const EdgeInsets.all(12),
@@ -592,48 +717,10 @@ class _ExactChangeStoreScreenState
                 ),
               ),
               const SizedBox(height: 10),
-              Expanded(
-                child: GridView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: crossAxisCount,
-                    mainAxisSpacing: spacing,
-                    crossAxisSpacing: spacing,
-                    mainAxisExtent: coinDiameter,
-                  ),
-                  itemCount: _wallet.length,
-                  itemBuilder: (context, index) {
-                    final coin = _wallet[index];
-                    return Draggable<double>(
-                      data: coin,
-                      feedback: Material(
-                        color: Colors.transparent,
-                        child: _coinBubble(
-                          context,
-                          coin,
-                          diameter: coinDiameter + 16,
-                          fontSize: fontSize + 3,
-                        ),
-                      ),
-                      childWhenDragging: Opacity(
-                        opacity: 0.25,
-                        child: _coinBubble(
-                          context,
-                          coin,
-                          diameter: coinDiameter,
-                          fontSize: fontSize,
-                        ),
-                      ),
-                      child: _coinBubble(
-                        context,
-                        coin,
-                        diameter: coinDiameter,
-                        fontSize: fontSize,
-                      ),
-                    );
-                  },
-                ),
-              ),
+              if (hasBoundedHeight)
+                Expanded(child: grid)
+              else
+                SizedBox(height: gridHeight, child: grid),
             ],
           ),
         );

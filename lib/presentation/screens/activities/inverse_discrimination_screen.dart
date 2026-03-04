@@ -14,6 +14,7 @@ import '../../../domain/models/level.dart';
 import '../../utils/category_visuals.dart';
 import '../../viewmodels/progress_view_model.dart';
 import '../../widgets/activity_asset_image.dart';
+import '../../widgets/game_style.dart';
 import '../../widgets/routine_steps.dart';
 import '../../widgets/upper_text.dart';
 import '../results_screen.dart';
@@ -40,6 +41,10 @@ class _InverseDiscriminationScreenState
   final Random _random = Random();
 
   final Map<AppCategory, List<Item>> _poolByCategory = {};
+  final Map<String, Item> _itemById = {};
+  final Set<String> _failedOddIds = {};
+  List<Item> _reinforcementOdds = [];
+  bool _isReinforcementRound = false;
   AppCategory? _focusCategory;
 
   int _currentRound = 0;
@@ -57,6 +62,7 @@ class _InverseDiscriminationScreenState
   int _streak = 0;
   int _bestStreak = 0;
   int _consecutiveErrors = 0;
+  int _attemptsOnCurrentRound = 0;
   DateTime _startedAt = DateTime.now();
 
   int get _optionsCount {
@@ -73,9 +79,12 @@ class _InverseDiscriminationScreenState
     _prepare();
   }
 
-  Future<void> _prepare() async {
+  Future<void> _prepare({List<Item>? reinforcementOdds}) async {
     final dataset = ref.read(datasetRepositoryProvider);
     final all = dataset.getAllItems();
+    _itemById
+      ..clear()
+      ..addEntries(all.map((item) => MapEntry(item.id, item)));
     _poolByCategory.clear();
     for (final category in AppCategoryLists.reales) {
       final items =
@@ -91,11 +100,23 @@ class _InverseDiscriminationScreenState
       _poolByCategory[category] = items;
     }
 
-    _roundCount = switch (widget.level) {
-      AppLevel.uno => 4,
-      AppLevel.dos => 5,
-      _ => 6,
-    };
+    final selectedReinforcementOdds = reinforcementOdds
+        ?.where((item) => (item.word ?? '').isNotEmpty)
+        .toList();
+
+    if (selectedReinforcementOdds != null &&
+        selectedReinforcementOdds.isNotEmpty) {
+      selectedReinforcementOdds.shuffle(_random);
+      _reinforcementOdds = selectedReinforcementOdds;
+      _roundCount = _reinforcementOdds.length;
+    } else {
+      _reinforcementOdds = [];
+      _roundCount = switch (widget.level) {
+        AppLevel.uno => 4,
+        AppLevel.dos => 5,
+        _ => 6,
+      };
+    }
 
     if (!mounted) {
       return;
@@ -104,11 +125,14 @@ class _InverseDiscriminationScreenState
     setState(() {
       _isLoading = false;
       _currentRound = 0;
+      _failedOddIds.clear();
+      _isReinforcementRound = _reinforcementOdds.isNotEmpty;
       _correct = 0;
       _incorrect = 0;
       _streak = 0;
       _bestStreak = 0;
       _consecutiveErrors = 0;
+      _attemptsOnCurrentRound = 0;
       _feedback = 'TOCA LA DIFERENTE';
       _focusCategory = null;
       _startedAt = DateTime.now();
@@ -120,6 +144,41 @@ class _InverseDiscriminationScreenState
   void _prepareRound() {
     if (_currentRound >= _roundCount) {
       _finish();
+      return;
+    }
+
+    if (_isReinforcementRound) {
+      final odd = _reinforcementOdds[_currentRound];
+      final focusCandidates = AppCategoryLists.reales.where((category) {
+        if (category == odd.category) {
+          return false;
+        }
+        return (_poolByCategory[category] ?? const []).length >=
+            _optionsCount - 1;
+      }).toList();
+
+      if (focusCandidates.isEmpty) {
+        _finish();
+        return;
+      }
+
+      final focusCategory =
+          focusCandidates[_random.nextInt(focusCandidates.length)];
+      final insidePool = List<Item>.from(
+        _poolByCategory[focusCategory] ?? const [],
+      )..shuffle(_random);
+      final options = <Item>[odd, ...insidePool.take(_optionsCount - 1)]
+        ..shuffle(_random);
+
+      setState(() {
+        _odd = odd;
+        _options = options;
+        _selectedId = null;
+        _answered = false;
+        _attemptsOnCurrentRound = 0;
+        _focusCategory = focusCategory;
+        _feedback = 'TOCA LA DIFERENTE';
+      });
       return;
     }
 
@@ -151,6 +210,7 @@ class _InverseDiscriminationScreenState
       _options = options;
       _selectedId = null;
       _answered = false;
+      _attemptsOnCurrentRound = 0;
       _focusCategory = focusCategory;
       _feedback = 'TOCA LA DIFERENTE';
     });
@@ -234,11 +294,13 @@ class _InverseDiscriminationScreenState
 
     final isCorrect = selected.id == _odd!.id;
 
-    await ref.read(progressViewModelProvider.notifier).registerAttempt(
-      itemId: _odd!.id,
-      correct: isCorrect,
-      activityType: ActivityType.discriminacionInversa,
-    );
+    await ref
+        .read(progressViewModelProvider.notifier)
+        .registerAttempt(
+          itemId: _odd!.id,
+          correct: isCorrect,
+          activityType: ActivityType.discriminacionInversa,
+        );
 
     if (!mounted) {
       return;
@@ -257,11 +319,15 @@ class _InverseDiscriminationScreenState
           totalCorrect: _correct,
         );
       } else {
+        final attemptsOnCurrent = _attemptsOnCurrentRound + 1;
         _incorrect++;
         _streak = 0;
+        _attemptsOnCurrentRound = attemptsOnCurrent;
+        _failedOddIds.add(_odd!.id);
         _feedback = PedagogicalFeedback.retry(
-          attemptsOnCurrent: _incorrect,
-          hint: 'BUSCA LA QUE NO ES DE ${_focusCategory?.label ?? 'LA CATEGORÍA'}',
+          attemptsOnCurrent: attemptsOnCurrent,
+          hint:
+              'BUSCA LA QUE NO ES DE ${_focusCategory?.label ?? 'LA CATEGORÍA'}',
         );
         _consecutiveErrors++;
       }
@@ -279,6 +345,10 @@ class _InverseDiscriminationScreenState
   }
 
   Future<void> _finish() async {
+    final failedOdds = _failedOddIds
+        .map((itemId) => _itemById[itemId])
+        .whereType<Item>()
+        .toList();
     final result = ActivityResult(
       id: 'RES-${DateTime.now().millisecondsSinceEpoch}',
       category: widget.category,
@@ -298,7 +368,12 @@ class _InverseDiscriminationScreenState
     }
 
     final action = await Navigator.of(context).push<ResultAction>(
-      MaterialPageRoute(builder: (_) => ResultsScreen(result: result)),
+      MaterialPageRoute(
+        builder: (_) => ResultsScreen(
+          result: result,
+          canReinforceErrors: failedOdds.isNotEmpty,
+        ),
+      ),
     );
 
     if (!mounted) {
@@ -310,9 +385,18 @@ class _InverseDiscriminationScreenState
         _isLoading = true;
       });
       await _prepare();
-    } else {
-      Navigator.of(context).pop();
+      return;
     }
+
+    if (action == ResultAction.reforzarErrores && failedOdds.isNotEmpty) {
+      setState(() {
+        _isLoading = true;
+      });
+      await _prepare(reinforcementOdds: failedOdds);
+      return;
+    }
+
+    Navigator.of(context).pop();
   }
 
   @override
@@ -323,9 +407,10 @@ class _InverseDiscriminationScreenState
         : width < 1100
         ? 3
         : 4;
+    final solvedCount = _answered ? _currentRound + 1 : _currentRound;
 
-    return Scaffold(
-      appBar: AppBar(title: const UpperText('DISCRIMINACIÓN INVERSA')),
+    return GameScaffold(
+      title: 'DISCRIMINACIÓN INVERSA',
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _odd == null
@@ -336,61 +421,81 @@ class _InverseDiscriminationScreenState
                 child: ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
-                    RoutineSteps(currentStep: _answered ? 4 : 2),
+                    GameProgressHeader(
+                      label: 'TU PROGRESO',
+                      current: solvedCount,
+                      total: _roundCount,
+                      trailingLabel: '⭐ $_correct',
+                    ),
                     const SizedBox(height: 10),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(14),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                    if (_isReinforcementRound) ...[
+                      GamePanel(
+                        backgroundColor: Colors.orange.shade50,
+                        borderColor: Colors.orange.shade200,
+                        child: const Row(
                           children: [
-                            UpperText(
-                              'RONDA ${_currentRound + 1} DE $_roundCount',
+                            Icon(Icons.fitness_center_rounded),
+                            SizedBox(width: 8),
+                            Expanded(
+                              child: UpperText(
+                                'MINI-RONDA DE REFUERZO EN MARCHA',
+                              ),
                             ),
-                            const SizedBox(height: 8),
-                            if (_answered)
-                              UpperText(
-                                _feedback,
-                                style: Theme.of(context).textTheme.titleLarge
-                                    ?.copyWith(
-                                      color: _feedback == 'CORRECTO'
-                                          ? Colors.green.shade700
-                                          : _feedback == 'INTÉNTALO DE NUEVO'
-                                          ? Colors.red.shade700
-                                          : null,
-                                    ),
-                              )
-                            else
-                              _buildPrompt(context),
                           ],
                         ),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                    RoutineSteps(currentStep: _answered ? 4 : 2),
+                    const SizedBox(height: 10),
+                    GamePanel(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          UpperText(
+                            'RONDA ${_currentRound + 1} DE $_roundCount',
+                          ),
+                          const SizedBox(height: 8),
+                          if (_answered)
+                            UpperText(
+                              _feedback,
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(
+                                    color: _feedback == 'CORRECTO'
+                                        ? Colors.green.shade700
+                                        : _feedback == 'INTÉNTALO DE NUEVO'
+                                        ? Colors.red.shade700
+                                        : null,
+                                  ),
+                            )
+                          else
+                            _buildPrompt(context),
+                        ],
                       ),
                     ),
                     if (!_answered &&
                         _consecutiveErrors >= 2 &&
                         _odd != null) ...[
                       const SizedBox(height: 10),
-                      Card(
-                        color: Colors.amber.shade50,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.lightbulb_rounded,
-                                color: Colors.amber.shade800,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: UpperText(
-                                  'AYUDA: LA DIFERENTE ES ${_odd!.word ?? ''}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                  ),
+                      GamePanel(
+                        backgroundColor: Colors.amber.shade50,
+                        borderColor: Colors.amber.shade300,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.lightbulb_rounded,
+                              color: Colors.amber.shade800,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: UpperText(
+                                'AYUDA: LA DIFERENTE ES ${_odd!.word ?? ''}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ],

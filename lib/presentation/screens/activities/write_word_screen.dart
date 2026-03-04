@@ -15,6 +15,7 @@ import '../../../domain/models/level.dart';
 import '../../viewmodels/progress_view_model.dart';
 import '../../viewmodels/settings_view_model.dart';
 import '../../widgets/activity_asset_image.dart';
+import '../../widgets/game_style.dart';
 import '../../widgets/routine_steps.dart';
 import '../../widgets/upper_text.dart';
 import '../results_screen.dart';
@@ -49,8 +50,10 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
   final TextEditingController _controller = TextEditingController();
 
   List<Item> _items = [];
+  final Set<String> _failedItemIds = {};
   int _index = 0;
   WriteMode _mode = WriteMode.copia;
+  bool _isReinforcementRound = false;
 
   String _feedback = 'ESCRIBE LA PALABRA';
   bool _isLoading = true;
@@ -79,7 +82,41 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
     super.dispose();
   }
 
-  Future<void> _prepareActivity() async {
+  Future<void> _prepareActivity({
+    List<Item>? customItems,
+    bool reinforcement = false,
+  }) async {
+    final selectedItems = customItems ?? await _loadItemsFromDataset();
+
+    selectedItems.shuffle(_random);
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _items = selectedItems;
+      _failedItemIds.clear();
+      _index = 0;
+      _mode = reinforcement ? WriteMode.semicopia : WriteMode.copia;
+      _feedback = reinforcement
+          ? 'MINI-RONDA: REFUERZA LAS PALABRAS FALLADAS'
+          : 'ESCRIBE LA PALABRA';
+      _isReinforcementRound = reinforcement;
+      _triesForCurrent = 0;
+      _guidedTrace = true;
+      _reducedKeyboard = false;
+      _correct = 0;
+      _incorrect = 0;
+      _streak = 0;
+      _bestStreak = 0;
+      _startedAt = DateTime.now();
+      _controller.clear();
+      _isLoading = false;
+    });
+  }
+
+  Future<List<Item>> _loadItemsFromDataset() async {
     final dataset = ref.read(datasetRepositoryProvider);
     final progressMap = ref.read(itemProgressMapProvider);
     final limit = widget.difficulty == Difficulty.primaria ? 5 : 7;
@@ -93,36 +130,14 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
       limit: limit,
     );
 
-    final selectedItems = items.isNotEmpty
-        ? items
-        : dataset.getItems(
-            category: widget.category,
-            level: AppLevel.uno,
-            activityType: ActivityType.imagenPalabra,
-          );
-
-    selectedItems.shuffle(_random);
-
-    if (!mounted) {
-      return;
+    if (items.isNotEmpty) {
+      return items;
     }
-
-    setState(() {
-      _items = selectedItems;
-      _index = 0;
-      _mode = WriteMode.copia;
-      _feedback = 'ESCRIBE LA PALABRA';
-      _triesForCurrent = 0;
-      _guidedTrace = true;
-      _reducedKeyboard = false;
-      _correct = 0;
-      _incorrect = 0;
-      _streak = 0;
-      _bestStreak = 0;
-      _startedAt = DateTime.now();
-      _controller.clear();
-      _isLoading = false;
-    });
+    return dataset.getItems(
+      category: widget.category,
+      level: AppLevel.uno,
+      activityType: ActivityType.imagenPalabra,
+    );
   }
 
   Future<void> _validate() async {
@@ -190,6 +205,7 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
       _incorrect++;
       _streak = 0;
       _triesForCurrent++;
+      _failedItemIds.add(item.id);
       _feedback = PedagogicalFeedback.writingError(
         expected: expected,
         input: _controller.text,
@@ -259,6 +275,9 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
   }
 
   Future<void> _finishActivity() async {
+    final failedItems = _items
+        .where((item) => _failedItemIds.contains(item.id))
+        .toList();
     final result = ActivityResult(
       id: 'RES-${DateTime.now().millisecondsSinceEpoch}',
       category: widget.category,
@@ -278,7 +297,12 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
     }
 
     final action = await Navigator.of(context).push<ResultAction>(
-      MaterialPageRoute(builder: (_) => ResultsScreen(result: result)),
+      MaterialPageRoute(
+        builder: (_) => ResultsScreen(
+          result: result,
+          canReinforceErrors: failedItems.isNotEmpty,
+        ),
+      ),
     );
 
     if (!mounted) {
@@ -288,9 +312,16 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
     if (action == ResultAction.repetir) {
       setState(() => _isLoading = true);
       await _prepareActivity();
-    } else {
-      Navigator.of(context).pop();
+      return;
     }
+
+    if (action == ResultAction.reforzarErrores && failedItems.isNotEmpty) {
+      setState(() => _isLoading = true);
+      await _prepareActivity(customItems: failedItems, reinforcement: true);
+      return;
+    }
+
+    Navigator.of(context).pop();
   }
 
   @override
@@ -305,11 +336,12 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
     final firstLetter = normalizedCurrentWord.isEmpty
         ? ''
         : normalizedCurrentWord[0];
+    final solvedCount = _items.isEmpty
+        ? 0
+        : _index.clamp(0, _items.length).toInt();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const UpperText('IMAGEN CON PALABRA PARA ESCRIBIR'),
-      ),
+    return GameScaffold(
+      title: 'IMAGEN CON PALABRA PARA ESCRIBIR',
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : current == null
@@ -320,22 +352,44 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
                 child: ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
-                    RoutineSteps(currentStep: _triesForCurrent >= 2 ? 3 : 2),
+                    GameProgressHeader(
+                      label: 'TU PROGRESO',
+                      current: solvedCount,
+                      total: _items.length,
+                      trailingLabel: '⭐ $_correct',
+                    ),
                     const SizedBox(height: 10),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Row(
+                    if (_isReinforcementRound) ...[
+                      GamePanel(
+                        backgroundColor: Colors.orange.shade50,
+                        borderColor: Colors.orange.shade200,
+                        child: const Row(
                           children: [
-                            const Icon(Icons.edit_note),
-                            const SizedBox(width: 10),
+                            Icon(Icons.fitness_center_rounded),
+                            SizedBox(width: 8),
                             Expanded(
                               child: UpperText(
-                                'PALABRA ${_index + 1} DE ${_items.length}',
+                                'MINI-RONDA DE REFUERZO EN MARCHA',
                               ),
                             ),
                           ],
                         ),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                    RoutineSteps(currentStep: _triesForCurrent >= 2 ? 3 : 2),
+                    const SizedBox(height: 10),
+                    GamePanel(
+                      child: Row(
+                        children: [
+                          const Icon(Icons.edit_note),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: UpperText(
+                              'PALABRA ${_index + 1} DE ${_items.length}',
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -369,35 +423,30 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
                       },
                     ),
                     const SizedBox(height: 8),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            FilterChip(
-                              selected: _guidedTrace,
-                              onSelected: (value) =>
-                                  setState(() => _guidedTrace = value),
-                              avatar: const Icon(
-                                Icons.gesture_rounded,
-                                size: 18,
-                              ),
-                              label: const UpperText('TRAZO GUIADO'),
+                    GamePanel(
+                      padding: const EdgeInsets.all(10),
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          FilterChip(
+                            selected: _guidedTrace,
+                            onSelected: (value) =>
+                                setState(() => _guidedTrace = value),
+                            avatar: const Icon(Icons.gesture_rounded, size: 18),
+                            label: const UpperText('TRAZO GUIADO'),
+                          ),
+                          FilterChip(
+                            selected: _reducedKeyboard,
+                            onSelected: (value) =>
+                                setState(() => _reducedKeyboard = value),
+                            avatar: const Icon(
+                              Icons.keyboard_rounded,
+                              size: 18,
                             ),
-                            FilterChip(
-                              selected: _reducedKeyboard,
-                              onSelected: (value) =>
-                                  setState(() => _reducedKeyboard = value),
-                              avatar: const Icon(
-                                Icons.keyboard_rounded,
-                                size: 18,
-                              ),
-                              label: const UpperText('TECLADO REDUCIDO'),
-                            ),
-                          ],
-                        ),
+                            label: const UpperText('TECLADO REDUCIDO'),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 10),

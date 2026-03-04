@@ -16,7 +16,7 @@ ThemeData buildAppTheme(AppSettings settings) {
           onSurface: Color(0xFF000000),
         )
       : ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1F9D8B),
+          seedColor: const Color(0xFF2C86EA),
           brightness: Brightness.light,
         );
 
@@ -30,7 +30,7 @@ ThemeData buildAppTheme(AppSettings settings) {
     useMaterial3: true,
     scaffoldBackgroundColor: settings.highContrast
         ? Colors.white
-        : const Color(0xFFF5FAF7),
+        : const Color(0xFFEDEFF3),
     textTheme: textTheme.copyWith(
       bodyLarge: textTheme.bodyLarge?.copyWith(
         fontSize: 20,
@@ -67,7 +67,9 @@ ThemeData buildAppTheme(AppSettings settings) {
     ),
     appBarTheme: AppBarTheme(
       centerTitle: true,
-      backgroundColor: settings.highContrast ? Colors.white : const Color(0xFFEAF7F3),
+      backgroundColor: settings.highContrast
+          ? Colors.white
+          : const Color(0xFFE9F0EE),
       foregroundColor: colorScheme.onSurface,
       elevation: 0,
       titleTextStyle: textTheme.titleLarge?.copyWith(
@@ -90,7 +92,9 @@ ThemeData buildAppTheme(AppSettings settings) {
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
         minimumSize: const Size.fromHeight(56),
-        backgroundColor: settings.highContrast ? Colors.black : const Color(0xFF146C5B),
+        backgroundColor: settings.highContrast
+            ? Colors.black
+            : const Color(0xFF2C86EA),
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),

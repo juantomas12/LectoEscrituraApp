@@ -15,6 +15,7 @@ import '../../../domain/models/letter_match_mode.dart';
 import '../../../domain/models/level.dart';
 import '../../viewmodels/progress_view_model.dart';
 import '../../widgets/activity_asset_image.dart';
+import '../../widgets/game_style.dart';
 import '../../widgets/routine_steps.dart';
 import '../../widgets/upper_text.dart';
 import '../results_screen.dart';
@@ -404,11 +405,10 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
     final withoutLetter = _items
         .where((item) => _classifiedByItem[item.id] == false)
         .toList();
+    final solvedCount = withLetter.length + withoutLetter.length;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: UpperText(widget.customTitle ?? 'LETRAS Y VOCALES'),
-      ),
+    return GameScaffold(
+      title: widget.customTitle ?? 'LETRAS Y VOCALES',
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _items.isEmpty
@@ -424,28 +424,32 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                 child: ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
+                    GameProgressHeader(
+                      label: 'TU PROGRESO',
+                      current: solvedCount,
+                      total: _items.length,
+                      trailingLabel: '⭐ $_correct',
+                    ),
+                    const SizedBox(height: 10),
                     RoutineSteps(currentStep: nextItem == null ? 4 : 2),
                     const SizedBox(height: 10),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            UpperText(
-                              'SEPARA LAS TARJETAS',
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                            const SizedBox(height: 8),
-                            UpperText(
-                              'LETRA: $_targetLetter',
-                              style: Theme.of(context).textTheme.titleLarge
-                                  ?.copyWith(fontWeight: FontWeight.w800),
-                            ),
-                            const SizedBox(height: 6),
-                            UpperText(_feedback),
-                          ],
-                        ),
+                    GamePanel(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          UpperText(
+                            'SEPARA LAS TARJETAS',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const SizedBox(height: 8),
+                          UpperText(
+                            'LETRA: $_targetLetter',
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.w800),
+                          ),
+                          const SizedBox(height: 6),
+                          UpperText(_feedback),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -487,27 +491,25 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                       ),
                     if (_consecutiveErrors >= 2 && nextItem != null) ...[
                       const SizedBox(height: 10),
-                      Card(
-                        color: Colors.amber.shade50,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.lightbulb_rounded,
-                                color: Colors.amber.shade800,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: UpperText(
-                                  'AYUDA: ${nextItem.word} VA EN ${_matchesWord(nextItem.word ?? '', _targetLetter) ? _targetLetter : 'NO $_targetLetter'}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                  ),
+                      GamePanel(
+                        backgroundColor: Colors.amber.shade50,
+                        borderColor: Colors.amber.shade300,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.lightbulb_rounded,
+                              color: Colors.amber.shade800,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: UpperText(
+                                'AYUDA: ${nextItem.word} VA EN ${_matchesWord(nextItem.word ?? '', _targetLetter) ? _targetLetter : 'NO $_targetLetter'}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ],

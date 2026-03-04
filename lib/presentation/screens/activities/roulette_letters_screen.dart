@@ -10,6 +10,7 @@ import '../../../domain/models/category.dart';
 import '../../../domain/models/difficulty.dart';
 import '../../../domain/models/item.dart';
 import '../../widgets/activity_asset_image.dart';
+import '../../widgets/game_style.dart';
 import '../../widgets/upper_text.dart';
 
 enum _RouletteMode { vocal, nivel }
@@ -48,6 +49,7 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
   String _feedback =
       'ELIGE VOCAL O NIVEL Y GIRA PARA VER OBJETOS CON ESA VOCAL';
 
+  List<Item> _initialPool = [];
   List<Item> _pool = [];
 
   @override
@@ -64,7 +66,14 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
     }).toList();
 
     setState(() {
+      _initialPool = items;
       _pool = items;
+      _wheelItems = [];
+      _selectedItem = null;
+      _activeVowel = '?';
+      _feedback = items.isEmpty
+          ? 'NO HAY OBJETOS DISPONIBLES PARA LA RULETA'
+          : 'ELIGE VOCAL O NIVEL Y GIRA PARA VER OBJETOS CON ESA VOCAL';
     });
   }
 
@@ -79,11 +88,15 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
     }
   }
 
-  List<Item> _baseByCategory() {
+  List<Item> _baseByCategoryFrom(List<Item> source) {
     if (widget.category == AppCategory.mixta) {
-      return _pool;
+      return source;
     }
-    return _pool.where((item) => item.category == widget.category).toList();
+    return source.where((item) => item.category == widget.category).toList();
+  }
+
+  List<Item> _baseByCategory() {
+    return _baseByCategoryFrom(_pool);
   }
 
   List<Item> _eligibleItemsFor(String vowel) {
@@ -122,6 +135,60 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
       2 => 'NIVEL 2: VOCAL EN MEDIO DE LA PALABRA',
       _ => 'NIVEL 3: PALABRAS QUE TERMINAN EN VOCAL',
     };
+  }
+
+  int _totalWordsForCurrentCategory() {
+    return _baseByCategoryFrom(_initialPool).length;
+  }
+
+  void _markCurrentAsSolved() {
+    final selected = _selectedItem;
+    if (selected == null || _isSpinning) {
+      return;
+    }
+
+    final nextPool = _pool.where((item) => item.id != selected.id).toList();
+    final nextWheel = _wheelItems
+        .where((item) => item.id != selected.id)
+        .toList();
+    final remaining = _baseByCategoryFrom(nextPool);
+    final solvedWord = (selected.word ?? '').trim().toUpperCase();
+
+    setState(() {
+      _pool = nextPool;
+      _wheelItems = nextWheel;
+      _selectedItem = null;
+      if (remaining.isEmpty) {
+        _activeVowel = '-';
+        _feedback = solvedWord.isEmpty
+            ? '¡COMPLETASTE LA RULETA! YA NO QUEDAN PALABRAS.'
+            : '¡CORRECTO! $solvedWord ELIMINADA. YA NO QUEDAN PALABRAS.';
+      } else {
+        _feedback = solvedWord.isEmpty
+            ? '¡CORRECTO! PALABRA ELIMINADA. QUEDAN ${remaining.length}.'
+            : '¡CORRECTO! $solvedWord ELIMINADA. QUEDAN ${remaining.length}.';
+      }
+    });
+  }
+
+  void _restartGame() {
+    if (_initialPool.isEmpty) {
+      _loadItems();
+      return;
+    }
+    setState(() {
+      _mode = _RouletteMode.vocal;
+      _selectedLevel = 1;
+      _selectedVowel = 'A';
+      _randomVowel = false;
+      _pool = [..._initialPool];
+      _wheelItems = [];
+      _selectedItem = null;
+      _activeVowel = '?';
+      _isSpinning = false;
+      _turns = 0;
+      _feedback = 'ELIGE VOCAL O NIVEL Y GIRA PARA VER OBJETOS CON ESA VOCAL';
+    });
   }
 
   List<Item> _pickWheelItems(List<Item> eligible, {bool randomize = true}) {
@@ -164,14 +231,28 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
   }
 
   Future<void> _spin() async {
-    if (_isSpinning || _pool.isEmpty) {
+    if (_isSpinning) {
+      return;
+    }
+    if (_pool.isEmpty) {
+      setState(() {
+        _feedback = 'NO HAY OBJETOS DISPONIBLES PARA LA RULETA';
+        _selectedItem = null;
+        _wheelItems = [];
+      });
       return;
     }
 
     final source = _baseByCategory();
     if (source.isEmpty) {
+      final hadWords = _totalWordsForCurrentCategory() > 0;
       setState(() {
-        _feedback = 'NO HAY OBJETOS DISPONIBLES EN ESTA CATEGORÍA';
+        _selectedItem = null;
+        _wheelItems = [];
+        _activeVowel = hadWords ? '-' : '?';
+        _feedback = hadWords
+            ? '¡COMPLETASTE LA RULETA! PULSA REINICIAR PARA JUGAR DE NUEVO.'
+            : 'NO HAY OBJETOS DISPONIBLES EN ESTA CATEGORÍA';
       });
       return;
     }
@@ -227,6 +308,12 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
       _selectedItem = selected;
       _feedback = 'OBJETO SELECCIONADO CON VOCAL $_activeVowel.';
     });
+
+    await Future<void>.delayed(const Duration(milliseconds: 900));
+    if (!mounted || _selectedItem?.id != selected.id) {
+      return;
+    }
+    _markCurrentAsSolved();
   }
 
   @override
@@ -235,6 +322,10 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
     final isTablet = width >= 720;
 
     final source = _baseByCategory();
+    final totalWords = _totalWordsForCurrentCategory();
+    final remainingWords = source.length;
+    final solvedWords = max(0, totalWords - remainingWords);
+    final completed = totalWords > 0 && remainingWords == 0;
     final previewVowel = _mode == _RouletteMode.vocal
         ? (_randomVowel ? _selectedVowel : _selectedVowel)
         : _pickVowelForLevel(source.isEmpty ? _pool : source);
@@ -243,114 +334,124 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
         ? _wheelItems
         : _pickWheelItems(previewEligible, randomize: false);
 
-    return Scaffold(
-      appBar: AppBar(title: const UpperText('RULETA DE OBJETOS Y VOCALES')),
+    return GameScaffold(
+      title: 'RULETA DE OBJETOS Y VOCALES',
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1080),
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      UpperText(
-                        'CONFIGURACIÓN DE RULETA',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 10),
-                      SegmentedButton<_RouletteMode>(
-                        segments: const [
-                          ButtonSegment(
-                            value: _RouletteMode.vocal,
-                            icon: Icon(Icons.record_voice_over_rounded),
-                            label: UpperText('POR VOCAL'),
-                          ),
-                          ButtonSegment(
-                            value: _RouletteMode.nivel,
-                            icon: Icon(Icons.layers_rounded),
-                            label: UpperText('POR NIVEL'),
+              GameProgressHeader(
+                label: 'TU PROGRESO',
+                current: solvedWords,
+                total: totalWords,
+              ),
+              const SizedBox(height: 10),
+              GamePanel(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    UpperText(
+                      'CONFIGURACIÓN DE RULETA',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 10),
+                    SegmentedButton<_RouletteMode>(
+                      segments: const [
+                        ButtonSegment(
+                          value: _RouletteMode.vocal,
+                          icon: Icon(Icons.record_voice_over_rounded),
+                          label: UpperText('POR VOCAL'),
+                        ),
+                        ButtonSegment(
+                          value: _RouletteMode.nivel,
+                          icon: Icon(Icons.layers_rounded),
+                          label: UpperText('POR NIVEL'),
+                        ),
+                      ],
+                      selected: {_mode},
+                      onSelectionChanged: (value) {
+                        setState(() {
+                          _mode = value.first;
+                          _selectedItem = null;
+                          _wheelItems = [];
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    if (_mode == _RouletteMode.vocal)
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          ..._vowels.map((v) {
+                            return ChoiceChip(
+                              selected: !_randomVowel && _selectedVowel == v,
+                              label: UpperText('VOCAL $v'),
+                              onSelected: (_) {
+                                setState(() {
+                                  _selectedVowel = v;
+                                  _randomVowel = false;
+                                  _selectedItem = null;
+                                  _wheelItems = [];
+                                });
+                              },
+                            );
+                          }),
+                          ChoiceChip(
+                            selected: _randomVowel,
+                            label: const UpperText('ALEATORIA'),
+                            onSelected: (_) {
+                              setState(() {
+                                _randomVowel = true;
+                                _selectedItem = null;
+                                _wheelItems = [];
+                              });
+                            },
                           ),
                         ],
-                        selected: {_mode},
-                        onSelectionChanged: (value) {
-                          setState(() {
-                            _mode = value.first;
-                            _selectedItem = null;
-                            _wheelItems = [];
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      if (_mode == _RouletteMode.vocal)
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            ..._vowels.map((v) {
+                      )
+                    else
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [1, 2, 3].map((level) {
                               return ChoiceChip(
-                                selected: !_randomVowel && _selectedVowel == v,
-                                label: UpperText('VOCAL $v'),
+                                selected: _selectedLevel == level,
+                                label: UpperText('NIVEL $level'),
                                 onSelected: (_) {
                                   setState(() {
-                                    _selectedVowel = v;
-                                    _randomVowel = false;
+                                    _selectedLevel = level;
                                     _selectedItem = null;
                                     _wheelItems = [];
                                   });
                                 },
                               );
-                            }),
-                            ChoiceChip(
-                              selected: _randomVowel,
-                              label: const UpperText('ALEATORIA'),
-                              onSelected: (_) {
-                                setState(() {
-                                  _randomVowel = true;
-                                  _selectedItem = null;
-                                  _wheelItems = [];
-                                });
-                              },
-                            ),
-                          ],
-                        )
-                      else
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: [1, 2, 3].map((level) {
-                                return ChoiceChip(
-                                  selected: _selectedLevel == level,
-                                  label: UpperText('NIVEL $level'),
-                                  onSelected: (_) {
-                                    setState(() {
-                                      _selectedLevel = level;
-                                      _selectedItem = null;
-                                      _wheelItems = [];
-                                    });
-                                  },
-                                );
-                              }).toList(),
-                            ),
-                            const SizedBox(height: 8),
-                            UpperText(_levelDescription(_selectedLevel)),
-                          ],
-                        ),
-                    ],
-                  ),
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 8),
+                          UpperText(_levelDescription(_selectedLevel)),
+                        ],
+                      ),
+                  ],
                 ),
               ),
               const SizedBox(height: 10),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: UpperText(_feedback),
+              GamePanel(child: UpperText(_feedback)),
+              const SizedBox(height: 10),
+              GamePanel(
+                child: Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    UpperText('TOTAL: $totalWords'),
+                    UpperText('ACERTADAS: $solvedWords'),
+                    UpperText('PENDIENTES: $remainingWords'),
+                  ],
                 ),
               ),
               const SizedBox(height: 14),
@@ -401,9 +502,21 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
               ),
               const SizedBox(height: 12),
               FilledButton.icon(
-                onPressed: _isSpinning ? null : _spin,
+                onPressed: _isSpinning || completed ? null : _spin,
                 icon: const Icon(Icons.casino_rounded),
-                label: UpperText(_isSpinning ? 'GIRANDO...' : 'GIRAR RULETA'),
+                label: UpperText(
+                  _isSpinning
+                      ? 'GIRANDO...'
+                      : completed
+                      ? 'RULETA COMPLETADA'
+                      : 'GIRAR RULETA',
+                ),
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: _isSpinning ? null : _restartGame,
+                icon: const Icon(Icons.restart_alt_rounded),
+                label: const UpperText('REINICIAR TODO'),
               ),
               if (_selectedItem != null) ...[
                 const SizedBox(height: 14),
@@ -421,6 +534,8 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
                         ),
                         const SizedBox(height: 6),
                         const UpperText('OBJETO ELEGIDO'),
+                        const SizedBox(height: 8),
+                        const UpperText('SE ELIMINA AUTOMÁTICAMENTE...'),
                       ],
                     ),
                   ),

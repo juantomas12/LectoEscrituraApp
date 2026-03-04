@@ -6,6 +6,7 @@ import '../../core/utils/text_utils.dart';
 import '../../domain/models/ai_resource.dart';
 import '../viewmodels/ai_resource_studio_view_model.dart';
 import '../widgets/activity_asset_image.dart';
+import '../widgets/game_style.dart';
 import '../widgets/upper_text.dart';
 
 class GeneratedSessionGameScreen extends ConsumerStatefulWidget {
@@ -29,6 +30,13 @@ class _GeneratedSessionGameScreenState
   int? _selected;
   int _correct = 0;
   bool _answered = false;
+  late final Map<String, String> _imageByWord;
+
+  @override
+  void initState() {
+    super.initState();
+    _imageByWord = _buildImageByWordIndex();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,18 +50,16 @@ class _GeneratedSessionGameScreenState
     }
 
     if (resource == null) {
-      return Scaffold(
-        appBar: AppBar(title: const UpperText('JUEGO GENERADO')),
-        body: const Center(
-          child: Text('No se encontró el recurso de la sesión.'),
-        ),
+      return const GameScaffold(
+        title: 'JUEGO GENERADO',
+        body: Center(child: Text('No se encontró el recurso de la sesión.')),
       );
     }
 
     if (resource.playableQuestions.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(title: const UpperText('JUEGO GENERADO')),
-        body: const Center(
+      return const GameScaffold(
+        title: 'JUEGO GENERADO',
+        body: Center(
           child: Text('Este recurso no tiene preguntas jugables todavía.'),
         ),
       );
@@ -61,16 +67,22 @@ class _GeneratedSessionGameScreenState
 
     final totalQuestions = resource.playableQuestions.length;
     final question = resource.playableQuestions[_index];
-    final imageByWord = _optionImageByWord(resource);
     final completed = _answered && _index == totalQuestions - 1;
 
-    return Scaffold(
-      appBar: AppBar(title: UpperText('JUEGO · ${widget.sessionTitle}')),
+    return GameScaffold(
+      title: 'JUEGO · ${widget.sessionTitle}',
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            GameProgressHeader(
+              label: 'TU PROGRESO',
+              current: _index + (_answered ? 1 : 0),
+              total: totalQuestions,
+              trailingLabel: '⭐ $_correct',
+            ),
+            const SizedBox(height: 12),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -101,7 +113,7 @@ class _GeneratedSessionGameScreenState
                 itemBuilder: (context, i) {
                   final option = question.options[i];
                   final normalized = normalizeWordForLetters(option);
-                  final imageAsset = imageByWord[normalized];
+                  final imageAsset = _imageByWord[normalized];
                   final isSelected = _selected == i;
                   final isCorrect = _answered && i == question.correctIndex;
                   final isWrong =
@@ -223,7 +235,7 @@ class _GeneratedSessionGameScreenState
     });
   }
 
-  Map<String, String> _optionImageByWord(AiResource resource) {
+  Map<String, String> _buildImageByWordIndex() {
     final dataset = ref.read(datasetRepositoryProvider);
     final all = dataset.getAllItems();
     final output = <String, String>{};

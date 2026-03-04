@@ -12,6 +12,7 @@ import '../../../domain/models/difficulty.dart';
 import '../../../domain/models/item.dart';
 import '../../../domain/models/level.dart';
 import '../../viewmodels/progress_view_model.dart';
+import '../../widgets/game_style.dart';
 import '../../widgets/upper_text.dart';
 import '../results_screen.dart';
 
@@ -43,6 +44,8 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
   final Random _random = Random();
 
   List<Item> _pairs = [];
+  final Set<String> _failedItemIds = {};
+  final Map<String, int> _attemptsByItemId = {};
   List<String> _leftWords = [];
   List<String> _rightWords = [];
 
@@ -53,6 +56,7 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
   String? _selectedLeft;
   String _feedback = 'SELECCIONA UNA PALABRA DE CADA COLUMNA';
   bool _isLoading = true;
+  bool _isReinforcementRound = false;
 
   int _correct = 0;
   int _incorrect = 0;
@@ -67,7 +71,36 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
     _prepareActivity();
   }
 
-  Future<void> _prepareActivity() async {
+  Future<void> _prepareActivity({
+    List<Item>? customPairs,
+    bool reinforcement = false,
+  }) async {
+    final selectedPairs = customPairs ?? await _loadPairsFromDataset();
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _pairs = selectedPairs;
+      _failedItemIds.clear();
+      _attemptsByItemId.clear();
+      _isReinforcementRound = reinforcement;
+      _mode = PairMode.iguales;
+      _correct = 0;
+      _incorrect = 0;
+      _streak = 0;
+      _bestStreak = 0;
+      _startedAt = DateTime.now();
+      _feedback = reinforcement
+          ? 'MINI-RONDA: REFUERZA LAS PALABRAS FALLADAS'
+          : 'SELECCIONA UNA PALABRA DE CADA COLUMNA';
+      _isLoading = false;
+    });
+    _rebuildColumns();
+  }
+
+  Future<List<Item>> _loadPairsFromDataset() async {
     final dataset = ref.read(datasetRepositoryProvider);
     final progressMap = ref.read(itemProgressMapProvider);
     final limit = widget.difficulty == Difficulty.primaria ? 6 : 8;
@@ -81,30 +114,14 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
       limit: limit,
     );
 
-    final selectedPairs = pairs.isNotEmpty
-        ? pairs
-        : dataset.getItems(
-            category: widget.category,
-            level: AppLevel.dos,
-            activityType: ActivityType.palabraPalabra,
-          );
-
-    if (!mounted) {
-      return;
+    if (pairs.isNotEmpty) {
+      return pairs;
     }
-
-    setState(() {
-      _pairs = selectedPairs;
-      _mode = PairMode.iguales;
-      _correct = 0;
-      _incorrect = 0;
-      _streak = 0;
-      _bestStreak = 0;
-      _startedAt = DateTime.now();
-      _feedback = 'SELECCIONA UNA PALABRA DE CADA COLUMNA';
-      _isLoading = false;
-    });
-    _rebuildColumns();
+    return dataset.getItems(
+      category: widget.category,
+      level: AppLevel.dos,
+      activityType: ActivityType.palabraPalabra,
+    );
   }
 
   void _rebuildColumns() {
@@ -154,6 +171,7 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
         : (pair.words.length > 1 ? pair.words[1] : '');
 
     final isCorrect = rightWord == expected;
+    final attemptsOnCurrent = (_attemptsByItemId[pair.id] ?? 0) + 1;
 
     if (pair.id.isNotEmpty) {
       await ref
@@ -170,6 +188,9 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
     }
 
     setState(() {
+      if (pair.id.isNotEmpty) {
+        _attemptsByItemId[pair.id] = attemptsOnCurrent;
+      }
       if (isCorrect) {
         _matchedLeft.add(leftWord);
         _matchedRight.add(rightWord);
@@ -183,8 +204,11 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
       } else {
         _incorrect++;
         _streak = 0;
+        if (pair.id.isNotEmpty) {
+          _failedItemIds.add(pair.id);
+        }
         _feedback = PedagogicalFeedback.retry(
-          attemptsOnCurrent: _incorrect,
+          attemptsOnCurrent: attemptsOnCurrent,
           hint: expected.isNotEmpty ? expected.substring(0, 1) : null,
         );
       }
@@ -197,6 +221,9 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
   }
 
   Future<void> _finishActivity() async {
+    final failedPairs = _pairs
+        .where((pair) => _failedItemIds.contains(pair.id))
+        .toList();
     final result = ActivityResult(
       id: 'RES-${DateTime.now().millisecondsSinceEpoch}',
       category: widget.category,
@@ -216,7 +243,12 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
     }
 
     final action = await Navigator.of(context).push<ResultAction>(
-      MaterialPageRoute(builder: (_) => ResultsScreen(result: result)),
+      MaterialPageRoute(
+        builder: (_) => ResultsScreen(
+          result: result,
+          canReinforceErrors: failedPairs.isNotEmpty,
+        ),
+      ),
     );
 
     if (!mounted) {
@@ -226,19 +258,25 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
     if (action == ResultAction.repetir) {
       setState(() => _isLoading = true);
       await _prepareActivity();
-    } else {
-      Navigator.of(context).pop();
+      return;
     }
+
+    if (action == ResultAction.reforzarErrores && failedPairs.isNotEmpty) {
+      setState(() => _isLoading = true);
+      await _prepareActivity(customPairs: failedPairs, reinforcement: true);
+      return;
+    }
+
+    Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
     final isDesktop = width >= 1000;
-    return Scaffold(
-      appBar: AppBar(
-        title: const UpperText('RELACIONAR PALABRAS CON PALABRAS'),
-      ),
+    final solvedCount = _matchedLeft.length;
+    return GameScaffold(
+      title: 'RELACIONAR PALABRAS CON PALABRAS',
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _pairs.isEmpty
@@ -250,44 +288,66 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
-                  SegmentedButton<PairMode>(
-                    segments: const [
-                      ButtonSegment(
-                        value: PairMode.iguales,
-                        label: UpperText('IGUALES'),
+                      GameProgressHeader(
+                        label: 'TU PROGRESO',
+                        current: solvedCount,
+                        total: _pairs.length,
+                        trailingLabel: '⭐ $_correct',
                       ),
-                      ButtonSegment(
-                        value: PairMode.relacionadas,
-                        label: UpperText('RELACIONADAS'),
-                      ),
-                    ],
-                    selected: {_mode},
-                    onSelectionChanged: (value) {
-                      setState(() {
-                        _mode = value.first;
-                        _correct = 0;
-                        _incorrect = 0;
-                        _streak = 0;
-                        _bestStreak = 0;
-                        _startedAt = DateTime.now();
-                      });
-                      _rebuildColumns();
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.sync_alt),
-                          const SizedBox(width: 10),
-                          Expanded(child: UpperText(_feedback)),
+                      const SizedBox(height: 10),
+                      if (_isReinforcementRound) ...[
+                        GamePanel(
+                          backgroundColor: Colors.orange.shade50,
+                          borderColor: Colors.orange.shade200,
+                          child: const Row(
+                            children: [
+                              Icon(Icons.fitness_center_rounded),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: UpperText(
+                                  'MINI-RONDA DE REFUERZO EN MARCHA',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                      SegmentedButton<PairMode>(
+                        segments: const [
+                          ButtonSegment(
+                            value: PairMode.iguales,
+                            label: UpperText('IGUALES'),
+                          ),
+                          ButtonSegment(
+                            value: PairMode.relacionadas,
+                            label: UpperText('RELACIONADAS'),
+                          ),
                         ],
+                        selected: {_mode},
+                        onSelectionChanged: (value) {
+                          setState(() {
+                            _mode = value.first;
+                            _correct = 0;
+                            _incorrect = 0;
+                            _streak = 0;
+                            _bestStreak = 0;
+                            _startedAt = DateTime.now();
+                          });
+                          _rebuildColumns();
+                        },
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
+                      const SizedBox(height: 10),
+                      GamePanel(
+                        child: Row(
+                          children: [
+                            const Icon(Icons.sync_alt),
+                            const SizedBox(width: 10),
+                            Expanded(child: UpperText(_feedback)),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
                       Expanded(
                         child: isDesktop
                             ? Row(
@@ -304,7 +364,8 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
                                         }
                                         setState(() {
                                           _selectedLeft = word;
-                                          _feedback = 'AHORA ELIGE EN COLUMNA B';
+                                          _feedback =
+                                              'AHORA ELIGE EN COLUMNA B';
                                         });
                                       },
                                     ),
@@ -335,7 +396,8 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
                                         }
                                         setState(() {
                                           _selectedLeft = word;
-                                          _feedback = 'AHORA ELIGE EN COLUMNA B';
+                                          _feedback =
+                                              'AHORA ELIGE EN COLUMNA B';
                                         });
                                       },
                                     ),

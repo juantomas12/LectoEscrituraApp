@@ -13,6 +13,7 @@ import '../../../domain/models/item.dart';
 import '../../../domain/models/level.dart';
 import '../../viewmodels/progress_view_model.dart';
 import '../../widgets/activity_asset_image.dart';
+import '../../widgets/game_style.dart';
 import '../../widgets/routine_steps.dart';
 import '../../widgets/upper_text.dart';
 import '../results_screen.dart';
@@ -39,6 +40,8 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
 
   List<Item> _pool = [];
   late List<Item> _roundTargets;
+  final Set<String> _failedItemIds = {};
+  bool _isReinforcementRound = false;
 
   int _currentRound = 0;
   bool _isLoading = true;
@@ -54,6 +57,7 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
   int _streak = 0;
   int _bestStreak = 0;
   int _consecutiveErrors = 0;
+  int _attemptsOnCurrentRound = 0;
   DateTime _startedAt = DateTime.now();
 
   @override
@@ -79,7 +83,7 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
     };
   }
 
-  Future<void> _prepare() async {
+  Future<void> _prepare({List<Item>? reinforcementTargets}) async {
     final dataset = ref.read(datasetRepositoryProvider);
     final progressMap = ref.read(itemProgressMapProvider);
     final source = dataset.getPrioritizedItems(
@@ -102,7 +106,15 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
         .toList();
 
     _pool.shuffle(_random);
-    _roundTargets = _pool.take(min(_roundCount, _pool.length)).toList();
+    final selectedTargets = reinforcementTargets
+        ?.where((item) => (item.word ?? '').isNotEmpty)
+        .toList();
+    if (selectedTargets != null && selectedTargets.isNotEmpty) {
+      selectedTargets.shuffle(_random);
+      _roundTargets = selectedTargets;
+    } else {
+      _roundTargets = _pool.take(min(_roundCount, _pool.length)).toList();
+    }
 
     if (!mounted) {
       return;
@@ -111,11 +123,15 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
     setState(() {
       _isLoading = false;
       _currentRound = 0;
+      _failedItemIds.clear();
+      _isReinforcementRound =
+          selectedTargets != null && selectedTargets.isNotEmpty;
       _correct = 0;
       _incorrect = 0;
       _streak = 0;
       _bestStreak = 0;
       _consecutiveErrors = 0;
+      _attemptsOnCurrentRound = 0;
       _feedback = 'TOCA LA IMAGEN CORRECTA';
       _startedAt = DateTime.now();
     });
@@ -141,6 +157,7 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
       _options = options;
       _selectedId = null;
       _answered = false;
+      _attemptsOnCurrentRound = 0;
       _feedback = 'TOCA LA IMAGEN DE: ${target.word ?? ''}';
     });
   }
@@ -152,11 +169,13 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
 
     final isCorrect = selected.id == _target!.id;
 
-    await ref.read(progressViewModelProvider.notifier).registerAttempt(
-      itemId: _target!.id,
-      correct: isCorrect,
-      activityType: ActivityType.discriminacion,
-    );
+    await ref
+        .read(progressViewModelProvider.notifier)
+        .registerAttempt(
+          itemId: _target!.id,
+          correct: isCorrect,
+          activityType: ActivityType.discriminacion,
+        );
 
     if (!mounted) {
       return;
@@ -175,10 +194,13 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
           totalCorrect: _correct,
         );
       } else {
+        final attemptsOnCurrent = _attemptsOnCurrentRound + 1;
         _incorrect++;
         _streak = 0;
+        _attemptsOnCurrentRound = attemptsOnCurrent;
+        _failedItemIds.add(_target!.id);
         _feedback = PedagogicalFeedback.retry(
-          attemptsOnCurrent: _incorrect,
+          attemptsOnCurrent: attemptsOnCurrent,
           hint: _target?.word,
         );
         _consecutiveErrors++;
@@ -197,6 +219,9 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
   }
 
   Future<void> _finish() async {
+    final failedTargets = _roundTargets
+        .where((item) => _failedItemIds.contains(item.id))
+        .toList();
     final result = ActivityResult(
       id: 'RES-${DateTime.now().millisecondsSinceEpoch}',
       category: widget.category,
@@ -216,7 +241,12 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
     }
 
     final action = await Navigator.of(context).push<ResultAction>(
-      MaterialPageRoute(builder: (_) => ResultsScreen(result: result)),
+      MaterialPageRoute(
+        builder: (_) => ResultsScreen(
+          result: result,
+          canReinforceErrors: failedTargets.isNotEmpty,
+        ),
+      ),
     );
 
     if (!mounted) {
@@ -228,9 +258,18 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
         _isLoading = true;
       });
       await _prepare();
-    } else {
-      Navigator.of(context).pop();
+      return;
     }
+
+    if (action == ResultAction.reforzarErrores && failedTargets.isNotEmpty) {
+      setState(() {
+        _isLoading = true;
+      });
+      await _prepare(reinforcementTargets: failedTargets);
+      return;
+    }
+
+    Navigator.of(context).pop();
   }
 
   @override
@@ -241,9 +280,10 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
         : width < 1100
         ? 3
         : 4;
+    final solvedCount = _answered ? _currentRound + 1 : _currentRound;
 
-    return Scaffold(
-      appBar: AppBar(title: const UpperText('DISCRIMINACIÓN VISUAL')),
+    return GameScaffold(
+      title: 'DISCRIMINACIÓN VISUAL',
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _target == null
@@ -254,49 +294,69 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
                 child: ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
-                    RoutineSteps(currentStep: _answered ? 4 : 2),
+                    GameProgressHeader(
+                      label: 'TU PROGRESO',
+                      current: solvedCount,
+                      total: _roundTargets.length,
+                      trailingLabel: '⭐ $_correct',
+                    ),
                     const SizedBox(height: 10),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(14),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                    if (_isReinforcementRound) ...[
+                      GamePanel(
+                        backgroundColor: Colors.orange.shade50,
+                        borderColor: Colors.orange.shade200,
+                        child: const Row(
                           children: [
-                            UpperText(
-                              'RONDA ${_currentRound + 1} DE ${_roundTargets.length}',
-                            ),
-                            const SizedBox(height: 8),
-                            UpperText(
-                              _feedback,
-                              style: Theme.of(context).textTheme.titleLarge,
+                            Icon(Icons.fitness_center_rounded),
+                            SizedBox(width: 8),
+                            Expanded(
+                              child: UpperText(
+                                'MINI-RONDA DE REFUERZO EN MARCHA',
+                              ),
                             ),
                           ],
                         ),
                       ),
+                      const SizedBox(height: 10),
+                    ],
+                    RoutineSteps(currentStep: _answered ? 4 : 2),
+                    const SizedBox(height: 10),
+                    GamePanel(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          UpperText(
+                            'RONDA ${_currentRound + 1} DE ${_roundTargets.length}',
+                          ),
+                          const SizedBox(height: 8),
+                          UpperText(
+                            _feedback,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                        ],
+                      ),
                     ),
                     if (!_answered && _consecutiveErrors >= 2) ...[
                       const SizedBox(height: 10),
-                      Card(
-                        color: Colors.amber.shade50,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.lightbulb_rounded,
-                                color: Colors.amber.shade800,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: UpperText(
-                                  'AYUDA: TOCA ${_target?.word ?? ''}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                  ),
+                      GamePanel(
+                        backgroundColor: Colors.amber.shade50,
+                        borderColor: Colors.amber.shade300,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.lightbulb_rounded,
+                              color: Colors.amber.shade800,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: UpperText(
+                                'AYUDA: TOCA ${_target?.word ?? ''}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
