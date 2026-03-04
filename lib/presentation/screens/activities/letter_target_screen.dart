@@ -395,17 +395,9 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
     final isTablet = width >= 700 && width < 1200;
     final isTabletLandscape = isTablet && isLandscape;
     final useVerticalDropZones = isPhone || (isTablet && !isLandscape);
-    final cardsCrossAxisCount = isTabletLandscape ? 4 : 2;
-    final cardsMainAxisExtent = isPhone
-        ? 210.0
-        : isTabletLandscape
-        ? 188.0
-        : 240.0;
-    final dragFeedbackWidth = isPhone
-        ? 190.0
-        : isTabletLandscape
-        ? 180.0
-        : 220.0;
+    final cardsCrossAxisCount = 2;
+    final cardsMainAxisExtent = isPhone ? 210.0 : 240.0;
+    final dragFeedbackWidth = isPhone ? 190.0 : 220.0;
 
     final remainingItems = _items
         .where((item) => !_classifiedByItem.containsKey(item.id))
@@ -538,6 +530,33 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                         children: [
                           if (remainingItems.isEmpty)
                             const UpperText('NO QUEDAN TARJETAS')
+                          else if (isTabletLandscape && nextItem != null)
+                            Center(
+                              child: Draggable<Item>(
+                                data: nextItem,
+                                feedback: Material(
+                                  color: Colors.transparent,
+                                  child: SizedBox(
+                                    width: 220,
+                                    child: _LetterCard(
+                                      item: nextItem,
+                                      tabletLarge: true,
+                                    ),
+                                  ),
+                                ),
+                                childWhenDragging: Opacity(
+                                  opacity: 0.3,
+                                  child: _LetterCard(
+                                    item: nextItem,
+                                    tabletLarge: true,
+                                  ),
+                                ),
+                                child: _LetterCard(
+                                  item: nextItem,
+                                  tabletLarge: true,
+                                ),
+                              ),
+                            )
                           else
                             GridView.builder(
                               shrinkWrap: true,
