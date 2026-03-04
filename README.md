@@ -1,5 +1,16 @@
 # APP DE LECTOESCRITURA (FLUTTER, OFFLINE)
 
+## REGLA DE TRABAJO PARA EL ASISTENTE
+
+ANTES DE EMPEZAR CUALQUIER TAREA EN ESTE PROYECTO, EL ASISTENTE DEBE LEER ESTE `README.md` COMPLETO.
+
+AL TERMINAR CADA CAMBIO, EL ASISTENTE DEBE HACER ESTE CIERRE OBLIGATORIO:
+
+1. REVISAR ERRORES (`./tools/check_build_deploy.sh` EJECUTA `ANALYZE` + `TEST`).
+2. SI NO HAY ERRORES, COMPILAR WEB PARA `/lectorEscrituraapp/`.
+3. DESPLEGAR EN `https://iaprende.itacaflow.com/lectorEscrituraapp/`.
+4. HACER `git add` DE LOS ARCHIVOS DEL CAMBIO, `git commit` Y `git push` A GITHUB.
+
 APP EDUCATIVA DE LECTOESCRITURA PARA PRIMARIA Y SECUNDARIA, CON NIVELACIÓN PROGRESIVA, TODO EL TEXTO VISIBLE EN MAYÚSCULAS Y DATASET LOCAL SIN INTERNET.
 
 ## ARQUITECTURA
@@ -109,6 +120,9 @@ SI GOOGLE NO ESTÁ CONFIGURADO, EL SCRIPT USA OPENVERSE/WIKIMEDIA COMO RESPALDO.
 ### OPCIONES ÚTILES DEL SCRIPT
 
 ```bash
+# COMPRESIÓN AUTOMÁTICA SI LA IMAGEN SUPERA 1MB (ACTIVO POR DEFECTO)
+python3 tools/sync_offline_images.py --auto-compress-over-mb 1
+
 # SOLO UN ÍTEM
 python3 tools/sync_offline_images.py --item-id CDC_N1_01
 
@@ -123,6 +137,9 @@ python3 tools/sync_offline_images.py --replace-svg
 
 # MODO PRUEBA (SIN GUARDAR)
 python3 tools/sync_offline_images.py --dry-run
+
+# DESACTIVAR COMPRESIÓN AUTOMÁTICA
+python3 tools/sync_offline_images.py --auto-compress-over-mb 0
 ```
 
 EL REGISTRO DE FUENTE/LICENCIA SE GUARDA EN `assets/data/image_sources.json`.
