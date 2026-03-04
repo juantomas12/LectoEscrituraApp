@@ -8,7 +8,6 @@ import '../../domain/models/category.dart';
 import '../../domain/models/difficulty.dart';
 import '../../domain/models/letter_match_mode.dart';
 import '../../domain/models/level.dart';
-import '../utils/category_visuals.dart';
 import '../viewmodels/progress_view_model.dart';
 import '../viewmodels/settings_view_model.dart';
 import '../widgets/upper_text.dart';
@@ -28,11 +27,15 @@ class ActivitySelectionScreen extends ConsumerStatefulWidget {
     required this.category,
     required this.activityType,
     required this.difficulty,
+    this.initialGameLevel,
+    this.initialVowelMode,
   });
 
   final AppCategory category;
   final ActivityType activityType;
   final Difficulty difficulty;
+  final int? initialGameLevel;
+  final String? initialVowelMode;
 
   @override
   ConsumerState<ActivitySelectionScreen> createState() =>
@@ -42,11 +45,22 @@ class ActivitySelectionScreen extends ConsumerStatefulWidget {
 class _ActivitySelectionScreenState
     extends ConsumerState<ActivitySelectionScreen> {
   static const _vowels = ['A', 'E', 'I', 'O', 'U'];
+  static const _accent = Color(0xFF2C86EA);
   final Random _random = Random();
 
   int _selectedGameLevel = 1;
   bool _didApplyAutoLevel = false;
+  bool _didAutoStartSingleLevel = false;
   String _selectedVowelMode = 'A';
+
+  @override
+  void initState() {
+    super.initState();
+    final initialVowel = (widget.initialVowelMode ?? '').trim().toUpperCase();
+    if (_vowels.contains(initialVowel) || initialVowel == 'RANDOM') {
+      _selectedVowelMode = initialVowel;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,8 +70,25 @@ class _ActivitySelectionScreenState
     final settings = ref.watch(settingsViewModelProvider);
     final progressVm = ref.read(progressViewModelProvider.notifier);
 
+    if (!_didApplyAutoLevel &&
+        widget.initialGameLevel != null &&
+        levels.contains(widget.initialGameLevel)) {
+      _selectedGameLevel = widget.initialGameLevel!;
+      _didApplyAutoLevel = true;
+    }
+
     if (!levels.contains(_selectedGameLevel)) {
       _selectedGameLevel = levels.first;
+    }
+
+    if (!_didAutoStartSingleLevel && levels.length == 1) {
+      _didAutoStartSingleLevel = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) {
+          return;
+        }
+        _openActivity(context, widget.activityType, levels.first);
+      });
     }
 
     if (!isLetterVowelsGame &&
@@ -74,158 +105,242 @@ class _ActivitySelectionScreenState
           : levels.first;
     }
 
+    final isSingleLevel = levels.length == 1;
+    final gameTitle = _displayGameTitle(widget.activityType);
+    final gameIcon = _displayGameIcon(widget.activityType);
+    final gameColor = _displayGameColor(widget.activityType);
+
     return Scaffold(
-      appBar: AppBar(title: const UpperText('SELECCIÓN DE JUEGO')),
+      backgroundColor: const Color(0xFFEDEFF3),
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 980),
-          child: ListView(
-            padding: const EdgeInsets.all(20),
-            children: [
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          constraints: const BoxConstraints(maxWidth: 820),
+          child: SafeArea(
+            child: Column(
+              children: [
+                Container(
+                  height: 84,
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Color(0xFFD7DFEC)),
+                    ),
+                  ),
+                  child: Row(
                     children: [
-                      const Row(
-                        children: [
-                          Icon(Icons.sports_esports_rounded),
-                          SizedBox(width: 8),
-                          UpperText(
-                            'JUEGO SELECCIONADO',
-                            style: TextStyle(fontWeight: FontWeight.w900),
+                      IconButton(
+                        onPressed: () => Navigator.of(context).maybePop(),
+                        icon: const Icon(Icons.arrow_back_rounded),
+                        color: _accent,
+                        tooltip: 'VOLVER',
+                      ),
+                      const Expanded(
+                        child: UpperText(
+                          'SELECCIÓN DE JUEGO',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w900,
+                            color: Color(0xFF101A39),
                           ),
-                        ],
+                        ),
                       ),
-                      const SizedBox(height: 10),
-                      UpperText(
-                        widget.activityType.label,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          Icon(
-                            widget.category.icon,
-                            color: widget.category.color,
-                          ),
-                          const SizedBox(width: 6),
-                          UpperText(widget.category.label),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      UpperText('DIFICULTAD: ${widget.difficulty.label}'),
+                      const SizedBox(width: 44),
                     ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 14),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: isLetterVowelsGame
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            UpperText(
-                              'VOCALES DEL JUEGO',
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                            const SizedBox(height: 10),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: [
-                                ..._vowels.map((vowel) {
-                                  return ChoiceChip(
-                                    selected: _selectedVowelMode == vowel,
-                                    label: UpperText('VOCAL $vowel'),
-                                    onSelected: (_) {
-                                      setState(() {
-                                        _selectedVowelMode = vowel;
-                                      });
-                                    },
-                                  );
-                                }),
-                                ChoiceChip(
-                                  selected: _selectedVowelMode == 'RANDOM',
-                                  label: const UpperText('TODAS ALEATORIO'),
-                                  onSelected: (_) {
-                                    setState(() {
-                                      _selectedVowelMode = 'RANDOM';
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            UpperText(
-                              _selectedVowelMode == 'RANDOM'
-                                  ? 'SE ELEGIRÁ UNA VOCAL ALEATORIA EN CADA PARTIDA'
-                                  : 'SE JUGARÁ SOLO CON LA VOCAL $_selectedVowelMode',
-                            ),
-                          ],
-                        )
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            UpperText(
-                              'NIVELES DEL JUEGO',
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                            const SizedBox(height: 10),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: levels.map((level) {
-                                final selected = _selectedGameLevel == level;
-                                return ChoiceChip(
-                                  selected: selected,
-                                  label: UpperText('NIVEL $level'),
-                                  onSelected: (_) {
-                                    setState(() {
-                                      _selectedGameLevel = level;
-                                    });
-                                  },
-                                );
-                              }).toList(),
-                            ),
-                            const SizedBox(height: 10),
-                            UpperText(
-                              _levelDescription(
-                                widget.activityType,
-                                _selectedGameLevel,
-                              ),
-                            ),
-                            if (settings.autoAdjustLevel && levels.length > 1)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: UpperText(
-                                  'NIVEL SUGERIDO AUTOMÁTICO: $_selectedGameLevel',
-                                  style: Theme.of(context).textTheme.bodySmall
-                                      ?.copyWith(fontWeight: FontWeight.w800),
-                                ),
-                              ),
-                          ],
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 170,
+                          height: 170,
+                          decoration: BoxDecoration(
+                            color: _accent.withValues(alpha: 0.14),
+                            borderRadius: BorderRadius.circular(58),
+                          ),
+                          child: Icon(gameIcon, size: 82, color: gameColor),
                         ),
+                      ),
+                      const SizedBox(height: 26),
+                      UpperText(
+                        gameTitle,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 58,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF101A39),
+                          height: 1.02,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      UpperText(
+                        isLetterVowelsGame
+                            ? 'MODOS DEL JUEGO'
+                            : 'NIVELES DEL JUEGO',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: _accent,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      if (!isLetterVowelsGame)
+                        ...levels.map((level) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _LevelRowCard(
+                              indexLabel: '$level',
+                              title: 'NIVEL $level',
+                              selected: _selectedGameLevel == level,
+                              accentColor: _accent,
+                              onTap: () => setState(() {
+                                _selectedGameLevel = level;
+                              }),
+                            ),
+                          );
+                        })
+                      else ...[
+                        ..._vowels.map((vowel) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _LevelRowCard(
+                              indexLabel: vowel,
+                              title: 'VOCAL $vowel',
+                              selected: _selectedVowelMode == vowel,
+                              accentColor: _accent,
+                              onTap: () => setState(() {
+                                _selectedVowelMode = vowel;
+                              }),
+                            ),
+                          );
+                        }),
+                        _LevelRowCard(
+                          indexLabel: '*',
+                          title: 'TODAS ALEATORIO',
+                          selected: _selectedVowelMode == 'RANDOM',
+                          accentColor: _accent,
+                          onTap: () => setState(() {
+                            _selectedVowelMode = 'RANDOM';
+                          }),
+                        ),
+                      ],
+                      if (!isSingleLevel) ...[
+                        const SizedBox(height: 8),
+                        UpperText(
+                          _levelDescription(
+                            widget.activityType,
+                            _selectedGameLevel,
+                          ),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF4B5E82),
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        if (settings.autoAdjustLevel &&
+                            levels.length > 1 &&
+                            !isLetterVowelsGame)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: UpperText(
+                              'NIVEL SUGERIDO AUTOMÁTICO: $_selectedGameLevel',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFF4B5E82),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        const SizedBox(height: 16),
+                        FilledButton.icon(
+                          onPressed: () => _openActivity(
+                            context,
+                            widget.activityType,
+                            _selectedGameLevel,
+                          ),
+                          icon: const Icon(Icons.play_arrow_rounded, size: 30),
+                          label: const UpperText('INICIAR JUEGO'),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: const Color(0xFF24C45F),
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size.fromHeight(66),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(40),
+                            ),
+                            textStyle: const TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 22,
+                            ),
+                          ),
+                        ),
+                      ],
+                      if (isSingleLevel)
+                        const Padding(
+                          padding: EdgeInsets.only(top: 8),
+                          child: UpperText(
+                            'INICIO AUTOMÁTICO (JUEGO DE NIVEL ÚNICO)',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFF5A6B8B),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 14),
-              FilledButton.icon(
-                onPressed: () => _openActivity(
-                  context,
-                  widget.activityType,
-                  _selectedGameLevel,
-                ),
-                icon: const Icon(Icons.play_arrow_rounded),
-                label: const UpperText('INICIAR JUEGO'),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  String _displayGameTitle(ActivityType type) {
+    return switch (type) {
+      ActivityType.imagenPalabra => 'IMAGEN Y PALABRA',
+      ActivityType.escribirPalabra => 'ESCRIBIR PALABRA',
+      ActivityType.palabraPalabra => 'PALABRA CON PALABRA',
+      ActivityType.imagenFrase => 'IMAGEN Y FRASE',
+      ActivityType.letraObjetivo => 'LETRAS Y VOCALES',
+      ActivityType.cambioExacto => 'TIENDA DE CHUCHES',
+      ActivityType.ruletaLetras => 'RULETA DE LETRAS',
+      ActivityType.discriminacion => 'DISCRIMINACIÓN VISUAL',
+      ActivityType.discriminacionInversa => 'DISCRIMINACIÓN INVERSA',
+    };
+  }
+
+  IconData _displayGameIcon(ActivityType type) {
+    return switch (type) {
+      ActivityType.imagenPalabra => Icons.image_search_rounded,
+      ActivityType.escribirPalabra => Icons.edit_rounded,
+      ActivityType.palabraPalabra => Icons.compare_arrows_rounded,
+      ActivityType.imagenFrase => Icons.text_snippet_rounded,
+      ActivityType.letraObjetivo => Icons.spellcheck_rounded,
+      ActivityType.cambioExacto => Icons.shopping_bag_rounded,
+      ActivityType.ruletaLetras => Icons.rotate_right_rounded,
+      ActivityType.discriminacion => Icons.visibility_rounded,
+      ActivityType.discriminacionInversa => Icons.find_replace_rounded,
+    };
+  }
+
+  Color _displayGameColor(ActivityType type) {
+    return switch (type) {
+      ActivityType.cambioExacto => const Color(0xFFC64890),
+      ActivityType.ruletaLetras => const Color(0xFF7A5CD6),
+      ActivityType.discriminacion => const Color(0xFF2C86EA),
+      ActivityType.discriminacionInversa => const Color(0xFFB86115),
+      _ => const Color(0xFF2C86EA),
+    };
   }
 
   List<int> _levelsForGame(ActivityType activityType) {
@@ -328,7 +443,7 @@ class _ActivitySelectionScreenState
             builder: (_) => LetterTargetScreen(
               category: widget.category,
               difficulty: widget.difficulty,
-              level: AppLevel.uno,
+              level: AppLevelX.fromInt(gameLevel),
               targetLetter: letter,
               matchMode: LetterMatchMode.contiene,
               customTitle: 'LETRAS Y VOCALES',
@@ -380,5 +495,83 @@ class _ActivitySelectionScreenState
         );
         return;
     }
+  }
+}
+
+class _LevelRowCard extends StatelessWidget {
+  const _LevelRowCard({
+    required this.indexLabel,
+    required this.title,
+    required this.selected,
+    required this.accentColor,
+    required this.onTap,
+  });
+
+  final String indexLabel;
+  final String title;
+  final bool selected;
+  final Color accentColor;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final borderColor = selected ? accentColor : const Color(0xFFCDD7E6);
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(999),
+        child: Ink(
+          height: 96,
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          decoration: BoxDecoration(
+            color: selected
+                ? accentColor.withValues(alpha: 0.06)
+                : Colors.white,
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: borderColor, width: selected ? 3 : 2),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  color: selected ? accentColor : const Color(0xFFEEF2F8),
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: UpperText(
+                  indexLabel,
+                  style: TextStyle(
+                    color: selected ? Colors.white : const Color(0xFF62728F),
+                    fontWeight: FontWeight.w900,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 18),
+              Expanded(
+                child: UpperText(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF101A39),
+                  ),
+                ),
+              ),
+              Icon(
+                selected
+                    ? Icons.check_circle_rounded
+                    : Icons.radio_button_unchecked_rounded,
+                color: selected ? accentColor : const Color(0xFFC0CCDD),
+                size: 44,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
