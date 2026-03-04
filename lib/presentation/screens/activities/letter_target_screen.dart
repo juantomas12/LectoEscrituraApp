@@ -389,9 +389,23 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
+    final isLandscape =
+        MediaQuery.orientationOf(context) == Orientation.landscape;
     final isPhone = width < 700;
     final isTablet = width >= 700 && width < 1200;
-    final useVerticalDropZones = isPhone || isTablet;
+    final isTabletLandscape = isTablet && isLandscape;
+    final useVerticalDropZones = isPhone || (isTablet && !isLandscape);
+    final cardsCrossAxisCount = isTabletLandscape ? 4 : 2;
+    final cardsMainAxisExtent = isPhone
+        ? 210.0
+        : isTabletLandscape
+        ? 188.0
+        : 240.0;
+    final dragFeedbackWidth = isPhone
+        ? 190.0
+        : isTabletLandscape
+        ? 180.0
+        : 220.0;
 
     final remainingItems = _items
         .where((item) => !_classifiedByItem.containsKey(item.id))
@@ -530,10 +544,10 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                               physics: const NeverScrollableScrollPhysics(),
                               gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
+                                    crossAxisCount: cardsCrossAxisCount,
                                     crossAxisSpacing: 10,
                                     mainAxisSpacing: 10,
-                                    mainAxisExtent: isPhone ? 210 : 240,
+                                    mainAxisExtent: cardsMainAxisExtent,
                                   ),
                               itemCount: remainingItems.length,
                               itemBuilder: (context, index) {
@@ -543,11 +557,12 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                                   feedback: Material(
                                     color: Colors.transparent,
                                     child: SizedBox(
-                                      width: isPhone ? 190 : 220,
+                                      width: dragFeedbackWidth,
                                       child: _LetterCard(
                                         item: item,
                                         mobileLarge: isPhone,
-                                        tabletLarge: isTablet,
+                                        tabletLarge:
+                                            isTablet && !isTabletLandscape,
                                       ),
                                     ),
                                   ),
@@ -556,13 +571,14 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                                     child: _LetterCard(
                                       item: item,
                                       mobileLarge: isPhone,
-                                      tabletLarge: isTablet,
+                                      tabletLarge:
+                                          isTablet && !isTabletLandscape,
                                     ),
                                   ),
                                   child: _LetterCard(
                                     item: item,
                                     mobileLarge: isPhone,
-                                    tabletLarge: isTablet,
+                                    tabletLarge: isTablet && !isTabletLandscape,
                                   ),
                                 );
                               },
