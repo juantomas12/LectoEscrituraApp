@@ -19,6 +19,31 @@ import 'progress_dashboard_screen.dart';
 import 'settings_screen.dart';
 import 'therapist_panel_screen.dart';
 
+String _categoryDisplayLabel(AppCategory category) {
+  if (category == AppCategory.mixta) {
+    return 'MIX DE COSAS';
+  }
+  return category.label;
+}
+
+String _titleCase(String value) {
+  final words = value
+      .trim()
+      .toLowerCase()
+      .split(RegExp(r'\s+'))
+      .where((word) => word.isNotEmpty);
+  return words
+      .map((word) => '${word[0].toUpperCase()}${word.substring(1)}')
+      .join(' ');
+}
+
+String _categoryPickerLabel(AppCategory category) {
+  if (category == AppCategory.mixta) {
+    return 'Mix de cosas';
+  }
+  return _titleCase(category.label);
+}
+
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -153,85 +178,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ),
   ];
 
+  static final _categoryChoices = <AppCategory>[
+    AppCategory.mixta,
+    ...AppCategoryLists.reales,
+  ];
+
   Future<void> _openCategoryPicker({
     required HomeSelectionViewModel selectionVm,
     required AppCategory selected,
   }) async {
-    final picked = await showModalBottomSheet<AppCategory>(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+    final picked = await Navigator.of(context).push<AppCategory>(
+      MaterialPageRoute<AppCategory>(
+        builder: (_) => _CategoryPickerScreen(
+          selected: selected,
+          choices: _categoryChoices,
+        ),
       ),
-      builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Selecciona categoría',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF111D3A),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Flexible(
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: AppCategoryLists.reales.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 8),
-                    itemBuilder: (context, index) {
-                      final category = AppCategoryLists.reales[index];
-                      final isSelected = category == selected;
-                      return Material(
-                        color: isSelected
-                            ? category.color.withValues(alpha: 0.14)
-                            : const Color(0xFFF5F7FB),
-                        borderRadius: BorderRadius.circular(14),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(14),
-                          onTap: () => Navigator.of(context).pop(category),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 12,
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(category.icon, color: category.color),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Text(
-                                    category.label,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                      color: Color(0xFF111D3A),
-                                    ),
-                                  ),
-                                ),
-                                if (isSelected)
-                                  const Icon(
-                                    Icons.check_circle_rounded,
-                                    color: Color(0xFF297BE6),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
 
     if (picked == null) {
@@ -599,7 +561,7 @@ class _HomeTab extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        category.label,
+                        _categoryDisplayLabel(category),
                         style: const TextStyle(
                           fontSize: 18,
                           color: Color(0xFF111D3A),
@@ -681,6 +643,183 @@ class _HomeTab extends StatelessWidget {
             );
           }),
       ],
+    );
+  }
+}
+
+class _CategoryPickerScreen extends StatelessWidget {
+  const _CategoryPickerScreen({required this.selected, required this.choices});
+
+  final AppCategory selected;
+  final List<AppCategory> choices;
+
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    final cardRatio = width >= 1000 ? 1.18 : 0.92;
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFEDEFF3),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.arrow_back_rounded),
+                    tooltip: 'Volver',
+                  ),
+                  const Expanded(
+                    child: Text(
+                      'Categorías',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF111D3A),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 48),
+                ],
+              ),
+            ),
+            const Divider(height: 1, color: Color(0xFFD6DFEE)),
+            Expanded(
+              child: CustomScrollView(
+                slivers: [
+                  const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(22, 20, 22, 12),
+                      child: Text(
+                        '¿Qué quieres aprender hoy?',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF506080),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                    sliver: SliverGrid(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final category = choices[index];
+                        final isSelected = category == selected;
+                        return _CategoryGridCard(
+                          category: category,
+                          isSelected: isSelected,
+                          onTap: () => Navigator.of(context).pop(category),
+                        );
+                      }, childCount: choices.length),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 14,
+                        mainAxisSpacing: 14,
+                        childAspectRatio: cardRatio,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CategoryGridCard extends StatelessWidget {
+  const _CategoryGridCard({
+    required this.category,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final AppCategory category;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = category.color;
+    final fillColor = color.withValues(alpha: isSelected ? 0.22 : 0.14);
+    final borderColor = color.withValues(alpha: isSelected ? 0.74 : 0.34);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(36),
+        onTap: onTap,
+        child: Ink(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: fillColor,
+            borderRadius: BorderRadius.circular(36),
+            border: Border.all(color: borderColor, width: isSelected ? 3 : 2),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: color.withValues(alpha: 0.22),
+                      blurRadius: 18,
+                      offset: const Offset(0, 8),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 102,
+                height: 102,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(category.icon, size: 52, color: color),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                _categoryPickerLabel(category),
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 23,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF111D3A),
+                  height: 1.1,
+                ),
+              ),
+              if (isSelected) ...[
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.9),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: const Text(
+                    'Seleccionada',
+                    style: TextStyle(
+                      color: Color(0xFF2C7BEA),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

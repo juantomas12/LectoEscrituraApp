@@ -9,21 +9,26 @@ class HomeSelectionState {
     required this.category,
     required this.game,
     required this.difficulty,
+    required this.categoryOptionId,
   });
 
   final AppCategory category;
-  final ActivityType game;
+  final ActivityType? game;
   final Difficulty difficulty;
+  final String categoryOptionId;
 
   HomeSelectionState copyWith({
     AppCategory? category,
     ActivityType? game,
+    bool clearGame = false,
     Difficulty? difficulty,
+    String? categoryOptionId,
   }) {
     return HomeSelectionState(
       category: category ?? this.category,
-      game: game ?? this.game,
+      game: clearGame ? null : game ?? this.game,
       difficulty: difficulty ?? this.difficulty,
+      categoryOptionId: categoryOptionId ?? this.categoryOptionId,
     );
   }
 }
@@ -32,18 +37,23 @@ class HomeSelectionViewModel extends Notifier<HomeSelectionState> {
   @override
   HomeSelectionState build() {
     return const HomeSelectionState(
-      category: AppCategory.cosasDeCasa,
-      game: ActivityType.imagenPalabra,
+      category: AppCategory.mixta,
+      game: null,
       difficulty: Difficulty.primaria,
+      categoryOptionId: 'MIX_CATEGORIAS',
     );
   }
 
-  void setCategory(AppCategory value) {
-    state = state.copyWith(category: value);
+  void setCategory(AppCategory value, {String? optionId}) {
+    state = state.copyWith(
+      category: value,
+      clearGame: true,
+      categoryOptionId: optionId ?? value.id,
+    );
   }
 
   void setGame(ActivityType value) {
-    state = state.copyWith(game: value);
+    state = state.copyWith(game: value, clearGame: false);
   }
 
   void setDifficulty(Difficulty value) {
