@@ -515,72 +515,64 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                     ],
                     const SizedBox(height: 14),
                     UpperText(
-                      isPhone ? 'TARJETA ACTUAL' : 'TARJETAS',
+                      'TARJETAS',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 8),
-                    if (isPhone)
+                    if (isPhone || isTablet)
                       Column(
                         children: [
-                          if (nextItem != null)
-                            Draggable<Item>(
-                              data: nextItem,
-                              feedback: Material(
-                                color: Colors.transparent,
-                                child: SizedBox(
-                                  width: 220,
-                                  child: _LetterCard(
-                                    item: nextItem,
-                                    mobileLarge: true,
-                                  ),
-                                ),
-                              ),
-                              childWhenDragging: Opacity(
-                                opacity: 0.3,
-                                child: _LetterCard(
-                                  item: nextItem,
-                                  mobileLarge: true,
-                                ),
-                              ),
-                              child: _LetterCard(
-                                item: nextItem,
-                                mobileLarge: true,
-                              ),
-                            )
+                          if (remainingItems.isEmpty)
+                            const UpperText('NO QUEDAN TARJETAS')
                           else
-                            const UpperText('NO QUEDAN TARJETAS'),
+                            GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10,
+                                    mainAxisExtent: isPhone ? 210 : 240,
+                                  ),
+                              itemCount: remainingItems.length,
+                              itemBuilder: (context, index) {
+                                final item = remainingItems[index];
+                                return Draggable<Item>(
+                                  data: item,
+                                  feedback: Material(
+                                    color: Colors.transparent,
+                                    child: SizedBox(
+                                      width: isPhone ? 190 : 220,
+                                      child: _LetterCard(
+                                        item: item,
+                                        mobileLarge: isPhone,
+                                        tabletLarge: isTablet,
+                                      ),
+                                    ),
+                                  ),
+                                  childWhenDragging: Opacity(
+                                    opacity: 0.3,
+                                    child: _LetterCard(
+                                      item: item,
+                                      mobileLarge: isPhone,
+                                      tabletLarge: isTablet,
+                                    ),
+                                  ),
+                                  child: _LetterCard(
+                                    item: item,
+                                    mobileLarge: isPhone,
+                                    tabletLarge: isTablet,
+                                  ),
+                                );
+                              },
+                            ),
                           const SizedBox(height: 8),
                           UpperText(
                             'QUEDAN: ${remainingItems.length}',
                             style: Theme.of(context).textTheme.bodyLarge,
                           ),
                         ],
-                      )
-                    else if (isTablet)
-                      Column(
-                        children: remainingItems.map((item) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: Draggable<Item>(
-                              data: item,
-                              feedback: Material(
-                                color: Colors.transparent,
-                                child: _LetterCard(
-                                  item: item,
-                                  tabletLarge: true,
-                                ),
-                              ),
-                              childWhenDragging: Opacity(
-                                opacity: 0.3,
-                                child: _LetterCard(
-                                  item: item,
-                                  tabletLarge: true,
-                                ),
-                              ),
-                              child: _LetterCard(item: item, tabletLarge: true),
-                            ),
-                          );
-                        }).toList(),
                       )
                     else
                       Wrap(
