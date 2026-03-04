@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/app_providers.dart';
+import '../../domain/models/app_settings.dart';
 import '../../domain/models/activity_type.dart';
 import '../../domain/models/category.dart';
-import '../../domain/models/difficulty.dart';
 import '../utils/category_visuals.dart';
 import '../viewmodels/home_selection_view_model.dart';
+import '../viewmodels/progress_view_model.dart';
 import '../viewmodels/settings_view_model.dart';
-import '../widgets/upper_text.dart';
 import 'activity_selection_screen.dart';
+import 'ai_play_screen.dart';
 import 'ai_resource_studio_screen.dart';
 import 'progress_dashboard_screen.dart';
 import 'settings_screen.dart';
@@ -24,88 +25,299 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool _didSyncSettings = false;
+  int _currentTab = 0;
+
+  static const _quickTracks = <_QuickTrack>[
+    _QuickTrack(
+      title: 'Letras',
+      subtitle: 'Conoce el abecedario',
+      icon: Icons.text_fields_rounded,
+      iconColor: Color(0xFFFF7A00),
+      backgroundColor: Color(0xFFFFF0DC),
+      gameType: ActivityType.letraObjetivo,
+    ),
+    _QuickTrack(
+      title: 'Sílabas',
+      subtitle: 'Une sonidos mágicos',
+      icon: Icons.menu_book_rounded,
+      iconColor: Color(0xFF1DBE5B),
+      backgroundColor: Color(0xFFDEF8E7),
+      gameType: ActivityType.palabraPalabra,
+    ),
+    _QuickTrack(
+      title: 'Palabras',
+      subtitle: 'Forma tus propias historias',
+      icon: Icons.star_rounded,
+      iconColor: Color(0xFFE4AE00),
+      backgroundColor: Color(0xFFFFF6C8),
+      gameType: ActivityType.imagenPalabra,
+    ),
+  ];
+
+  static const _allGameShortcuts = <_GameShortcut>[
+    _GameShortcut(
+      title: 'Imagen y Palabra',
+      type: ActivityType.imagenPalabra,
+      icon: Icons.link_rounded,
+    ),
+    _GameShortcut(
+      title: 'Escribir Palabra',
+      type: ActivityType.escribirPalabra,
+      icon: Icons.keyboard_alt_rounded,
+    ),
+    _GameShortcut(
+      title: 'Palabra con Palabra',
+      type: ActivityType.palabraPalabra,
+      icon: Icons.compare_arrows_rounded,
+    ),
+    _GameShortcut(
+      title: 'Imagen y Frase',
+      type: ActivityType.imagenFrase,
+      icon: Icons.text_snippet_rounded,
+    ),
+    _GameShortcut(
+      title: 'Letras y Vocales',
+      type: ActivityType.letraObjetivo,
+      icon: Icons.spellcheck_rounded,
+    ),
+    _GameShortcut(
+      title: 'Tienda de Chuches',
+      type: ActivityType.cambioExacto,
+      icon: Icons.shopping_bag_rounded,
+    ),
+    _GameShortcut(
+      title: 'Ruleta de Letras',
+      type: ActivityType.ruletaLetras,
+      icon: Icons.rotate_right_rounded,
+    ),
+    _GameShortcut(
+      title: 'Discriminación',
+      type: ActivityType.discriminacion,
+      icon: Icons.filter_center_focus_rounded,
+    ),
+    _GameShortcut(
+      title: 'Discriminación Inversa',
+      type: ActivityType.discriminacionInversa,
+      icon: Icons.find_replace_rounded,
+    ),
+  ];
+
+  Future<void> _openCategoryPicker({
+    required HomeSelectionViewModel selectionVm,
+    required AppCategory selected,
+  }) async {
+    final picked = await showModalBottomSheet<AppCategory>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Selecciona categoría',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF111D3A),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: AppCategoryLists.reales.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 8),
+                    itemBuilder: (context, index) {
+                      final category = AppCategoryLists.reales[index];
+                      final isSelected = category == selected;
+                      return Material(
+                        color: isSelected
+                            ? category.color.withValues(alpha: 0.14)
+                            : const Color(0xFFF5F7FB),
+                        borderRadius: BorderRadius.circular(14),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(14),
+                          onTap: () => Navigator.of(context).pop(category),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(category.icon, color: category.color),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    category.label,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFF111D3A),
+                                    ),
+                                  ),
+                                ),
+                                if (isSelected)
+                                  const Icon(
+                                    Icons.check_circle_rounded,
+                                    color: Color(0xFF297BE6),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    if (picked == null) {
+      return;
+    }
+    selectionVm.setCategory(picked, optionId: picked.id);
+  }
+
+  void _openAiScreen() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const AiPlayScreen()));
+  }
+
+  void _openAllGamesSheet({
+    required HomeSelectionState selection,
+    required HomeSelectionViewModel selectionVm,
+  }) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Menú rápido',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF111D3A),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _QuickActionTile(
+                    icon: Icons.auto_awesome_rounded,
+                    title: 'Pantalla IA nueva',
+                    subtitle: 'Genera recursos y juega preguntas IA',
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      _openAiScreen();
+                    },
+                  ),
+                  _QuickActionTile(
+                    icon: Icons.auto_fix_high_rounded,
+                    title: 'Studio IA clásico',
+                    subtitle: 'Editor completo de recursos IA',
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(this.context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const AiResourceStudioScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  _QuickActionTile(
+                    icon: Icons.analytics_outlined,
+                    title: 'Panel terapeuta',
+                    subtitle: 'Métricas y recomendaciones adaptativas',
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(this.context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const TherapistPanelScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Todos los juegos',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF111D3A),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ..._allGameShortcuts.map((shortcut) {
+                    return _QuickActionTile(
+                      icon: shortcut.icon,
+                      title: shortcut.title,
+                      subtitle: 'Abrir selector del juego',
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        _startActivity(
+                          selection: selection,
+                          selectionVm: selectionVm,
+                          type: shortcut.type,
+                        );
+                      },
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _startActivity({
+    required HomeSelectionState selection,
+    required HomeSelectionViewModel selectionVm,
+    required ActivityType type,
+  }) {
+    selectionVm.setGame(type);
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ActivitySelectionScreen(
+          category: selection.category,
+          activityType: type,
+          difficulty: selection.difficulty,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(progressViewModelProvider);
     final selection = ref.watch(homeSelectionViewModelProvider);
     final selectionVm = ref.read(homeSelectionViewModelProvider.notifier);
+    final progressVm = ref.read(progressViewModelProvider.notifier);
     final settings = ref.watch(settingsViewModelProvider);
+    final settingsVm = ref.read(settingsViewModelProvider.notifier);
     final profile = ref.watch(localProfileProvider);
-    final colorScheme = Theme.of(context).colorScheme;
-    final games = <_GameOption>[
-      _GameOption(
-        type: ActivityType.imagenPalabra,
-        title: 'IMAGEN Y PALABRA',
-        subtitle: 'UNE PALABRA CON SU IMAGEN',
-        icon: Icons.link_rounded,
-        color: const Color(0xFF2F9E8A),
-        levelHint: 'NIVEL 1',
-      ),
-      _GameOption(
-        type: ActivityType.escribirPalabra,
-        title: 'ESCRIBIR PALABRA',
-        subtitle: 'COPIA, SEMICOPIA O DICTADO',
-        icon: Icons.keyboard_alt_rounded,
-        color: const Color(0xFFF29F05),
-        levelHint: 'NIVEL 1',
-      ),
-      _GameOption(
-        type: ActivityType.palabraPalabra,
-        title: 'PALABRA CON PALABRA',
-        subtitle: 'UNE PALABRAS IGUALES O RELACIONADAS',
-        icon: Icons.compare_arrows_rounded,
-        color: const Color(0xFF6E77E5),
-        levelHint: 'NIVEL 1',
-      ),
-      _GameOption(
-        type: ActivityType.imagenFrase,
-        title: 'IMAGEN Y FRASE',
-        subtitle: 'UNE CADA FRASE CON SU IMAGEN',
-        icon: Icons.text_snippet_rounded,
-        color: const Color(0xFF00A5B5),
-        levelHint: 'NIVEL 1',
-      ),
-      _GameOption(
-        type: ActivityType.letraObjetivo,
-        title: 'LETRAS Y VOCALES',
-        subtitle: 'ELIGE VOCAL FIJA O VOCAL ALEATORIA',
-        icon: Icons.spellcheck_rounded,
-        color: const Color(0xFFDA5E2A),
-        levelHint: 'MODO VOCAL',
-      ),
-      _GameOption(
-        type: ActivityType.cambioExacto,
-        title: 'TIENDA DE CHUCHES',
-        subtitle: 'PAGA CON MONEDAS EL CAMBIO EXACTO',
-        icon: Icons.shopping_bag_rounded,
-        color: const Color(0xFFC74990),
-        levelHint: 'NIVELES 1, 2 Y 3',
-      ),
-      _GameOption(
-        type: ActivityType.ruletaLetras,
-        title: 'RULETA DE LETRAS',
-        subtitle: 'GIRA Y JUEGA POR INICIO, MEDIO O FINAL',
-        icon: Icons.rotate_right_rounded,
-        color: const Color(0xFF8E5CD7),
-        levelHint: 'NIVELES 1, 2 Y 3',
-      ),
-      _GameOption(
-        type: ActivityType.discriminacion,
-        title: 'DISCRIMINACIÓN',
-        subtitle: 'ELIGE LA OPCIÓN CORRECTA',
-        icon: Icons.filter_center_focus_rounded,
-        color: const Color(0xFF00996B),
-        levelHint: 'NIVELES 1, 2 Y 3',
-      ),
-      _GameOption(
-        type: ActivityType.discriminacionInversa,
-        title: 'DISCRIMINACIÓN INVERSA',
-        subtitle: 'ENCUENTRA LA OPCIÓN INTRUSA',
-        icon: Icons.find_replace_rounded,
-        color: const Color(0xFFB66A15),
-        levelHint: 'NIVELES 1, 2 Y 3',
-      ),
-    ];
 
     if (!_didSyncSettings) {
       _didSyncSettings = true;
@@ -115,354 +327,72 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const UpperText('LECTOESCRITURA'),
-        actions: [
-          IconButton(
-            tooltip: 'PROGRESO',
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) =>
-                      ProgressDashboardScreen(category: selection.category),
-                ),
-              );
-            },
-            icon: const Icon(Icons.insights_rounded),
-          ),
-          IconButton(
-            tooltip: 'PANEL ADULTO',
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const TherapistPanelScreen(),
-                ),
-              );
-            },
-            icon: const Icon(Icons.analytics_outlined),
-          ),
-          IconButton(
-            tooltip: 'CREAR RECURSO IA',
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const AiResourceStudioScreen(),
-                ),
-              );
-            },
-            icon: const Icon(Icons.auto_awesome_rounded),
-          ),
-          IconButton(
-            tooltip: 'AJUSTES',
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => const SettingsScreen()),
-              );
-            },
-            icon: const Icon(Icons.tune),
-          ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          Positioned(
-            top: -60,
-            right: -40,
-            child: _ColorBubble(
-              color: const Color(0xFF9FE6D9).withValues(alpha: 0.45),
-              size: 180,
-            ),
-          ),
-          Positioned(
-            left: -70,
-            top: 150,
-            child: _ColorBubble(
-              color: const Color(0xFFFFD48D).withValues(alpha: 0.40),
-              size: 210,
-            ),
-          ),
-          ListView(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24),
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Color(0xFF1F9D8B), Color(0xFF1A7D95)],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.12),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Icon(
-                          Icons.auto_stories_rounded,
-                          color: Colors.white,
-                          size: 34,
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: UpperText(
-                            'APRENDE JUGANDO',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 26,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    UpperText(
-                      'HOLA ${profile.displayName}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 18,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    const UpperText(
-                      'ELIGE CATEGORÍA Y JUEGO',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 14),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      UpperText(
-                        'DIFICULTAD',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 10),
-                      SegmentedButton<Difficulty>(
-                        segments: const [
-                          ButtonSegment(
-                            value: Difficulty.primaria,
-                            icon: Icon(Icons.child_care_rounded),
-                            label: UpperText('PRIMARIA'),
-                          ),
-                          ButtonSegment(
-                            value: Difficulty.secundaria,
-                            icon: Icon(Icons.school_rounded),
-                            label: UpperText('SECUNDARIA'),
-                          ),
-                        ],
-                        selected: {selection.difficulty},
-                        onSelectionChanged: (value) {
-                          selectionVm.setDifficulty(value.first);
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 14),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      UpperText(
-                        'CATEGORÍA',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 10),
-                      LayoutBuilder(
-                        builder: (context, constraints) {
-                          final cardWidth = (constraints.maxWidth - 10) / 2;
-                          return Wrap(
-                            spacing: 10,
-                            runSpacing: 10,
-                            children: AppCategory.values.map((category) {
-                              return SizedBox(
-                                width: cardWidth,
-                                child: _CategoryCard(
-                                  category: category,
-                                  selected: selection.category == category,
-                                  onTap: () =>
-                                      selectionVm.setCategory(category),
-                                ),
-                              );
-                            }).toList(),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 14),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      UpperText(
-                        'JUEGO',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 10),
-                      LayoutBuilder(
-                        builder: (context, constraints) {
-                          final maxWidth = constraints.maxWidth;
-                          final compact = maxWidth < 620;
-                          final crossAxisCount = compact
-                              ? 1
-                              : maxWidth >= 1120
-                              ? 4
-                              : maxWidth >= 760
-                              ? 3
-                              : 2;
-
-                          return GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: games.length,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: crossAxisCount,
-                                  crossAxisSpacing: 10,
-                                  mainAxisSpacing: 10,
-                                  childAspectRatio: compact ? 2.8 : 1,
-                                ),
-                            itemBuilder: (context, index) {
-                              final game = games[index];
-                              return _GameCard(
-                                title: game.title,
-                                subtitle: game.subtitle,
-                                levelHint: game.levelHint,
-                                icon: game.icon,
-                                selected: selection.game == game.type,
-                                color: game.color,
-                                compact: compact,
-                                onTap: () => selectionVm.setGame(game.type),
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              FilledButton.icon(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => ActivitySelectionScreen(
-                        category: selection.category,
-                        activityType: selection.game,
-                        difficulty: selection.difficulty,
-                      ),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.play_arrow_rounded, size: 30),
-                label: const UpperText('EMPEZAR ACTIVIDAD'),
-              ),
-              const SizedBox(height: 10),
-              Center(
-                child: UpperText(
-                  'TODO EL CONTENIDO FUNCIONA OFFLINE',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurface.withValues(alpha: 0.70),
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ColorBubble extends StatelessWidget {
-  const _ColorBubble({required this.color, required this.size});
-
-  final Color color;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      ),
-    );
-  }
-}
-
-class _CategoryCard extends StatelessWidget {
-  const _CategoryCard({
-    required this.category,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final AppCategory category;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = category.color;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Ink(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: selected ? color : color.withValues(alpha: 0.30),
-            width: selected ? 3 : 1.4,
-          ),
-          color: selected ? color.withValues(alpha: 0.16) : Colors.white,
-        ),
-        child: Row(
+      backgroundColor: const Color(0xFFEDEFF3),
+      body: SafeArea(
+        child: Column(
           children: [
-            Icon(category.icon, color: color, size: 28),
-            const SizedBox(width: 8),
             Expanded(
-              child: UpperText(
-                category.label,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 220),
+                child: switch (_currentTab) {
+                  1 => _ProgressTab(
+                    key: const ValueKey('progress-tab'),
+                    selection: selection,
+                    progressVm: progressVm,
+                    onOpenDashboard: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => ProgressDashboardScreen(
+                            category: selection.category,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  2 => _SettingsTab(
+                    key: const ValueKey('settings-tab'),
+                    settings: settings,
+                    settingsVm: settingsVm,
+                    onOpenSettings: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const SettingsScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  _ => _HomeTab(
+                    key: const ValueKey('home-tab'),
+                    profileName: profile.displayName,
+                    category: selection.category,
+                    progressVm: progressVm,
+                    onMenuTap: () => _openAllGamesSheet(
+                      selection: selection,
+                      selectionVm: selectionVm,
+                    ),
+                    onProfileTap: _openAiScreen,
+                    onPickCategory: () => _openCategoryPicker(
+                      selectionVm: selectionVm,
+                      selected: selection.category,
+                    ),
+                    onTrackTap: (track) => _startActivity(
+                      selection: selection,
+                      selectionVm: selectionVm,
+                      type: track.gameType,
+                    ),
+                    onOpenAi: _openAiScreen,
+                    onOpenProgress: () {
+                      setState(() => _currentTab = 1);
+                    },
+                  ),
+                },
               ),
+            ),
+            _BottomNavBar(
+              index: _currentTab,
+              onChanged: (index) {
+                setState(() => _currentTab = index);
+              },
             ),
           ],
         ),
@@ -471,174 +401,984 @@ class _CategoryCard extends StatelessWidget {
   }
 }
 
-class _GameCard extends StatelessWidget {
-  const _GameCard({
-    required this.title,
-    required this.subtitle,
-    required this.levelHint,
-    required this.icon,
-    required this.selected,
-    required this.color,
-    required this.compact,
-    required this.onTap,
+class _HomeTab extends StatelessWidget {
+  const _HomeTab({
+    super.key,
+    required this.profileName,
+    required this.category,
+    required this.progressVm,
+    required this.onMenuTap,
+    required this.onProfileTap,
+    required this.onPickCategory,
+    required this.onTrackTap,
+    required this.onOpenAi,
+    required this.onOpenProgress,
   });
 
-  final String title;
-  final String subtitle;
-  final String levelHint;
-  final IconData icon;
-  final bool selected;
-  final Color color;
-  final bool compact;
+  final String profileName;
+  final AppCategory category;
+  final ProgressViewModel progressVm;
+  final VoidCallback onMenuTap;
+  final VoidCallback onProfileTap;
+  final VoidCallback onPickCategory;
+  final VoidCallback onOpenAi;
+  final VoidCallback onOpenProgress;
+  final ValueChanged<_QuickTrack> onTrackTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final rewards = progressVm.rewardsSummary();
+    final nextMilestone = rewards.currentStreak >= 5
+        ? '¡Racha excelente!'
+        : 'Estás a ${(5 - rewards.currentStreak).clamp(1, 5)} juegos de una racha de 5';
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+      children: [
+        Row(
+          children: [
+            _CircleIconButton(
+              icon: Icons.menu_rounded,
+              backgroundColor: const Color(0xFFDDE6F5),
+              iconColor: const Color(0xFF2C7BEA),
+              onTap: onMenuTap,
+            ),
+            const Expanded(
+              child: Text(
+                'EduMundo',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF2C7BEA),
+                ),
+              ),
+            ),
+            _CircleIconButton(
+              icon: Icons.auto_awesome_rounded,
+              backgroundColor: const Color(0xFF2C7BEA),
+              iconColor: Colors.white,
+              onTap: onProfileTap,
+            ),
+          ],
+        ),
+        const SizedBox(height: 26),
+        const Text(
+          '¡Aprende Jugando!',
+          style: TextStyle(
+            fontSize: 52,
+            height: 1.02,
+            fontWeight: FontWeight.w900,
+            color: Color(0xFF101A39),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'Hola, ${profileName.split(' ').first}. ¿Qué quieres practicar hoy?',
+          style: const TextStyle(
+            fontSize: 31,
+            color: Color(0xFF6A7898),
+            fontWeight: FontWeight.w500,
+            height: 1.15,
+          ),
+        ),
+        const SizedBox(height: 16),
+        InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: onPickCategory,
+          child: Ink(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFFD7DFEC)),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF1A2847).withValues(alpha: 0.05),
+                  blurRadius: 15,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: category.color.withValues(alpha: 0.18),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(category.icon, color: category.color),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Categoría actual',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF7A87A5),
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        category.label,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Color(0xFF111D3A),
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(
+                  Icons.keyboard_arrow_right_rounded,
+                  size: 30,
+                  color: Color(0xFFAAB7D1),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 14),
+        ..._HomeScreenState._quickTracks.map((track) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 14),
+            child: _LearningCard(track: track, onTap: () => onTrackTap(track)),
+          );
+        }),
+        _AiEntryCard(onTap: onOpenAi),
+        const SizedBox(height: 14),
+        _ProgressCard(
+          streak: rewards.currentStreak,
+          message: nextMilestone,
+          onTap: onOpenProgress,
+        ),
+      ],
+    );
+  }
+}
+
+class _ProgressTab extends StatelessWidget {
+  const _ProgressTab({
+    super.key,
+    required this.selection,
+    required this.progressVm,
+    required this.onOpenDashboard,
+  });
+
+  final HomeSelectionState selection;
+  final ProgressViewModel progressVm;
+  final VoidCallback onOpenDashboard;
+
+  @override
+  Widget build(BuildContext context) {
+    final results = progressVm.getAllResults();
+    final rewards = progressVm.rewardsSummary();
+    final recommendation = progressVm.adaptivePlanRecommendation();
+    final totalCorrect = results.fold<int>(
+      0,
+      (sum, item) => sum + item.correct,
+    );
+    final totalIncorrect = results.fold<int>(
+      0,
+      (sum, item) => sum + item.incorrect,
+    );
+    final totalAttempts = totalCorrect + totalIncorrect;
+    final accuracy = totalAttempts == 0
+        ? 0
+        : ((totalCorrect / totalAttempts) * 100).round();
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 22, 20, 24),
+      children: [
+        const Text(
+          'Tu Progreso',
+          style: TextStyle(
+            fontSize: 38,
+            fontWeight: FontWeight.w900,
+            color: Color(0xFF111D3A),
+          ),
+        ),
+        const SizedBox(height: 4),
+        const Text(
+          'Resumen rápido de tu avance diario.',
+          style: TextStyle(
+            fontSize: 22,
+            color: Color(0xFF6A7898),
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            gradient: const LinearGradient(
+              colors: [Color(0xFF2C7BEA), Color(0xFF1F5DCB)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF2C7BEA).withValues(alpha: 0.30),
+                blurRadius: 22,
+                offset: const Offset(0, 12),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Objetivo de hoy',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                rewards.activeToday
+                    ? '¡Ya entrenaste hoy! Racha activa: ${rewards.currentStreak}'
+                    : 'Completa una actividad para mantener la racha.',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  height: 1.2,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 14),
+        Row(
+          children: [
+            Expanded(
+              child: _MetricCard(
+                title: 'Sesiones',
+                value: '${results.length}',
+                icon: Icons.sports_esports_rounded,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _MetricCard(
+                title: 'Precisión',
+                value: '$accuracy%',
+                icon: Icons.verified_rounded,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: _MetricCard(
+                title: 'Racha',
+                value: '${rewards.currentStreak} días',
+                icon: Icons.local_fire_department_rounded,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _MetricCard(
+                title: 'Insignias',
+                value: '${rewards.unlockedBadges}',
+                icon: Icons.workspace_premium_rounded,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: const Color(0xFFD6DFEE)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Siguiente recomendación',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF6780A8),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                recommendation.activityType.label,
+                style: const TextStyle(
+                  fontSize: 21,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF111D3A),
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                recommendation.reason,
+                style: const TextStyle(fontSize: 18, color: Color(0xFF506080)),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Categoría actual del panel: ${selection.category.label}',
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF7A87A5),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 14),
+        FilledButton.icon(
+          onPressed: onOpenDashboard,
+          icon: const Icon(Icons.insights_rounded),
+          label: const Text('Abrir panel completo'),
+          style: FilledButton.styleFrom(
+            backgroundColor: const Color(0xFF2C7BEA),
+            foregroundColor: Colors.white,
+            minimumSize: const Size.fromHeight(58),
+            textStyle: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SettingsTab extends StatelessWidget {
+  const _SettingsTab({
+    super.key,
+    required this.settings,
+    required this.settingsVm,
+    required this.onOpenSettings,
+  });
+
+  final AppSettings settings;
+  final SettingsViewModel settingsVm;
+  final VoidCallback onOpenSettings;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 22, 20, 24),
+      children: [
+        const Text(
+          'Ajustes',
+          style: TextStyle(
+            fontSize: 38,
+            fontWeight: FontWeight.w900,
+            color: Color(0xFF111D3A),
+          ),
+        ),
+        const SizedBox(height: 4),
+        const Text(
+          'Configura accesibilidad y experiencia de juego.',
+          style: TextStyle(
+            fontSize: 21,
+            color: Color(0xFF6A7898),
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 16),
+        _SwitchCard(
+          title: 'Audio (TTS local)',
+          subtitle: 'Lee palabras y consignas en voz alta.',
+          value: settings.audioEnabled,
+          onChanged: settingsVm.setAudioEnabled,
+        ),
+        _SwitchCard(
+          title: 'Alto contraste',
+          subtitle: 'Mejora visibilidad en interfaces claras.',
+          value: settings.highContrast,
+          onChanged: settingsVm.setHighContrast,
+        ),
+        _SwitchCard(
+          title: 'Modo dislexia',
+          subtitle: 'Aumenta espaciado para lectura cómoda.',
+          value: settings.dyslexiaMode,
+          onChanged: settingsVm.setDyslexiaMode,
+        ),
+        const SizedBox(height: 10),
+        FilledButton.icon(
+          onPressed: onOpenSettings,
+          icon: const Icon(Icons.tune_rounded),
+          label: const Text('Abrir ajustes completos'),
+          style: FilledButton.styleFrom(
+            backgroundColor: const Color(0xFF2C7BEA),
+            foregroundColor: Colors.white,
+            minimumSize: const Size.fromHeight(58),
+            textStyle: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LearningCard extends StatelessWidget {
+  const _LearningCard({required this.track, required this.onTap});
+
+  final _QuickTrack track;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Ink(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: selected ? color : color.withValues(alpha: 0.30),
-            width: selected ? 3 : 1.3,
-          ),
-          color: selected ? color.withValues(alpha: 0.16) : Colors.white,
-        ),
-        child: compact
-            ? Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.14),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(icon, color: color, size: 24),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        UpperText(
-                          title,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 3),
-                        UpperText(
-                          levelHint,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w900,
-                            color: color,
-                          ),
-                          maxLines: 1,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    selected
-                        ? Icons.check_circle_rounded
-                        : Icons.radio_button_unchecked_rounded,
-                    color: color,
-                    size: selected ? 24 : 20,
-                  ),
-                ],
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: UpperText(
-                          title,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w900,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Icon(
-                        selected
-                            ? Icons.check_circle_rounded
-                            : Icons.radio_button_unchecked_rounded,
-                        color: color,
-                        size: selected ? 24 : 20,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  UpperText(
-                    subtitle,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const Spacer(),
-                  Center(
-                    child: Icon(
-                      icon,
-                      size: 84,
-                      color: color.withValues(alpha: 0.82),
-                    ),
-                  ),
-                  const Spacer(),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: UpperText(
-                      levelHint,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w900,
-                        color: color,
-                      ),
-                    ),
-                  ),
-                ],
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(30),
+        onTap: onTap,
+        child: Ink(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: const Color(0xFFE4EAF4)),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF122041).withValues(alpha: 0.05),
+                blurRadius: 16,
+                offset: const Offset(0, 8),
               ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  color: track.backgroundColor,
+                  borderRadius: BorderRadius.circular(28),
+                ),
+                child: Icon(track.icon, color: track.iconColor, size: 62),
+              ),
+              const SizedBox(width: 18),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      track.title,
+                      style: const TextStyle(
+                        fontSize: 52,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF111D3A),
+                        height: 1.0,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      track.subtitle,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        color: Color(0xFF56698B),
+                        height: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: Color(0xFFC0CBDE),
+                size: 38,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
-class _GameOption {
-  const _GameOption({
-    required this.type,
+class _AiEntryCard extends StatelessWidget {
+  const _AiEntryCard({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+        onTap: onTap,
+        child: Ink(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            gradient: const LinearGradient(
+              colors: [Color(0xFFE8EEFF), Color(0xFFE2F6FF)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            border: Border.all(color: const Color(0xFFBFD0F4)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 58,
+                height: 58,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF2C7BEA),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.auto_awesome_rounded,
+                  color: Colors.white,
+                  size: 30,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Pantalla IA',
+                      style: TextStyle(
+                        fontSize: 17,
+                        color: Color(0xFF2C7BEA),
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Crea actividades personalizadas con IA.',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Color(0xFF1A2A48),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.chevron_right_rounded,
+                size: 34,
+                color: Color(0xFF8FA3C8),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ProgressCard extends StatelessWidget {
+  const _ProgressCard({
+    required this.streak,
+    required this.message,
+    required this.onTap,
+  });
+
+  final int streak;
+  final String message;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+        onTap: onTap,
+        child: Ink(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            color: const Color(0xFFDDE9F9),
+            border: Border.all(color: const Color(0xFFB3CCF4)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 58,
+                height: 58,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF2C7BEA),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.emoji_events_rounded,
+                  color: Colors.white,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'TU PROGRESO · RACHA: $streak',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF2C7BEA),
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      message,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        color: Color(0xFF1A2A48),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MetricCard extends StatelessWidget {
+  const _MetricCard({
+    required this.title,
+    required this.value,
+    required this.icon,
+  });
+
+  final String title;
+  final String value;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFD6DFEE)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: const Color(0xFF2C7BEA)),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w900,
+              color: Color(0xFF101A39),
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF6A7898),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SwitchCard extends StatelessWidget {
+  const _SwitchCard({
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final String title;
+  final String subtitle;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFD6DFEE)),
+      ),
+      child: SwitchListTile(
+        value: value,
+        onChanged: onChanged,
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: Color(0xFF111D3A),
+            fontWeight: FontWeight.w800,
+            fontSize: 18,
+          ),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: const TextStyle(color: Color(0xFF64789C), fontSize: 15),
+        ),
+        activeThumbColor: const Color(0xFF2C7BEA),
+      ),
+    );
+  }
+}
+
+class _BottomNavBar extends StatelessWidget {
+  const _BottomNavBar({required this.index, required this.onChanged});
+
+  final int index;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: Color(0xFFDCE4F1))),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: _BottomNavItem(
+                  selected: index == 0,
+                  icon: Icons.home_rounded,
+                  label: 'Inicio',
+                  onTap: () => onChanged(0),
+                ),
+              ),
+              Expanded(
+                child: _BottomNavItem(
+                  selected: index == 1,
+                  icon: Icons.bar_chart_rounded,
+                  label: 'Progreso',
+                  onTap: () => onChanged(1),
+                ),
+              ),
+              Expanded(
+                child: _BottomNavItem(
+                  selected: index == 2,
+                  icon: Icons.settings_rounded,
+                  label: 'Ajustes',
+                  onTap: () => onChanged(2),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BottomNavItem extends StatelessWidget {
+  const _BottomNavItem({
+    required this.selected,
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final bool selected;
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final fg = selected ? const Color(0xFF2C7BEA) : const Color(0xFF95A3BE);
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: fg, size: 30),
+              const SizedBox(height: 3),
+              Text(
+                label,
+                style: TextStyle(
+                  color: fg,
+                  fontSize: 16,
+                  fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CircleIconButton extends StatelessWidget {
+  const _CircleIconButton({
+    required this.icon,
+    required this.backgroundColor,
+    required this.iconColor,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final Color backgroundColor;
+  final Color iconColor;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: onTap,
+        child: Ink(
+          width: 58,
+          height: 58,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: iconColor, size: 30),
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickActionTile extends StatelessWidget {
+  const _QuickActionTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Material(
+        color: const Color(0xFFF5F8FD),
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Icon(icon, color: const Color(0xFF2C7BEA)),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF1A2745),
+                        ),
+                      ),
+                      Text(
+                        subtitle,
+                        style: const TextStyle(
+                          color: Color(0xFF63789D),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: Color(0xFF9EB0CF),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickTrack {
+  const _QuickTrack({
     required this.title,
     required this.subtitle,
     required this.icon,
-    required this.color,
-    required this.levelHint,
+    required this.iconColor,
+    required this.backgroundColor,
+    required this.gameType,
   });
 
-  final ActivityType type;
   final String title;
   final String subtitle;
   final IconData icon;
-  final Color color;
-  final String levelHint;
+  final Color iconColor;
+  final Color backgroundColor;
+  final ActivityType gameType;
+}
+
+class _GameShortcut {
+  const _GameShortcut({
+    required this.title,
+    required this.type,
+    required this.icon,
+  });
+
+  final String title;
+  final ActivityType type;
+  final IconData icon;
 }
