@@ -14,6 +14,7 @@ import '../../../domain/models/item.dart';
 import '../../../domain/models/letter_match_mode.dart';
 import '../../../domain/models/level.dart';
 import '../../viewmodels/progress_view_model.dart';
+import '../../viewmodels/settings_view_model.dart';
 import '../../widgets/activity_asset_image.dart';
 import '../../widgets/game_style.dart';
 import '../../widgets/routine_steps.dart';
@@ -287,6 +288,90 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
     }
   }
 
+  String _instructionQuestion() {
+    return switch (widget.matchMode) {
+      LetterMatchMode.contiene =>
+        '¿QUÉ OBJETOS TIENEN EL SONIDO DE LA LETRA $_targetLetter?',
+      LetterMatchMode.inicia => '¿QUÉ OBJETOS EMPIEZAN POR $_targetLetter?',
+      LetterMatchMode.medio => '¿QUÉ OBJETOS TIENEN $_targetLetter EN MEDIO?',
+      LetterMatchMode.termina => '¿QUÉ OBJETOS TERMINAN EN $_targetLetter?',
+    };
+  }
+
+  Future<void> _speakText(String text) async {
+    final settings = ref.read(settingsViewModelProvider);
+    if (!settings.audioEnabled || text.trim().isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('ACTIVA EL AUDIO EN AYUDAS TÉCNICAS')),
+        );
+      }
+      return;
+    }
+    await ref.read(ttsServiceProvider).speak(text);
+  }
+
+  Future<void> _speakInstruction() async {
+    await _speakText('ARRASTRA A LA CAJA CORRECTA. ${_instructionQuestion()}');
+  }
+
+  Future<void> _speakWord(String word) async {
+    await _speakText(word);
+  }
+
+  void _openTechnicalAidsSheet() {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) {
+        return SafeArea(
+          child: Consumer(
+            builder: (context, ref, _) {
+              final settings = ref.watch(settingsViewModelProvider);
+              final vm = ref.read(settingsViewModelProvider.notifier);
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 22),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const UpperText(
+                      'AYUDAS TÉCNICAS',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SwitchListTile(
+                      value: settings.showHints,
+                      onChanged: (value) => vm.setShowHints(value),
+                      title: const UpperText('MOSTRAR PISTAS'),
+                    ),
+                    SwitchListTile(
+                      value: settings.audioEnabled,
+                      onChanged: (value) => vm.setAudioEnabled(value),
+                      title: const UpperText('AUDIO DE INSTRUCCIONES'),
+                    ),
+                    SwitchListTile(
+                      value: settings.dyslexiaMode,
+                      onChanged: (value) => vm.setDyslexiaMode(value),
+                      title: const UpperText('MODO DISLEXIA'),
+                    ),
+                    SwitchListTile(
+                      value: settings.highContrast,
+                      onChanged: (value) => vm.setHighContrast(value),
+                      title: const UpperText('ALTO CONTRASTE'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildDropZone({
     required BuildContext context,
     required bool toHasLetter,
@@ -386,11 +471,363 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
     );
   }
 
+  Widget _buildDesktopDropZone({
+    required BuildContext context,
+    required bool toHasLetter,
+    required List<Item> accepted,
+  }) {
+    return DragTarget<Item>(
+      onWillAcceptWithDetails: (details) =>
+          details.data.word != null &&
+          !_classifiedByItem.containsKey(details.data.id),
+      onAcceptWithDetails: (details) {
+        _handleDrop(details.data, toHasLetter: toHasLetter);
+      },
+      builder: (context, candidateData, rejectedData) {
+        final hovering = candidateData.isNotEmpty;
+        final zoneColor = toHasLetter
+            ? const Color(0xFF40C87C)
+            : const Color(0xFFF47777);
+        final zoneBgColor = toHasLetter
+            ? const Color(0xFFE8F8EE)
+            : const Color(0xFFFFF0F0);
+        final icon = toHasLetter ? Icons.check_rounded : Icons.close_rounded;
+        final zonePrefix = widget.matchMode.label;
+        final zoneTitle = toHasLetter
+            ? '$zonePrefix $_targetLetter'
+            : 'NO $zonePrefix $_targetLetter';
+
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 120),
+          height: 190,
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: zoneBgColor,
+            borderRadius: BorderRadius.circular(36),
+            border: Border.all(
+              color: hovering ? kGameAccent : zoneColor.withValues(alpha: 0.45),
+              width: hovering ? 3 : 2.2,
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 28,
+                backgroundColor: zoneColor,
+                foregroundColor: Colors.white,
+                child: Icon(icon, size: 34),
+              ),
+              const SizedBox(height: 16),
+              UpperText(
+                zoneTitle,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 50,
+                  fontWeight: FontWeight.w900,
+                  color: zoneColor,
+                  letterSpacing: 1.1,
+                ),
+              ),
+              const SizedBox(height: 6),
+              UpperText(
+                'ACERTADAS: ${accepted.length}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF1D2A49),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDesktopLayout({
+    required BuildContext context,
+    required List<Item> remainingItems,
+    required List<Item> withLetter,
+    required List<Item> withoutLetter,
+    required int solvedCount,
+    required bool showHints,
+  }) {
+    final progress = _items.isEmpty
+        ? 0.0
+        : (solvedCount / _items.length).clamp(0.0, 1.0);
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF1F3F7),
+      body: SafeArea(
+        child: Row(
+          children: [
+            Container(
+              width: 330,
+              decoration: const BoxDecoration(
+                color: Color(0xFFF8FAFF),
+                border: Border(right: BorderSide(color: Color(0xFFD7DFEC))),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 64,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEAF1FF),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Icon(Icons.menu_book_rounded, size: 34),
+                        ),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: UpperText(
+                            'EDUMUNDO\nALFABETIZACIÓN',
+                            style: TextStyle(
+                              fontSize: 16,
+                              height: 1.15,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(26),
+                        color: const Color(0xFFEAF1FF),
+                      ),
+                      child: UpperText(
+                        'LECCIÓN ACTUAL\n${widget.customTitle ?? 'LETRAS Y VOCALES'}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          height: 1.15,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    const _DesktopSidebarItem(
+                      icon: Icons.menu_book_rounded,
+                      label: 'APRENDER',
+                      active: true,
+                    ),
+                    const SizedBox(height: 12),
+                    const _DesktopSidebarItem(
+                      icon: Icons.bar_chart_rounded,
+                      label: 'MI PROGRESO',
+                    ),
+                    const SizedBox(height: 12),
+                    const _DesktopSidebarItem(
+                      icon: Icons.settings_rounded,
+                      label: 'AJUSTES',
+                    ),
+                    const Spacer(),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(28),
+                        color: const Color(0xFFEFF4FF),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          UpperText(
+                            'TU PROGRESO',
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  color: const Color(0xFF5D6E8C),
+                                ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(999),
+                                  child: LinearProgressIndicator(
+                                    value: progress,
+                                    minHeight: 12,
+                                    backgroundColor: const Color(0xFFD7DEEA),
+                                    color: kGameAccent,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              UpperText(
+                                '$solvedCount/${_items.length}',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                      onPressed: _openTechnicalAidsSheet,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: const Color(0xFF0E1A3D),
+                        minimumSize: const Size.fromHeight(56),
+                      ),
+                      child: const UpperText('AYUDA TÉCNICA'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(38, 24, 38, 20),
+                child: Column(
+                  children: [
+                    UpperText(
+                      'ARRASTRA A LA CAJA CORRECTA',
+                      style: Theme.of(context).textTheme.headlineLarge
+                          ?.copyWith(
+                            fontWeight: FontWeight.w900,
+                            color: const Color(0xFF121C3D),
+                          ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 6),
+                    UpperText(
+                      _instructionQuestion(),
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF4D638C),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    if (showHints) ...[
+                      const SizedBox(height: 8),
+                      UpperText(
+                        'PISTA: ${_hintForMode()}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF4D638C),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildDesktopDropZone(
+                            context: context,
+                            toHasLetter: true,
+                            accepted: withLetter,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildDesktopDropZone(
+                            context: context,
+                            toHasLetter: false,
+                            accepted: withoutLetter,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+                    Expanded(
+                      child: remainingItems.isEmpty
+                          ? const Center(
+                              child: UpperText(
+                                'COMPLETADO. NO QUEDAN TARJETAS.',
+                              ),
+                            )
+                          : GridView.builder(
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 4,
+                                    crossAxisSpacing: 14,
+                                    mainAxisSpacing: 14,
+                                    mainAxisExtent: 312,
+                                  ),
+                              itemCount: remainingItems.length,
+                              itemBuilder: (context, index) {
+                                final item = remainingItems[index];
+                                return Draggable<Item>(
+                                  data: item,
+                                  feedback: Material(
+                                    color: Colors.transparent,
+                                    child: SizedBox(
+                                      width: 220,
+                                      child: _DesktopLetterCard(
+                                        item: item,
+                                        onSpeak: () =>
+                                            _speakWord(item.word ?? ''),
+                                      ),
+                                    ),
+                                  ),
+                                  childWhenDragging: Opacity(
+                                    opacity: 0.3,
+                                    child: _DesktopLetterCard(
+                                      item: item,
+                                      onSpeak: () =>
+                                          _speakWord(item.word ?? ''),
+                                    ),
+                                  ),
+                                  child: _DesktopLetterCard(
+                                    item: item,
+                                    onSpeak: () => _speakWord(item.word ?? ''),
+                                  ),
+                                );
+                              },
+                            ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: OutlinedButton.icon(
+                        onPressed: _speakInstruction,
+                        icon: const Icon(Icons.headset_rounded),
+                        label: const UpperText('ESCUCHAR INSTRUCCIÓN'),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(340, 66),
+                          side: const BorderSide(
+                            color: kGameAccent,
+                            width: 2.5,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(44),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final settings = ref.watch(settingsViewModelProvider);
     final width = MediaQuery.sizeOf(context).width;
     final isLandscape =
         MediaQuery.orientationOf(context) == Orientation.landscape;
+    final isDesktopLandscape = width >= 1200 && isLandscape;
     final isPhone = width < 700;
     final isTablet = width >= 700 && width < 1200;
     final isTabletLandscape = isTablet && isLandscape;
@@ -412,6 +849,17 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
         .where((item) => _classifiedByItem[item.id] == false)
         .toList();
     final solvedCount = withLetter.length + withoutLetter.length;
+
+    if (isDesktopLandscape) {
+      return _buildDesktopLayout(
+        context: context,
+        remainingItems: remainingItems,
+        withLetter: withLetter,
+        withoutLetter: withoutLetter,
+        solvedCount: solvedCount,
+        showHints: settings.showHints,
+      );
+    }
 
     return GameScaffold(
       title: widget.customTitle ?? 'LETRAS Y VOCALES',
@@ -457,6 +905,23 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                           UpperText(_feedback),
                         ],
                       ),
+                    ),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: _openTechnicalAidsSheet,
+                          icon: const Icon(Icons.tune_rounded),
+                          label: const UpperText('AYUDA TÉCNICA'),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: _speakInstruction,
+                          icon: const Icon(Icons.headset_rounded),
+                          label: const UpperText('ESCUCHAR INSTRUCCIÓN'),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 10),
                     if (useVerticalDropZones)
@@ -541,6 +1006,8 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                                     child: _LetterCard(
                                       item: nextItem,
                                       tabletLarge: true,
+                                      onSpeak: () =>
+                                          _speakWord(nextItem.word ?? ''),
                                     ),
                                   ),
                                 ),
@@ -549,11 +1016,15 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                                   child: _LetterCard(
                                     item: nextItem,
                                     tabletLarge: true,
+                                    onSpeak: () =>
+                                        _speakWord(nextItem.word ?? ''),
                                   ),
                                 ),
                                 child: _LetterCard(
                                   item: nextItem,
                                   tabletLarge: true,
+                                  onSpeak: () =>
+                                      _speakWord(nextItem.word ?? ''),
                                 ),
                               ),
                             )
@@ -582,6 +1053,8 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                                         mobileLarge: isPhone,
                                         tabletLarge:
                                             isTablet && !isTabletLandscape,
+                                        onSpeak: () =>
+                                            _speakWord(item.word ?? ''),
                                       ),
                                     ),
                                   ),
@@ -592,12 +1065,15 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                                       mobileLarge: isPhone,
                                       tabletLarge:
                                           isTablet && !isTabletLandscape,
+                                      onSpeak: () =>
+                                          _speakWord(item.word ?? ''),
                                     ),
                                   ),
                                   child: _LetterCard(
                                     item: item,
                                     mobileLarge: isPhone,
                                     tabletLarge: isTablet && !isTabletLandscape,
+                                    onSpeak: () => _speakWord(item.word ?? ''),
                                   ),
                                 );
                               },
@@ -641,9 +1117,15 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                             ),
                             childWhenDragging: Opacity(
                               opacity: 0.3,
-                              child: _LetterCard(item: item),
+                              child: _LetterCard(
+                                item: item,
+                                onSpeak: () => _speakWord(item.word ?? ''),
+                              ),
                             ),
-                            child: _LetterCard(item: item),
+                            child: _LetterCard(
+                              item: item,
+                              onSpeak: () => _speakWord(item.word ?? ''),
+                            ),
                           );
                         }).toList(),
                       ),
@@ -660,11 +1142,13 @@ class _LetterCard extends StatelessWidget {
     required this.item,
     this.mobileLarge = false,
     this.tabletLarge = false,
+    this.onSpeak,
   });
 
   final Item item;
   final bool mobileLarge;
   final bool tabletLarge;
+  final VoidCallback? onSpeak;
 
   @override
   Widget build(BuildContext context) {
@@ -699,8 +1183,115 @@ class _LetterCard extends StatelessWidget {
                   fontSize: tabletLarge ? 28 : null,
                 ),
               ),
+              if (onSpeak != null) ...[
+                const SizedBox(height: 8),
+                IconButton.filledTonal(
+                  onPressed: onSpeak,
+                  icon: const Icon(Icons.volume_up_rounded),
+                  tooltip: 'ESCUCHAR PALABRA',
+                ),
+              ],
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DesktopSidebarItem extends StatelessWidget {
+  const _DesktopSidebarItem({
+    required this.icon,
+    required this.label,
+    this.active = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool active;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: active ? kGameAccent : Colors.transparent,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            color: active ? Colors.white : const Color(0xFF51607C),
+            size: 24,
+          ),
+          const SizedBox(width: 10),
+          UpperText(
+            label,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: active ? Colors.white : const Color(0xFF1D2A49),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DesktopLetterCard extends StatelessWidget {
+  const _DesktopLetterCard({required this.item, this.onSpeak});
+
+  final Item item;
+  final VoidCallback? onSpeak;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: const Color(0xFFE0E5EF), width: 2),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+        child: Column(
+          children: [
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF6F8FC),
+                  borderRadius: BorderRadius.circular(26),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: ActivityAssetImage(
+                    assetPath: item.imageAsset,
+                    semanticsLabel: item.word,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            UpperText(
+              item.word ?? '',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 42,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF101A3D),
+              ),
+            ),
+            const SizedBox(height: 8),
+            IconButton.filledTonal(
+              onPressed: onSpeak,
+              icon: const Icon(Icons.volume_up_rounded),
+              tooltip: 'ESCUCHAR PALABRA',
+            ),
+          ],
         ),
       ),
     );
