@@ -34,6 +34,12 @@ class ExactChangeStoreScreen extends ConsumerStatefulWidget {
 class _ExactChangeStoreScreenState
     extends ConsumerState<ExactChangeStoreScreen> {
   final Random _random = Random();
+  static const _storeBg = Color(0xFFF3F6FB);
+  static const _storeSurface = Colors.white;
+  static const _storeStroke = Color(0xFFD4DEEC);
+  static const _storePrimary = Color(0xFF2B8CEE);
+  static const _storeText = Color(0xFF223250);
+  static const _storeMuted = Color(0xFF667996);
 
   static const _coinValues = [2.0, 1.0, 0.5, 0.2, 0.1, 0.05, 0.02, 0.01];
   static const _catalogPool = [
@@ -400,7 +406,8 @@ class _ExactChangeStoreScreenState
     final isTablet = width >= 720;
     final isLandscape = media.orientation == Orientation.landscape;
     final isShortDisplay = height < 860;
-    final useCompactMetrics = !isLandscape || isShortDisplay;
+    final useCompactMetrics =
+        isTabletLandscapePrimary || !isLandscape || isShortDisplay;
 
     return GameScaffold(
       title: 'LA TIENDA DE CHUCHES',
@@ -409,45 +416,82 @@ class _ExactChangeStoreScreenState
           : 'ARRASTRA MONEDAS A LA BANDEJA. SE COMPRUEBA AUTOMÁTICAMENTE',
       progressCurrent: _round - 1,
       progressTotal: _rounds,
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1260),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: isTablet
-                ? LayoutBuilder(
-                    builder: (context, constraints) {
-                      final enableDesktopScroll =
-                          !isTabletLandscapePrimary &&
-                          constraints.maxHeight < 760;
-                      final row = _isSelectingItems
-                          ? _buildSelectionBoard(
-                              context,
-                              compact: useCompactMetrics,
-                              forceColumn: false,
-                            )
-                          : Row(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Expanded(
-                                  flex: isLandscape ? 60 : 58,
-                                  child: _buildOrderAndDrop(
-                                    context,
-                                    compact: useCompactMetrics,
+      body: Container(
+        color: _storeBg,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1260),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: isTablet
+                  ? LayoutBuilder(
+                      builder: (context, constraints) {
+                        final enableDesktopScroll =
+                            !isTabletLandscapePrimary &&
+                            constraints.maxHeight < 760;
+                        final row = _isSelectingItems
+                            ? _buildSelectionBoard(
+                                context,
+                                compact: useCompactMetrics,
+                                forceColumn: false,
+                              )
+                            : Row(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Expanded(
+                                    flex: isLandscape ? 60 : 58,
+                                    child: _buildOrderAndDrop(
+                                      context,
+                                      compact: useCompactMetrics,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  flex: isLandscape ? 40 : 42,
-                                  child: _buildWallet(
-                                    context,
-                                    compact: useCompactMetrics,
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    flex: isLandscape ? 40 : 42,
+                                    child: _buildWallet(
+                                      context,
+                                      compact: useCompactMetrics,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            );
+                                ],
+                              );
 
-                      final top = <Widget>[
+                        final top = <Widget>[
+                          GameProgressHeader(
+                            label: 'TU PROGRESO',
+                            current: _round - 1,
+                            total: _rounds,
+                            trailingLabel: '⭐ $_correct',
+                          ),
+                          const SizedBox(height: 10),
+                          _buildHeader(context),
+                          const SizedBox(height: 10),
+                          GamePanel(child: UpperText(_feedback)),
+                          const SizedBox(height: 12),
+                        ];
+
+                        if (!enableDesktopScroll) {
+                          return Column(
+                            children: [
+                              ...top,
+                              Expanded(child: row),
+                            ],
+                          );
+                        }
+
+                        final rowHeight = isLandscape ? 620.0 : 700.0;
+                        return SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              ...top,
+                              SizedBox(height: rowHeight, child: row),
+                            ],
+                          ),
+                        );
+                      },
+                    )
+                  : ListView(
+                      children: [
                         GameProgressHeader(
                           label: 'TU PROGRESO',
                           current: _round - 1,
@@ -459,57 +503,23 @@ class _ExactChangeStoreScreenState
                         const SizedBox(height: 10),
                         GamePanel(child: UpperText(_feedback)),
                         const SizedBox(height: 12),
-                      ];
-
-                      if (!enableDesktopScroll) {
-                        return Column(
-                          children: [
-                            ...top,
-                            Expanded(child: row),
-                          ],
-                        );
-                      }
-
-                      final rowHeight = isLandscape ? 620.0 : 700.0;
-                      return SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            ...top,
-                            SizedBox(height: rowHeight, child: row),
-                          ],
-                        ),
-                      );
-                    },
-                  )
-                : ListView(
-                    children: [
-                      GameProgressHeader(
-                        label: 'TU PROGRESO',
-                        current: _round - 1,
-                        total: _rounds,
-                        trailingLabel: '⭐ $_correct',
-                      ),
-                      const SizedBox(height: 10),
-                      _buildHeader(context),
-                      const SizedBox(height: 10),
-                      GamePanel(child: UpperText(_feedback)),
-                      const SizedBox(height: 12),
-                      if (_isSelectingItems)
-                        _buildSelectionBoard(
-                          context,
-                          compact: true,
-                          forceColumn: true,
-                        )
-                      else ...[
-                        _buildOrderAndDrop(context, compact: true),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          height: 360,
-                          child: _buildWallet(context, compact: true),
-                        ),
+                        if (_isSelectingItems)
+                          _buildSelectionBoard(
+                            context,
+                            compact: true,
+                            forceColumn: true,
+                          )
+                        else ...[
+                          _buildOrderAndDrop(context, compact: true),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            height: 360,
+                            child: _buildWallet(context, compact: true),
+                          ),
+                        ],
                       ],
-                    ],
-                  ),
+                    ),
+            ),
           ),
         ),
       ),
@@ -528,8 +538,8 @@ class _ExactChangeStoreScreenState
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        color: Colors.white,
-        border: Border.all(color: const Color(0xFFCBD6E9)),
+        color: _storeSurface,
+        border: Border.all(color: _storeStroke),
       ),
       child: Row(
         children: [
@@ -541,7 +551,7 @@ class _ExactChangeStoreScreenState
                   phaseTitle,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w900,
-                    color: const Color(0xFF263047),
+                    color: _storeText,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -549,7 +559,7 @@ class _ExactChangeStoreScreenState
                   phaseHint,
                   style: const TextStyle(
                     fontSize: 13,
-                    color: Color(0xFF60708C),
+                    color: _storeMuted,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -560,14 +570,14 @@ class _ExactChangeStoreScreenState
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: const Color(0xFFF4F8FF),
+                color: const Color(0xFFEAF2FF),
                 borderRadius: BorderRadius.circular(999),
               ),
               child: UpperText(
                 'MÍNIMO: $_requiredUnits',
                 style: const TextStyle(
                   fontWeight: FontWeight.w900,
-                  color: Color(0xFF35598E),
+                  color: _storePrimary,
                 ),
               ),
             ),
@@ -576,14 +586,14 @@ class _ExactChangeStoreScreenState
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: const Color(0xFFE9F1FF),
+              color: const Color(0xFFEAF2FF),
               borderRadius: BorderRadius.circular(999),
             ),
             child: UpperText(
               'RONDA $_round/$_rounds',
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w900,
-                color: Color(0xFF1C3D77),
+                color: _storePrimary,
               ),
             ),
           ),
@@ -640,8 +650,8 @@ class _ExactChangeStoreScreenState
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: Colors.white,
-        border: Border.all(color: const Color(0xFFCBD6E9)),
+        color: _storeSurface,
+        border: Border.all(color: _storeStroke),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -650,7 +660,7 @@ class _ExactChangeStoreScreenState
             'SELECCIONA TUS CHUCHES',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w900,
-              color: const Color(0xFF1F2F4E),
+              color: _storeText,
             ),
           ),
           const SizedBox(height: 4),
@@ -659,7 +669,7 @@ class _ExactChangeStoreScreenState
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF60708C),
+              color: _storeMuted,
             ),
           ),
           const SizedBox(height: 10),
@@ -729,9 +739,9 @@ class _ExactChangeStoreScreenState
     final card = Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF7F9FD),
+        color: const Color(0xFFF8FAFD),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFDCE5F3)),
+        border: Border.all(color: const Color(0xFFD7E1EF)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -742,7 +752,7 @@ class _ExactChangeStoreScreenState
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFFE1E9F5)),
+              border: Border.all(color: const Color(0xFFDDE6F4)),
             ),
             child: Center(
               child: UpperText(
@@ -769,7 +779,7 @@ class _ExactChangeStoreScreenState
                 style: TextStyle(
                   fontSize: compact ? 20 : 22,
                   fontWeight: FontWeight.w900,
-                  color: const Color(0xFF2B80E2),
+                  color: _storePrimary,
                 ),
               ),
               const Spacer(),
@@ -780,14 +790,14 @@ class _ExactChangeStoreScreenState
                     vertical: 3,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEAF3FF),
+                    color: const Color(0xFFEAF2FF),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: UpperText(
                     'X$qty',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w900,
-                      color: Color(0xFF2A5B9E),
+                      color: _storePrimary,
                     ),
                   ),
                 ),
@@ -815,8 +825,8 @@ class _ExactChangeStoreScreenState
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: Colors.white,
-        border: Border.all(color: const Color(0xFFCBD6E9)),
+        color: _storeSurface,
+        border: Border.all(color: _storeStroke),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -825,7 +835,7 @@ class _ExactChangeStoreScreenState
             'MI BANDEJA',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w900,
-              color: const Color(0xFF1F2F4E),
+              color: _storeText,
             ),
           ),
           const SizedBox(height: 8),
@@ -838,13 +848,11 @@ class _ExactChangeStoreScreenState
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: hovering
-                      ? const Color(0xFFEFF6FF)
-                      : const Color(0xFFF5F9FF),
+                      ? const Color(0xFFEAF2FF)
+                      : const Color(0xFFF2F6FD),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: hovering
-                        ? const Color(0xFF2B8CEE)
-                        : const Color(0xFFB9CDEB),
+                    color: hovering ? _storePrimary : const Color(0xFFB9CDEB),
                     width: 2,
                   ),
                 ),
@@ -853,7 +861,7 @@ class _ExactChangeStoreScreenState
                         'ARRASTRA AQUÍ TUS CHUCHES',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Color(0xFF60708C),
+                          color: _storeMuted,
                           fontWeight: FontWeight.w800,
                         ),
                       )
@@ -906,7 +914,7 @@ class _ExactChangeStoreScreenState
               gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFF2F88E8), Color(0xFF2A67D8)],
+                colors: [Color(0xFF2F8AF0), Color(0xFF2769DA)],
               ),
             ),
             child: Column(
@@ -973,7 +981,7 @@ class _ExactChangeStoreScreenState
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(22),
-                color: Colors.white,
+                color: _storeSurface,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.06),
@@ -1006,7 +1014,7 @@ class _ExactChangeStoreScreenState
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEFF4FF),
+                            color: const Color(0xFFEAF2FF),
                             borderRadius: BorderRadius.circular(999),
                           ),
                           child: UpperText(
@@ -1023,10 +1031,10 @@ class _ExactChangeStoreScreenState
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFEAF9F2),
+                      color: const Color(0xFFEAF2FF),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: const Color(0xFFB8E2CB),
+                        color: const Color(0xFFB9CDEB),
                         width: 2,
                       ),
                     ),
@@ -1035,7 +1043,7 @@ class _ExactChangeStoreScreenState
                       style: TextStyle(
                         fontSize: useCompactMetrics ? 30 : 40,
                         fontWeight: FontWeight.w900,
-                        color: const Color(0xFF1F8A58),
+                        color: _storePrimary,
                       ),
                     ),
                   ),
@@ -1056,12 +1064,10 @@ class _ExactChangeStoreScreenState
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(18),
                     color: hovering
-                        ? Colors.green.shade50
-                        : const Color(0xFFFFF8D8),
+                        ? const Color(0xFFEAF2FF)
+                        : const Color(0xFFF2F6FD),
                     border: Border.all(
-                      color: hovering
-                          ? Colors.green.shade700
-                          : const Color(0xFFE8DFA9),
+                      color: hovering ? _storePrimary : const Color(0xFFB9CDEB),
                       width: 2,
                     ),
                   ),
@@ -1079,7 +1085,7 @@ class _ExactChangeStoreScreenState
                         style: TextStyle(
                           fontSize: useCompactMetrics ? 32 : 40,
                           fontWeight: FontWeight.w900,
-                          color: const Color(0xFF1D6E37),
+                          color: _storePrimary,
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -1145,8 +1151,8 @@ class _ExactChangeStoreScreenState
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(22),
-            color: const Color(0xFFFFF3FB),
-            border: Border.all(color: const Color(0xFFFFD5EC)),
+            color: const Color(0xFFF2F6FD),
+            border: Border.all(color: const Color(0xFFCAD8EB)),
           ),
           child: hasBoundedHeight && !isTabletLandscapePrimary
               ? Scrollbar(
@@ -1225,8 +1231,8 @@ class _ExactChangeStoreScreenState
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            color: Colors.white,
-            border: Border.all(color: const Color(0xFFCBD6E9)),
+            color: _storeSurface,
+            border: Border.all(color: _storeStroke),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1235,7 +1241,7 @@ class _ExactChangeStoreScreenState
                 'TU MONEDERO',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w900,
-                  color: const Color(0xFF2C3A55),
+                  color: _storeText,
                 ),
               ),
               const SizedBox(height: 10),
@@ -1246,17 +1252,17 @@ class _ExactChangeStoreScreenState
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEFF5FF),
+                  color: const Color(0xFFEAF2FF),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFFD8E5FF)),
+                  border: Border.all(color: const Color(0xFFD1E0F6)),
                 ),
-                child: const UpperText(
+                child: UpperText(
                   'SE COMPRUEBA AL SOLTAR LA MONEDA',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF3B5688),
+                    color: _storePrimary,
                   ),
                 ),
               ),
