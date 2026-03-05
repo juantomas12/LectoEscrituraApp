@@ -36,26 +36,30 @@ class _ExactChangeStoreScreenState
   final Random _random = Random();
 
   static const _coinValues = [2.0, 1.0, 0.5, 0.2, 0.1, 0.05, 0.02, 0.01];
-  static const _productPool = [
-    ('🧸', 'GOMINOLAS'),
-    ('🍭', 'PIRULETA'),
-    ('🍪', 'GALLETAS'),
-    ('🧃', 'ZUMITO'),
-    ('🍫', 'CHOCOLATE'),
-    ('🍓', 'FRESA DULCE'),
-    ('🍌', 'PLÁTANO SNACK'),
-    ('🧁', 'MINI CUPCAKE'),
+  static const _catalogPool = [
+    _StoreProduct(emoji: '🐻', name: 'OSITOS DE GOMA', price: 1.20),
+    _StoreProduct(emoji: '☁️', name: 'NUBES DULCES', price: 0.80),
+    _StoreProduct(emoji: '🍭', name: 'PIRULETAS', price: 0.50),
+    _StoreProduct(emoji: '🍫', name: 'REGALIZ NEGRO', price: 1.00),
+    _StoreProduct(emoji: '🧃', name: 'ZUMO DE FRUTA', price: 0.15),
+    _StoreProduct(emoji: '🥚', name: 'HUEVOS FRITOS', price: 0.75),
+    _StoreProduct(emoji: '🍬', name: 'CARAMELOS MIX', price: 0.40),
+    _StoreProduct(emoji: '🍪', name: 'MINI GALLETAS', price: 0.60),
+    _StoreProduct(emoji: '🍓', name: 'FRESA ÁCIDA', price: 0.35),
+    _StoreProduct(emoji: '🍌', name: 'PLÁTANO SNACK', price: 0.90),
   ];
 
   int _round = 1;
   int _rounds = 4;
-  double _targetPrice = 0.45;
-  String _productEmoji = '🧸';
-  String _productName = 'GOMINOLAS';
+  int _requiredUnits = 2;
+  bool _isSelectingItems = true;
+  double _targetPrice = 0.0;
+  final List<_StoreProduct> _catalog = [];
+  final Map<int, int> _basketByIndex = {};
   final List<double> _wallet = [];
   final List<double> _droppedCoins = [];
   bool _checking = false;
-  String _feedback = 'ARRASTRA MONEDAS HASTA LOGRAR EL CAMBIO EXACTO';
+  String _feedback = 'SELECCIONA VARIAS CHUCHES PARA TU BANDEJA';
 
   int _correct = 0;
   int _incorrect = 0;
@@ -87,55 +91,31 @@ class _ExactChangeStoreScreenState
     _bestStreak = 0;
     _round = 1;
     _startedAt = DateTime.now();
-    _feedback = 'ARRASTRA MONEDAS HASTA LOGRAR EL CAMBIO EXACTO';
+    _feedback = 'SELECCIONA VARIAS CHUCHES PARA TU BANDEJA';
     _prepareRound();
   }
 
   void _prepareRound() {
-    final price = _buildTargetPrice();
-    final picked = _productPool[_random.nextInt(_productPool.length)];
-    final wallet = _buildWalletCoins(targetPrice: price);
-
-    setState(() {
-      _targetPrice = price;
-      _productEmoji = picked.$1;
-      _productName = picked.$2;
-      _wallet
-        ..clear()
-        ..addAll(wallet);
-      _droppedCoins.clear();
-      _checking = false;
-    });
-  }
-
-  double _buildTargetPrice() {
-    final candidateSets = switch (widget.level) {
-      AppLevel.uno => [
-        [0.2, 0.2, 0.05],
-        [0.2, 0.1, 0.1],
-        [0.5, 0.2],
-        [0.1, 0.1, 0.1],
-        [0.5, 0.1, 0.05],
-      ],
-      AppLevel.dos => [
-        [1.0, 0.2, 0.1],
-        [0.5, 0.5, 0.2],
-        [1.0, 0.5, 0.2, 0.05],
-        [0.2, 0.2, 0.2, 0.1, 0.05],
-        [1.0, 0.2, 0.2, 0.1],
-      ],
-      _ => [
-        [2.0, 0.5, 0.2, 0.1],
-        [1.0, 1.0, 0.2, 0.05],
-        [2.0, 0.2, 0.2, 0.05, 0.02],
-        [1.0, 0.5, 0.2, 0.2, 0.1],
-        [2.0, 0.5, 0.1, 0.05],
-      ],
+    final shuffledCatalog = [..._catalogPool]..shuffle(_random);
+    final required = switch (widget.level) {
+      AppLevel.uno => 2,
+      AppLevel.dos => widget.difficulty == Difficulty.primaria ? 2 : 3,
+      _ => widget.difficulty == Difficulty.primaria ? 3 : 4,
     };
 
-    final chosen = candidateSets[_random.nextInt(candidateSets.length)];
-    final sum = chosen.fold<double>(0, (acc, coin) => acc + coin);
-    return double.parse(sum.toStringAsFixed(2));
+    setState(() {
+      _requiredUnits = required;
+      _isSelectingItems = true;
+      _targetPrice = 0.0;
+      _catalog
+        ..clear()
+        ..addAll(shuffledCatalog.take(6));
+      _basketByIndex.clear();
+      _wallet.clear();
+      _droppedCoins.clear();
+      _checking = false;
+      _feedback = 'SELECCIONA AL MENOS $_requiredUnits CHUCHES';
+    });
   }
 
   List<double> _buildWalletCoins({required double targetPrice}) {
@@ -144,14 +124,15 @@ class _ExactChangeStoreScreenState
     var remaining = targetPrice;
     final ordered = [..._coinValues];
     for (final coin in ordered) {
-      while (remaining + 1e-6 >= coin && exactCombo.length < 6) {
+      while (remaining + 1e-6 >= coin) {
         exactCombo.add(coin);
         remaining = double.parse((remaining - coin).toStringAsFixed(2));
       }
     }
     wallet.addAll(exactCombo);
 
-    while (wallet.length < _walletSize) {
+    final walletSlots = max(_walletSize, exactCombo.length + 2);
+    while (wallet.length < walletSlots) {
       wallet.add(_coinValues[_random.nextInt(_coinValues.length)]);
     }
     wallet.shuffle(_random);
@@ -166,8 +147,96 @@ class _ExactChangeStoreScreenState
     return '${value.toStringAsFixed(2)}€';
   }
 
+  int get _basketUnits =>
+      _basketByIndex.values.fold<int>(0, (acc, qty) => acc + qty);
+
+  double get _basketTotal => double.parse(
+    _basketByIndex.entries
+        .fold<double>(
+          0,
+          (acc, entry) => acc + (_catalog[entry.key].price * entry.value),
+        )
+        .toStringAsFixed(2),
+  );
+
+  List<({int index, int qty})> get _basketEntries => _basketByIndex.entries
+      .where((entry) => entry.value > 0)
+      .map((entry) => (index: entry.key, qty: entry.value))
+      .toList();
+
   String get _progressItemId =>
       'CAMBIO-L${widget.level.value}-${_targetPrice.toStringAsFixed(2)}';
+
+  void _addProductToBasket(int index) {
+    if (_checking) {
+      return;
+    }
+    setState(() {
+      _basketByIndex[index] = (_basketByIndex[index] ?? 0) + 1;
+      _feedback = _basketUnits >= _requiredUnits
+          ? 'PEDIDO LISTO. PULSA IR A PAGAR'
+          : 'AÑADE ${_requiredUnits - _basketUnits} MÁS';
+    });
+  }
+
+  void _removeProductFromBasket(int index) {
+    final current = _basketByIndex[index] ?? 0;
+    if (current <= 0) {
+      return;
+    }
+    setState(() {
+      if (current == 1) {
+        _basketByIndex.remove(index);
+      } else {
+        _basketByIndex[index] = current - 1;
+      }
+      _feedback = _basketUnits >= _requiredUnits
+          ? 'PEDIDO LISTO. PULSA IR A PAGAR'
+          : 'AÑADE ${_requiredUnits - _basketUnits} MÁS';
+    });
+  }
+
+  void _clearBasket() {
+    setState(() {
+      _basketByIndex.clear();
+      _feedback = 'SELECCIONA AL MENOS $_requiredUnits CHUCHES';
+    });
+  }
+
+  void _startPaymentPhase() {
+    if (_basketUnits < _requiredUnits) {
+      setState(() {
+        _feedback = 'TE FALTAN ${_requiredUnits - _basketUnits} ARTÍCULOS';
+      });
+      return;
+    }
+    final total = _basketTotal;
+    final wallet = _buildWalletCoins(targetPrice: total);
+    setState(() {
+      _isSelectingItems = false;
+      _targetPrice = total;
+      _wallet
+        ..clear()
+        ..addAll(wallet);
+      _droppedCoins.clear();
+      _checking = false;
+      _feedback = 'AHORA PAGA EXACTAMENTE ${_formatEuro(total)}';
+    });
+  }
+
+  void _backToSelectionPhase() {
+    if (_checking) {
+      return;
+    }
+    setState(() {
+      _isSelectingItems = true;
+      _droppedCoins.clear();
+      _checking = false;
+      _feedback = _basketUnits >= _requiredUnits
+          ? 'EDITA TU PEDIDO Y VUELVE A PAGAR'
+          : 'SELECCIONA AL MENOS $_requiredUnits CHUCHES';
+    });
+  }
 
   void _undoCoin() {
     if (_droppedCoins.isEmpty) {
@@ -184,16 +253,33 @@ class _ExactChangeStoreScreenState
     });
   }
 
-  Future<void> _checkAnswer() async {
+  Future<void> _handleCoinDropped(double coin) async {
+    if (_checking) {
+      return;
+    }
+    setState(() {
+      _droppedCoins.add(coin);
+    });
+    await _checkAnswer(fromAutoDrop: true);
+  }
+
+  Future<void> _checkAnswer({bool fromAutoDrop = false}) async {
     if (_checking || _droppedCoins.isEmpty) {
       return;
     }
+    final total = _currentTotal;
+    if (fromAutoDrop && total + 0.001 < _targetPrice) {
+      setState(() {
+        _feedback = 'TE FALTAN ${_formatEuro(_targetPrice - total)}';
+      });
+      return;
+    }
+
     setState(() {
       _checking = true;
     });
 
     try {
-      final total = _currentTotal;
       final diff = (total - _targetPrice).abs();
       final ok = diff <= 0.001;
 
@@ -233,6 +319,9 @@ class _ExactChangeStoreScreenState
 
       if (!ok) {
         setState(() {
+          if (fromAutoDrop) {
+            _droppedCoins.clear();
+          }
           _checking = false;
         });
         return;
@@ -307,6 +396,7 @@ class _ExactChangeStoreScreenState
     final media = MediaQuery.of(context);
     final width = media.size.width;
     final height = media.size.height;
+    final isTabletLandscapePrimary = isPrimaryTabletLandscape(context);
     final isTablet = width >= 720;
     final isLandscape = media.orientation == Orientation.landscape;
     final isShortDisplay = height < 860;
@@ -314,7 +404,9 @@ class _ExactChangeStoreScreenState
 
     return GameScaffold(
       title: 'LA TIENDA DE CHUCHES',
-      instructionText: 'ELIGE MONEDAS HASTA LLEGAR AL PRECIO EXACTO',
+      instructionText: _isSelectingItems
+          ? 'SELECCIONA VARIAS CHUCHES Y LUEGO PAGA EL TOTAL'
+          : 'ARRASTRA MONEDAS A LA BANDEJA. SE COMPRUEBA AUTOMÁTICAMENTE',
       progressCurrent: _round - 1,
       progressTotal: _rounds,
       body: Center(
@@ -325,27 +417,35 @@ class _ExactChangeStoreScreenState
             child: isTablet
                 ? LayoutBuilder(
                     builder: (context, constraints) {
-                      final enableDesktopScroll = constraints.maxHeight < 760;
-                      final row = Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            flex: isLandscape ? 60 : 58,
-                            child: _buildProductAndDrop(
+                      final enableDesktopScroll =
+                          !isTabletLandscapePrimary &&
+                          constraints.maxHeight < 760;
+                      final row = _isSelectingItems
+                          ? _buildSelectionBoard(
                               context,
                               compact: useCompactMetrics,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            flex: isLandscape ? 40 : 42,
-                            child: _buildWallet(
-                              context,
-                              compact: useCompactMetrics,
-                            ),
-                          ),
-                        ],
-                      );
+                              forceColumn: false,
+                            )
+                          : Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(
+                                  flex: isLandscape ? 60 : 58,
+                                  child: _buildOrderAndDrop(
+                                    context,
+                                    compact: useCompactMetrics,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  flex: isLandscape ? 40 : 42,
+                                  child: _buildWallet(
+                                    context,
+                                    compact: useCompactMetrics,
+                                  ),
+                                ),
+                              ],
+                            );
 
                       final top = <Widget>[
                         GameProgressHeader(
@@ -394,9 +494,20 @@ class _ExactChangeStoreScreenState
                       const SizedBox(height: 10),
                       GamePanel(child: UpperText(_feedback)),
                       const SizedBox(height: 12),
-                      _buildProductAndDrop(context, compact: true),
-                      const SizedBox(height: 12),
-                      _buildWallet(context, compact: true),
+                      if (_isSelectingItems)
+                        _buildSelectionBoard(
+                          context,
+                          compact: true,
+                          forceColumn: true,
+                        )
+                      else ...[
+                        _buildOrderAndDrop(context, compact: true),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          height: 360,
+                          child: _buildWallet(context, compact: true),
+                        ),
+                      ],
                     ],
                   ),
           ),
@@ -406,39 +517,74 @@ class _ExactChangeStoreScreenState
   }
 
   Widget _buildHeader(BuildContext context) {
+    final phaseTitle = _isSelectingItems
+        ? 'SELECCIONA TUS CHUCHES'
+        : 'PAGA EL PEDIDO';
+    final phaseHint = _isSelectingItems
+        ? 'AÑADE PRODUCTOS A LA BANDEJA ANTES DE PAGAR'
+        : 'USA TU MONEDERO PARA DAR EL CAMBIO EXACTO';
+
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFFFF4FB), Color(0xFFE8F4FF)],
-        ),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.25),
-        ),
+        borderRadius: BorderRadius.circular(24),
+        color: Colors.white,
+        border: Border.all(color: const Color(0xFFCBD6E9)),
       ),
       child: Row(
         children: [
           Expanded(
-            child: UpperText(
-              'CAMBIO EXACTO',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w900,
-                color: const Color(0xFF263047),
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                UpperText(
+                  phaseTitle,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: const Color(0xFF263047),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                UpperText(
+                  phaseHint,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF60708C),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
             ),
           ),
+          if (_isSelectingItems) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF4F8FF),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: UpperText(
+                'MÍNIMO: $_requiredUnits',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF35598E),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+          ],
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: const Color(0xFFF5E8FF),
+              color: const Color(0xFFE9F1FF),
               borderRadius: BorderRadius.circular(999),
             ),
             child: UpperText(
               'RONDA $_round/$_rounds',
-              style: const TextStyle(fontWeight: FontWeight.w900),
+              style: const TextStyle(
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF1C3D77),
+              ),
             ),
           ),
         ],
@@ -446,12 +592,378 @@ class _ExactChangeStoreScreenState
     );
   }
 
-  Widget _buildProductAndDrop(BuildContext context, {required bool compact}) {
+  Widget _buildSelectionBoard(
+    BuildContext context, {
+    required bool compact,
+    required bool forceColumn,
+  }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = !forceColumn && constraints.maxWidth >= 860;
+        if (isWide) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                flex: 62,
+                child: _buildCatalogPanel(context, compact: compact),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 38,
+                child: _buildBasketPanel(context, compact: compact),
+              ),
+            ],
+          );
+        }
+        return Column(
+          children: [
+            SizedBox(
+              height: forceColumn ? 520 : 360,
+              child: _buildCatalogPanel(context, compact: compact),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: forceColumn ? 420 : 320,
+              child: _buildBasketPanel(context, compact: compact),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildCatalogPanel(BuildContext context, {required bool compact}) {
+    final isTabletLandscapePrimary = isPrimaryTabletLandscape(context);
+    final crossAxisCount = isTabletLandscapePrimary ? 3 : 2;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        border: Border.all(color: const Color(0xFFCBD6E9)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          UpperText(
+            'SELECCIONA TUS CHUCHES',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w900,
+              color: const Color(0xFF1F2F4E),
+            ),
+          ),
+          const SizedBox(height: 4),
+          const UpperText(
+            'ARRASTRA O TOCA PARA AÑADIR A LA BANDEJA',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF60708C),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+            child: GridView.builder(
+              physics: const BouncingScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                mainAxisExtent: compact ? 148 : 166,
+              ),
+              itemCount: _catalog.length,
+              itemBuilder: (context, index) {
+                final item = _catalog[index];
+                final qty = _basketByIndex[index] ?? 0;
+                return Draggable<int>(
+                  data: index,
+                  feedback: Material(
+                    color: Colors.transparent,
+                    child: SizedBox(
+                      width: 170,
+                      child: _buildCandyCard(
+                        context,
+                        item: item,
+                        qty: qty,
+                        compact: true,
+                        interactive: false,
+                      ),
+                    ),
+                  ),
+                  childWhenDragging: Opacity(
+                    opacity: 0.35,
+                    child: _buildCandyCard(
+                      context,
+                      item: item,
+                      qty: qty,
+                      compact: compact,
+                      interactive: false,
+                    ),
+                  ),
+                  child: _buildCandyCard(
+                    context,
+                    item: item,
+                    qty: qty,
+                    compact: compact,
+                    interactive: true,
+                    onTap: () => _addProductToBasket(index),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCandyCard(
+    BuildContext context, {
+    required _StoreProduct item,
+    required int qty,
+    required bool compact,
+    required bool interactive,
+    VoidCallback? onTap,
+  }) {
+    final card = Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF7F9FD),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFDCE5F3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFFE1E9F5)),
+            ),
+            child: Center(
+              child: UpperText(
+                item.emoji,
+                style: TextStyle(fontSize: compact ? 34 : 42),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          UpperText(
+            item.name,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: compact ? 16 : 17,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Row(
+            children: [
+              UpperText(
+                _formatEuro(item.price),
+                style: TextStyle(
+                  fontSize: compact ? 20 : 22,
+                  fontWeight: FontWeight.w900,
+                  color: const Color(0xFF2B80E2),
+                ),
+              ),
+              const Spacer(),
+              if (qty > 0)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEAF3FF),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: UpperText(
+                    'X$qty',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF2A5B9E),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+    if (!interactive) {
+      return card;
+    }
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: card,
+      ),
+    );
+  }
+
+  Widget _buildBasketPanel(BuildContext context, {required bool compact}) {
+    final entries = _basketEntries;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        border: Border.all(color: const Color(0xFFCBD6E9)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          UpperText(
+            'MI BANDEJA',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w900,
+              color: const Color(0xFF1F2F4E),
+            ),
+          ),
+          const SizedBox(height: 8),
+          DragTarget<int>(
+            onAcceptWithDetails: (details) => _addProductToBasket(details.data),
+            builder: (context, candidateData, rejected) {
+              final hovering = candidateData.isNotEmpty;
+              return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: hovering
+                      ? const Color(0xFFEFF6FF)
+                      : const Color(0xFFF5F9FF),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: hovering
+                        ? const Color(0xFF2B8CEE)
+                        : const Color(0xFFB9CDEB),
+                    width: 2,
+                  ),
+                ),
+                child: entries.isEmpty
+                    ? const UpperText(
+                        'ARRASTRA AQUÍ TUS CHUCHES',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFF60708C),
+                          fontWeight: FontWeight.w800,
+                        ),
+                      )
+                    : Column(
+                        children: entries.map((entry) {
+                          final item = _catalog[entry.index];
+                          final subtotal = item.price * entry.qty;
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: UpperText(
+                                    '${item.name} X${entry.qty}',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ),
+                                UpperText(
+                                  _formatEuro(subtotal),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                IconButton(
+                                  onPressed: () =>
+                                      _removeProductFromBasket(entry.index),
+                                  icon: const Icon(
+                                    Icons.remove_circle_outline_rounded,
+                                    size: 18,
+                                  ),
+                                  tooltip: 'QUITAR UNO',
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+              );
+            },
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFF2F88E8), Color(0xFF2A67D8)],
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const UpperText(
+                  'TOTAL EN BANDEJA',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                UpperText(
+                  _formatEuro(_basketTotal),
+                  style: TextStyle(
+                    fontSize: compact ? 34 : 40,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Spacer(),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: entries.isEmpty ? null : _clearBasket,
+                  icon: const Icon(Icons.delete_outline_rounded),
+                  label: const UpperText('LIMPIAR'),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: entries.isEmpty ? null : _startPaymentPhase,
+                  icon: const Icon(Icons.shopping_cart_checkout_rounded),
+                  label: const UpperText('IR A PAGAR'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrderAndDrop(BuildContext context, {required bool compact}) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final hasBoundedHeight = constraints.maxHeight.isFinite;
+        final isTabletLandscapePrimary = isPrimaryTabletLandscape(context);
         final isShortPanel = hasBoundedHeight && constraints.maxHeight < 560;
         final useCompactMetrics = compact || isShortPanel;
+        final entries = _basketEntries;
 
         final panelContent = Column(
           mainAxisSize: MainAxisSize.min,
@@ -473,39 +985,57 @@ class _ExactChangeStoreScreenState
               child: Column(
                 children: [
                   UpperText(
-                    _productEmoji,
-                    style: TextStyle(fontSize: useCompactMetrics ? 46 : 64),
-                  ),
-                  const SizedBox(height: 6),
-                  UpperText(
-                    _productName,
-                    style: TextStyle(
-                      fontSize: useCompactMetrics ? 30 : 40,
-                      color: const Color(0xFFE03595),
+                    'TU PEDIDO',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
-                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 6),
+                  if (entries.isEmpty)
+                    const UpperText('NO HAY ARTÍCULOS')
+                  else
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      alignment: WrapAlignment.center,
+                      children: entries.map((entry) {
+                        final item = _catalog[entry.index];
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEFF4FF),
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: UpperText(
+                            '${item.emoji} ${item.name} X${entry.qty}',
+                            style: const TextStyle(fontWeight: FontWeight.w800),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  const SizedBox(height: 10),
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 18,
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFF0AE),
+                      color: const Color(0xFFEAF9F2),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: const Color(0xFFEDD070),
+                        color: const Color(0xFFB8E2CB),
                         width: 2,
                       ),
                     ),
                     child: UpperText(
                       _formatEuro(_targetPrice),
                       style: TextStyle(
-                        fontSize: useCompactMetrics ? 34 : 48,
+                        fontSize: useCompactMetrics ? 30 : 40,
                         fontWeight: FontWeight.w900,
-                        color: const Color(0xFF985E00),
+                        color: const Color(0xFF1F8A58),
                       ),
                     ),
                   ),
@@ -514,10 +1044,8 @@ class _ExactChangeStoreScreenState
             ),
             const SizedBox(height: 10),
             DragTarget<double>(
-              onAcceptWithDetails: (details) {
-                setState(() {
-                  _droppedCoins.add(details.data);
-                });
+              onAcceptWithDetails: (details) async {
+                await _handleCoinDropped(details.data);
               },
               builder: (context, candidateData, rejected) {
                 final hovering = candidateData.isNotEmpty;
@@ -583,6 +1111,14 @@ class _ExactChangeStoreScreenState
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
+                    onPressed: _checking ? null : _backToSelectionPhase,
+                    icon: const Icon(Icons.shopping_bag_outlined),
+                    label: UpperText(useCompactMetrics ? 'EDITAR' : 'PEDIDO'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton.icon(
                     onPressed: _droppedCoins.isEmpty || _checking
                         ? null
                         : _undoCoin,
@@ -600,23 +1136,6 @@ class _ExactChangeStoreScreenState
                     label: const UpperText('LIMPIAR'),
                   ),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  flex: 2,
-                  child: FilledButton.icon(
-                    onPressed: _droppedCoins.isEmpty || _checking
-                        ? null
-                        : _checkAnswer,
-                    icon: _checking
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.check_circle_rounded),
-                    label: UpperText(_checking ? 'COMPROBANDO' : 'COMPROBAR'),
-                  ),
-                ),
               ],
             ),
           ],
@@ -629,7 +1148,7 @@ class _ExactChangeStoreScreenState
             color: const Color(0xFFFFF3FB),
             border: Border.all(color: const Color(0xFFFFD5EC)),
           ),
-          child: hasBoundedHeight
+          child: hasBoundedHeight && !isTabletLandscapePrimary
               ? Scrollbar(
                   thumbVisibility: true,
                   child: SingleChildScrollView(child: panelContent),
@@ -720,6 +1239,28 @@ class _ExactChangeStoreScreenState
                 ),
               ),
               const SizedBox(height: 10),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEFF5FF),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xFFD8E5FF)),
+                ),
+                child: const UpperText(
+                  'SE COMPRUEBA AL SOLTAR LA MONEDA',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF3B5688),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
               if (hasBoundedHeight)
                 Expanded(child: grid)
               else
@@ -763,4 +1304,16 @@ class _ExactChangeStoreScreenState
       ),
     );
   }
+}
+
+class _StoreProduct {
+  const _StoreProduct({
+    required this.emoji,
+    required this.name,
+    required this.price,
+  });
+
+  final String emoji;
+  final String name;
+  final double price;
 }
