@@ -644,8 +644,6 @@ class _ExactChangeStoreScreenState
   }
 
   Widget _buildCatalogPanel(BuildContext context, {required bool compact}) {
-    final isTabletLandscapePrimary = isPrimaryTabletLandscape(context);
-    final crossAxisCount = isTabletLandscapePrimary ? 3 : 2;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -653,77 +651,100 @@ class _ExactChangeStoreScreenState
         color: _storeSurface,
         border: Border.all(color: _storeStroke),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          UpperText(
-            'SELECCIONA TUS CHUCHES',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w900,
-              color: _storeText,
-            ),
-          ),
-          const SizedBox(height: 4),
-          const UpperText(
-            'ARRASTRA O TOCA PARA AÑADIR A LA BANDEJA',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: _storeMuted,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Expanded(
-            child: GridView.builder(
-              physics: const BouncingScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-                mainAxisExtent: compact ? 148 : 166,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final crossAxisCount = constraints.maxWidth >= 620 ? 3 : 2;
+          final spacing = 10.0;
+          final headerBlockHeight = compact ? 76.0 : 84.0;
+          final rows = max(1, (_catalog.length / crossAxisCount).ceil());
+          final gridAvailable = max(
+            220.0,
+            constraints.maxHeight - headerBlockHeight,
+          );
+          final computedExtent =
+              (gridAvailable - ((rows - 1) * spacing)) / rows;
+          final mainExtent = computedExtent.clamp(
+            compact ? 112.0 : 124.0,
+            compact ? 150.0 : 168.0,
+          );
+          final fullGridHeight = rows * mainExtent + (rows - 1) * spacing;
+          final allowScroll = fullGridHeight > gridAvailable + 0.5;
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              UpperText(
+                'SELECCIONA TUS CHUCHES',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: _storeText,
+                ),
               ),
-              itemCount: _catalog.length,
-              itemBuilder: (context, index) {
-                final item = _catalog[index];
-                final qty = _basketByIndex[index] ?? 0;
-                return Draggable<int>(
-                  data: index,
-                  feedback: Material(
-                    color: Colors.transparent,
-                    child: SizedBox(
-                      width: 170,
+              const SizedBox(height: 4),
+              const UpperText(
+                'ARRASTRA O TOCA PARA AÑADIR A LA BANDEJA',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: _storeMuted,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: GridView.builder(
+                  physics: allowScroll
+                      ? const BouncingScrollPhysics()
+                      : const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    mainAxisSpacing: spacing,
+                    crossAxisSpacing: spacing,
+                    mainAxisExtent: mainExtent,
+                  ),
+                  itemCount: _catalog.length,
+                  itemBuilder: (context, index) {
+                    final item = _catalog[index];
+                    final qty = _basketByIndex[index] ?? 0;
+                    return Draggable<int>(
+                      data: index,
+                      feedback: Material(
+                        color: Colors.transparent,
+                        child: SizedBox(
+                          width: 170,
+                          child: _buildCandyCard(
+                            context,
+                            item: item,
+                            qty: qty,
+                            compact: true,
+                            interactive: false,
+                          ),
+                        ),
+                      ),
+                      childWhenDragging: Opacity(
+                        opacity: 0.35,
+                        child: _buildCandyCard(
+                          context,
+                          item: item,
+                          qty: qty,
+                          compact: compact,
+                          interactive: false,
+                        ),
+                      ),
                       child: _buildCandyCard(
                         context,
                         item: item,
                         qty: qty,
-                        compact: true,
-                        interactive: false,
+                        compact: compact,
+                        interactive: true,
+                        onTap: () => _addProductToBasket(index),
                       ),
-                    ),
-                  ),
-                  childWhenDragging: Opacity(
-                    opacity: 0.35,
-                    child: _buildCandyCard(
-                      context,
-                      item: item,
-                      qty: qty,
-                      compact: compact,
-                      interactive: false,
-                    ),
-                  ),
-                  child: _buildCandyCard(
-                    context,
-                    item: item,
-                    qty: qty,
-                    compact: compact,
-                    interactive: true,
-                    onTap: () => _addProductToBasket(index),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
