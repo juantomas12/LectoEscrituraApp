@@ -43,9 +43,12 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
   bool _isSpinning = false;
   double _turns = 0;
   List<Item> _wheelItems = [];
+  List<Item> _batchInitialItems = [];
+  List<String> _wordOptions = [];
 
   String _activeVowel = '?';
   Item? _selectedItem;
+  bool _awaitingWordChoice = false;
   String _feedback =
       'ELIGE VOCAL O NIVEL Y GIRA PARA VER OBJETOS CON ESA VOCAL';
 
@@ -69,7 +72,10 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
       _initialPool = items;
       _pool = items;
       _wheelItems = [];
+      _batchInitialItems = [];
+      _wordOptions = [];
       _selectedItem = null;
+      _awaitingWordChoice = false;
       _activeVowel = '?';
       _feedback = items.isEmpty
           ? 'NO HAY OBJETOS DISPONIBLES PARA LA RULETA'
@@ -138,35 +144,37 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
   }
 
   int _totalWordsForCurrentCategory() {
-    return _baseByCategoryFrom(_initialPool).length;
+    if (_batchInitialItems.isNotEmpty) {
+      return _batchInitialItems.length;
+    }
+    return 8;
   }
 
   void _markCurrentAsSolved() {
     final selected = _selectedItem;
-    if (selected == null || _isSpinning) {
+    if (selected == null || _isSpinning || !_awaitingWordChoice) {
       return;
     }
-
-    final nextPool = _pool.where((item) => item.id != selected.id).toList();
     final nextWheel = _wheelItems
         .where((item) => item.id != selected.id)
         .toList();
-    final remaining = _baseByCategoryFrom(nextPool);
+    final remaining = nextWheel.length;
     final solvedWord = (selected.word ?? '').trim().toUpperCase();
 
     setState(() {
-      _pool = nextPool;
       _wheelItems = nextWheel;
       _selectedItem = null;
-      if (remaining.isEmpty) {
+      _wordOptions = [];
+      _awaitingWordChoice = false;
+      if (remaining == 0) {
         _activeVowel = '-';
         _feedback = solvedWord.isEmpty
             ? '¡COMPLETASTE LA RULETA! YA NO QUEDAN PALABRAS.'
             : '¡CORRECTO! $solvedWord ELIMINADA. YA NO QUEDAN PALABRAS.';
       } else {
         _feedback = solvedWord.isEmpty
-            ? '¡CORRECTO! PALABRA ELIMINADA. QUEDAN ${remaining.length}.'
-            : '¡CORRECTO! $solvedWord ELIMINADA. QUEDAN ${remaining.length}.';
+            ? '¡CORRECTO! PALABRA ELIMINADA. QUEDAN $remaining.'
+            : '¡CORRECTO! $solvedWord ELIMINADA. QUEDAN $remaining.';
       }
     });
   }
@@ -183,8 +191,11 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
       _randomVowel = false;
       _pool = [..._initialPool];
       _wheelItems = [];
+      _batchInitialItems = [];
+      _wordOptions = [];
       _selectedItem = null;
       _activeVowel = '?';
+      _awaitingWordChoice = false;
       _isSpinning = false;
       _turns = 0;
       _feedback = 'ELIGE VOCAL O NIVEL Y GIRA PARA VER OBJETOS CON ESA VOCAL';
@@ -234,25 +245,9 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
     if (_isSpinning) {
       return;
     }
-    if (_pool.isEmpty) {
+    if (_awaitingWordChoice) {
       setState(() {
-        _feedback = 'NO HAY OBJETOS DISPONIBLES PARA LA RULETA';
-        _selectedItem = null;
-        _wheelItems = [];
-      });
-      return;
-    }
-
-    final source = _baseByCategory();
-    if (source.isEmpty) {
-      final hadWords = _totalWordsForCurrentCategory() > 0;
-      setState(() {
-        _selectedItem = null;
-        _wheelItems = [];
-        _activeVowel = hadWords ? '-' : '?';
-        _feedback = hadWords
-            ? '¡COMPLETASTE LA RULETA! PULSA REINICIAR PARA JUGAR DE NUEVO.'
-            : 'NO HAY OBJETOS DISPONIBLES EN ESTA CATEGORÍA';
+        _feedback = 'PRIMERO ELIGE LA PALABRA CORRECTA DEL OBJETO';
       });
       return;
     }
@@ -261,22 +256,15 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
         ? (_randomVowel
               ? _vowels[_random.nextInt(_vowels.length)]
               : _selectedVowel)
-        : _pickVowelForLevel(source);
+        : _pickVowelForLevel(_baseByCategoryFrom(_initialPool));
 
-    final eligible = _eligibleItemsFor(vowel);
-    if (eligible.isEmpty) {
-      setState(() {
-        _feedback =
-            'NO ENCONTRÉ OBJETOS CON LA VOCAL $vowel EN ESTA CONFIGURACIÓN';
-        _activeVowel = vowel;
-      });
-      return;
-    }
-
-    final wheelItems = _pickWheelItems(eligible, randomize: true);
+    final wheelItems = _wheelItems.isNotEmpty
+        ? _wheelItems
+        : _buildFixedBatch(vowel);
     if (wheelItems.isEmpty) {
       setState(() {
-        _feedback = 'NO HAY SUFICIENTES OBJETOS PARA GIRAR LA RULETA';
+        _feedback = 'NO ENCONTRÉ OBJETOS PARA CONSTRUIR UNA RULETA FIJA';
+        _activeVowel = vowel;
       });
       return;
     }
@@ -294,6 +282,8 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
       _turns += spinTurns;
       _wheelItems = wheelItems;
       _selectedItem = null;
+      _wordOptions = [];
+      _awaitingWordChoice = false;
       _activeVowel = vowel;
       _feedback = 'GIRANDO...';
     });
@@ -306,33 +296,360 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
     setState(() {
       _isSpinning = false;
       _selectedItem = selected;
-      _feedback = 'OBJETO SELECCIONADO CON VOCAL $_activeVowel.';
+      _wordOptions = _buildWordOptions(selected, wheelItems);
+      _awaitingWordChoice = true;
+      _feedback = 'ELIGE LA PALABRA CORRECTA DEL OBJETO';
     });
+  }
 
-    await Future<void>.delayed(const Duration(milliseconds: 900));
-    if (!mounted || _selectedItem?.id != selected.id) {
+  List<Item> _buildFixedBatch(String vowel) {
+    final eligible = _eligibleItemsFor(vowel);
+    final batch = _pickWheelItems(eligible, randomize: true);
+    _batchInitialItems = [...batch];
+    return batch;
+  }
+
+  List<String> _buildWordOptions(Item selected, List<Item> wheel) {
+    final selectedWord = (selected.word ?? '').trim();
+    final distractors =
+        wheel
+            .where((item) => item.id != selected.id)
+            .map((item) => (item.word ?? '').trim())
+            .where((word) => word.isNotEmpty)
+            .toList()
+          ..shuffle(_random);
+    final options = <String>[
+      selectedWord,
+      ...distractors.take(3),
+    ].where((word) => word.isNotEmpty).toSet().toList()..shuffle(_random);
+    return options;
+  }
+
+  void _selectWordOption(String word) {
+    final selected = _selectedItem;
+    if (selected == null || !_awaitingWordChoice || _isSpinning) {
+      return;
+    }
+    final expected = (selected.word ?? '').trim();
+    final isCorrect =
+        normalizeForComparison(word, ignoreAccents: true) ==
+        normalizeForComparison(expected, ignoreAccents: true);
+    if (!isCorrect) {
+      setState(() {
+        _feedback = 'INTENTA OTRA VEZ: OBSERVA EL OBJETO Y ELIGE SU PALABRA';
+      });
       return;
     }
     _markCurrentAsSolved();
   }
 
+  Widget _buildTabletLandscapeBody({
+    required int totalWords,
+    required int solvedWords,
+    required int remainingWords,
+    required bool completed,
+    required List<Item> wheelItems,
+  }) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1180),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              GameProgressHeader(
+                label: 'TU PROGRESO',
+                current: solvedWords,
+                total: totalWords,
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 44,
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: GamePanel(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  UpperText(
+                                    'CONFIGURACIÓN',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  SegmentedButton<_RouletteMode>(
+                                    segments: const [
+                                      ButtonSegment(
+                                        value: _RouletteMode.vocal,
+                                        label: UpperText('VOCAL'),
+                                      ),
+                                      ButtonSegment(
+                                        value: _RouletteMode.nivel,
+                                        label: UpperText('NIVEL'),
+                                      ),
+                                    ],
+                                    selected: {_mode},
+                                    onSelectionChanged: (value) {
+                                      setState(() {
+                                        _mode = value.first;
+                                        _selectedItem = null;
+                                        _wheelItems = [];
+                                        _batchInitialItems = [];
+                                        _wordOptions = [];
+                                        _awaitingWordChoice = false;
+                                        _activeVowel = '?';
+                                      });
+                                    },
+                                  ),
+                                  const SizedBox(height: 8),
+                                  if (_mode == _RouletteMode.vocal)
+                                    Wrap(
+                                      spacing: 6,
+                                      runSpacing: 6,
+                                      children: [
+                                        ..._vowels.map((v) {
+                                          return ChoiceChip(
+                                            selected:
+                                                !_randomVowel &&
+                                                _selectedVowel == v,
+                                            label: UpperText(v),
+                                            onSelected: (_) {
+                                              setState(() {
+                                                _selectedVowel = v;
+                                                _randomVowel = false;
+                                                _selectedItem = null;
+                                                _wheelItems = [];
+                                                _batchInitialItems = [];
+                                                _wordOptions = [];
+                                                _awaitingWordChoice = false;
+                                                _activeVowel = '?';
+                                              });
+                                            },
+                                          );
+                                        }),
+                                        ChoiceChip(
+                                          selected: _randomVowel,
+                                          label: const UpperText('ALEATORIA'),
+                                          onSelected: (_) {
+                                            setState(() {
+                                              _randomVowel = true;
+                                              _selectedItem = null;
+                                              _wheelItems = [];
+                                              _batchInitialItems = [];
+                                              _wordOptions = [];
+                                              _awaitingWordChoice = false;
+                                              _activeVowel = '?';
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    )
+                                  else
+                                    Wrap(
+                                      spacing: 6,
+                                      runSpacing: 6,
+                                      children: [1, 2, 3].map((level) {
+                                        return ChoiceChip(
+                                          selected: _selectedLevel == level,
+                                          label: UpperText('NIVEL $level'),
+                                          onSelected: (_) {
+                                            setState(() {
+                                              _selectedLevel = level;
+                                              _selectedItem = null;
+                                              _wheelItems = [];
+                                              _batchInitialItems = [];
+                                              _wordOptions = [];
+                                              _awaitingWordChoice = false;
+                                              _activeVowel = '?';
+                                            });
+                                          },
+                                        );
+                                      }).toList(),
+                                    ),
+                                  const Spacer(),
+                                  const UpperText(
+                                    'PALABRAS RELACIONADAS',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  if (_selectedItem == null)
+                                    const UpperText(
+                                      'GIRA Y LUEGO ELIGE LA PALABRA CORRECTA',
+                                    )
+                                  else
+                                    Wrap(
+                                      spacing: 6,
+                                      runSpacing: 6,
+                                      children: _wordOptions.map((word) {
+                                        return FilledButton.tonal(
+                                          onPressed: _isSpinning
+                                              ? null
+                                              : () => _selectWordOption(word),
+                                          child: UpperText(word),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  const SizedBox(height: 8),
+                                  UpperText(_feedback, maxLines: 4),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          GamePanel(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                UpperText('TOTAL: $totalWords'),
+                                UpperText('ACERTADAS: $solvedWords'),
+                                UpperText('PENDIENTES: $remainingWords'),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: FilledButton.icon(
+                                  onPressed: _isSpinning || completed
+                                      ? null
+                                      : _spin,
+                                  icon: const Icon(Icons.casino_rounded),
+                                  label: UpperText(
+                                    _isSpinning
+                                        ? 'GIRANDO'
+                                        : completed
+                                        ? 'COMPLETADA'
+                                        : 'GIRAR',
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed: _isSpinning ? null : _restartGame,
+                                  icon: const Icon(Icons.restart_alt_rounded),
+                                  label: const UpperText('REINICIAR'),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 56,
+                      child: GamePanel(
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: Center(
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    AnimatedRotation(
+                                      turns: _turns,
+                                      duration: const Duration(
+                                        milliseconds: 1500,
+                                      ),
+                                      curve: Curves.easeOutCubic,
+                                      child: _RouletteWheelVisual(
+                                        items: wheelItems,
+                                        size: 420,
+                                      ),
+                                    ),
+                                    const Positioned(
+                                      top: 4,
+                                      child: Icon(
+                                        Icons.arrow_drop_down_rounded,
+                                        size: 76,
+                                        color: Color(0xFF00695C),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(14),
+                                color: Colors.teal.shade50,
+                                border: Border.all(color: Colors.teal.shade300),
+                              ),
+                              child: UpperText(
+                                'VOCAL: $_activeVowel',
+                                style: const TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ),
+                            if (_selectedItem != null) ...[
+                              const SizedBox(height: 8),
+                              UpperText(
+                                'OBJETO: ${_selectedItem!.word ?? ''}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
+    final isTabletLandscape = isPrimaryTabletLandscape(context);
     final isTablet = width >= 720;
 
-    final source = _baseByCategory();
     final totalWords = _totalWordsForCurrentCategory();
-    final remainingWords = source.length;
+    final remainingWords = _wheelItems.isNotEmpty
+        ? _wheelItems.length
+        : totalWords;
     final solvedWords = max(0, totalWords - remainingWords);
-    final completed = totalWords > 0 && remainingWords == 0;
-    final previewVowel = _mode == _RouletteMode.vocal
-        ? (_randomVowel ? _selectedVowel : _selectedVowel)
-        : _pickVowelForLevel(source.isEmpty ? _pool : source);
-    final previewEligible = _eligibleItemsFor(previewVowel);
-    final wheelItems = _wheelItems.isNotEmpty
-        ? _wheelItems
-        : _pickWheelItems(previewEligible, randomize: false);
+    final completed = _batchInitialItems.isNotEmpty && _wheelItems.isEmpty;
+    final wheelItems = _wheelItems;
+
+    if (isTabletLandscape) {
+      return GameScaffold(
+        title: 'RULETA DE OBJETOS Y VOCALES',
+        instructionText: _mode == _RouletteMode.vocal
+            ? 'GIRA LA RULETA Y PRACTICA OBJETOS POR VOCAL'
+            : 'GIRA LA RULETA Y PRACTICA OBJETOS POR NIVEL',
+        progressCurrent: solvedWords,
+        progressTotal: totalWords,
+        body: _buildTabletLandscapeBody(
+          totalWords: totalWords,
+          solvedWords: solvedWords,
+          remainingWords: remainingWords,
+          completed: completed,
+          wheelItems: wheelItems,
+        ),
+      );
+    }
 
     return GameScaffold(
       title: 'RULETA DE OBJETOS Y VOCALES',
@@ -381,6 +698,10 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
                           _mode = value.first;
                           _selectedItem = null;
                           _wheelItems = [];
+                          _batchInitialItems = [];
+                          _wordOptions = [];
+                          _awaitingWordChoice = false;
+                          _activeVowel = '?';
                         });
                       },
                     ),
@@ -400,6 +721,10 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
                                   _randomVowel = false;
                                   _selectedItem = null;
                                   _wheelItems = [];
+                                  _batchInitialItems = [];
+                                  _wordOptions = [];
+                                  _awaitingWordChoice = false;
+                                  _activeVowel = '?';
                                 });
                               },
                             );
@@ -412,6 +737,10 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
                                 _randomVowel = true;
                                 _selectedItem = null;
                                 _wheelItems = [];
+                                _batchInitialItems = [];
+                                _wordOptions = [];
+                                _awaitingWordChoice = false;
+                                _activeVowel = '?';
                               });
                             },
                           ),
@@ -433,6 +762,10 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
                                     _selectedLevel = level;
                                     _selectedItem = null;
                                     _wheelItems = [];
+                                    _batchInitialItems = [];
+                                    _wordOptions = [];
+                                    _awaitingWordChoice = false;
+                                    _activeVowel = '?';
                                   });
                                 },
                               );
