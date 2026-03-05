@@ -115,7 +115,7 @@ class _ExactChangeStoreScreenState
       _targetPrice = 0.0;
       _catalog
         ..clear()
-        ..addAll(shuffledCatalog.take(6));
+        ..addAll(shuffledCatalog.take(4));
       _basketByIndex.clear();
       _wallet.clear();
       _droppedCoins.clear();
@@ -402,15 +402,15 @@ class _ExactChangeStoreScreenState
     final media = MediaQuery.of(context);
     final width = media.size.width;
     final height = media.size.height;
-    final isTabletLandscapePrimary = isPrimaryTabletLandscape(context);
-    final isTablet = width >= 720;
     final isLandscape = media.orientation == Orientation.landscape;
+    final isHorizontalPrimary = isLandscape && width >= 700;
+    final isTablet = width >= 720;
     final isShortDisplay = height < 860;
-    final useCompactMetrics =
-        isTabletLandscapePrimary || !isLandscape || isShortDisplay;
+    final useCompactMetrics = isHorizontalPrimary || isShortDisplay;
 
     return GameScaffold(
       title: 'LA TIENDA DE CHUCHES',
+      enableDesktopShell: false,
       instructionText: _isSelectingItems
           ? 'SELECCIONA VARIAS CHUCHES Y LUEGO PAGA EL TOTAL'
           : 'ARRASTRA MONEDAS A LA BANDEJA. SE COMPRUEBA AUTOMÁTICAMENTE',
@@ -426,9 +426,6 @@ class _ExactChangeStoreScreenState
               child: isTablet
                   ? LayoutBuilder(
                       builder: (context, constraints) {
-                        final enableDesktopScroll =
-                            !isTabletLandscapePrimary &&
-                            constraints.maxHeight < 760;
                         final row = _isSelectingItems
                             ? _buildSelectionBoard(
                                 context,
@@ -457,36 +454,36 @@ class _ExactChangeStoreScreenState
                               );
 
                         final top = <Widget>[
-                          GameProgressHeader(
-                            label: 'TU PROGRESO',
-                            current: _round - 1,
-                            total: _rounds,
-                            trailingLabel: '⭐ $_correct',
-                          ),
-                          const SizedBox(height: 10),
+                          if (!isHorizontalPrimary) ...[
+                            GameProgressHeader(
+                              label: 'TU PROGRESO',
+                              current: _round - 1,
+                              total: _rounds,
+                              trailingLabel: '⭐ $_correct',
+                            ),
+                            const SizedBox(height: 10),
+                          ],
                           _buildHeader(context),
-                          const SizedBox(height: 10),
-                          GamePanel(child: UpperText(_feedback)),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 8),
+                          GamePanel(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 10,
+                            ),
+                            child: UpperText(
+                              _feedback,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
                         ];
 
-                        if (!enableDesktopScroll) {
-                          return Column(
-                            children: [
-                              ...top,
-                              Expanded(child: row),
-                            ],
-                          );
-                        }
-
-                        final rowHeight = isLandscape ? 620.0 : 700.0;
-                        return SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              ...top,
-                              SizedBox(height: rowHeight, child: row),
-                            ],
-                          ),
+                        return Column(
+                          children: [
+                            ...top,
+                            Expanded(child: row),
+                          ],
                         );
                       },
                     )
@@ -692,14 +689,12 @@ class _ExactChangeStoreScreenState
               const SizedBox(height: 10),
               Expanded(
                 child: GridView.builder(
-                  physics: allowScroll
-                      ? const BouncingScrollPhysics()
-                      : const NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: crossAxisCount,
                     mainAxisSpacing: spacing,
                     crossAxisSpacing: spacing,
-                    mainAxisExtent: mainExtent,
+                    mainAxisExtent: allowScroll ? mainExtent : mainExtent,
                   ),
                   itemCount: _catalog.length,
                   itemBuilder: (context, index) {
@@ -842,6 +837,8 @@ class _ExactChangeStoreScreenState
 
   Widget _buildBasketPanel(BuildContext context, {required bool compact}) {
     final entries = _basketEntries;
+    final visibleEntries = entries.take(3).toList();
+    final hiddenCount = entries.length - visibleEntries.length;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -864,6 +861,51 @@ class _ExactChangeStoreScreenState
             onAcceptWithDetails: (details) => _addProductToBasket(details.data),
             builder: (context, candidateData, rejected) {
               final hovering = candidateData.isNotEmpty;
+              final summaryRows = <Widget>[
+                ...visibleEntries.map((entry) {
+                  final item = _catalog[entry.index];
+                  final subtotal = item.price * entry.qty;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: UpperText(
+                            '${item.name} X${entry.qty}',
+                            style: const TextStyle(fontWeight: FontWeight.w800),
+                          ),
+                        ),
+                        UpperText(
+                          _formatEuro(subtotal),
+                          style: const TextStyle(fontWeight: FontWeight.w900),
+                        ),
+                        const SizedBox(width: 6),
+                        IconButton(
+                          onPressed: () =>
+                              _removeProductFromBasket(entry.index),
+                          icon: const Icon(
+                            Icons.remove_circle_outline_rounded,
+                            size: 18,
+                          ),
+                          tooltip: 'QUITAR UNO',
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ];
+              if (hiddenCount > 0) {
+                summaryRows.add(const SizedBox(height: 2));
+                summaryRows.add(
+                  UpperText(
+                    '+$hiddenCount MÁS',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      color: _storeMuted,
+                    ),
+                  ),
+                );
+              }
               return Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
@@ -886,43 +928,7 @@ class _ExactChangeStoreScreenState
                           fontWeight: FontWeight.w800,
                         ),
                       )
-                    : Column(
-                        children: entries.map((entry) {
-                          final item = _catalog[entry.index];
-                          final subtotal = item.price * entry.qty;
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: UpperText(
-                                    '${item.name} X${entry.qty}',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                ),
-                                UpperText(
-                                  _formatEuro(subtotal),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                IconButton(
-                                  onPressed: () =>
-                                      _removeProductFromBasket(entry.index),
-                                  icon: const Icon(
-                                    Icons.remove_circle_outline_rounded,
-                                    size: 18,
-                                  ),
-                                  tooltip: 'QUITAR UNO',
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
-                      ),
+                    : Column(children: summaryRows),
               );
             },
           ),
@@ -960,7 +966,7 @@ class _ExactChangeStoreScreenState
               ],
             ),
           ),
-          const Spacer(),
+          const SizedBox(height: 10),
           Row(
             children: [
               Expanded(
