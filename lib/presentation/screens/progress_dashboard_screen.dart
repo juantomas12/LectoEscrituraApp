@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/app_providers.dart';
 import '../../core/utils/text_utils.dart';
+import '../../domain/models/activity_result.dart';
 import '../../domain/models/activity_type.dart';
 import '../../domain/models/category.dart';
 import '../../domain/models/item.dart';
@@ -95,6 +96,7 @@ class ProgressDashboardScreen extends ConsumerWidget {
         sessionsWithData: gameResults.length,
         problemLetters: letters,
         evolution: evolution,
+        recentResults: gameResults.reversed.take(12).toList(),
       );
     }).toList();
 
@@ -202,6 +204,8 @@ class ProgressDashboardScreen extends ConsumerWidget {
                 _ActivityProgressCard(
                   stats: gameStats[i],
                   accent: _accents[i % _accents.length],
+                  onDetails: () =>
+                      _showGameDetails(context: context, stats: gameStats[i]),
                 ),
                 const SizedBox(height: 12),
               ],
@@ -269,6 +273,159 @@ class ProgressDashboardScreen extends ConsumerWidget {
   }
 }
 
+void _showGameDetails({
+  required BuildContext context,
+  required _GameStats stats,
+}) {
+  showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    showDragHandle: true,
+    builder: (context) {
+      final media = MediaQuery.sizeOf(context);
+      return SafeArea(
+        child: SizedBox(
+          height: media.height * 0.72,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(18, 6, 18, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                UpperText(
+                  'DETALLES: ${stats.game.label}',
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF1A2340),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 8,
+                  children: [
+                    _detailBadge(
+                      'PRECISIÓN ${((stats.accuracy) * 100).round()}%',
+                      const Color(0xFF2B8CEE),
+                    ),
+                    _detailBadge(
+                      'ACIERTOS ${stats.totalCorrect}',
+                      const Color(0xFF5F6D89),
+                    ),
+                    _detailBadge(
+                      'FALLOS ${stats.totalIncorrect}',
+                      const Color(0xFF5F6D89),
+                    ),
+                    _detailBadge(
+                      'TIEMPO ${stats.totalTime} S',
+                      const Color(0xFF5F6D89),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                UpperText(
+                  stats.problemLetters.isEmpty
+                      ? 'LETRAS A REFORZAR: SIN DATOS'
+                      : 'LETRAS A REFORZAR: ${stats.problemLetters.join(', ')}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF5F6D89),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                const UpperText(
+                  'ÚLTIMAS SESIONES',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+                ),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: stats.recentResults.isEmpty
+                      ? const Center(
+                          child: UpperText(
+                            'TODAVÍA NO HAY SESIONES EN ESTE JUEGO',
+                            style: TextStyle(
+                              color: Color(0xFF7A869E),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        )
+                      : ListView.separated(
+                          itemCount: stats.recentResults.length,
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(height: 8),
+                          itemBuilder: (context, index) {
+                            final result = stats.recentResults[index];
+                            final date = result.createdAt;
+                            final dateLabel =
+                                '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year} '
+                                '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+                            final attempts = result.correct + result.incorrect;
+                            final acc = attempts == 0
+                                ? 0
+                                : ((result.correct / attempts) * 100).round();
+
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF6F8FD),
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: const Color(0xFFDCE4F2),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: UpperText(
+                                      dateLabel,
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFF5E6C87),
+                                      ),
+                                    ),
+                                  ),
+                                  UpperText(
+                                    'A:${result.correct} F:${result.incorrect} $acc%',
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w900,
+                                      color: Color(0xFF1A2340),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+Widget _detailBadge(String text, Color color) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(999),
+      color: color.withValues(alpha: 0.12),
+    ),
+    child: UpperText(
+      text,
+      style: TextStyle(color: color, fontSize: 13, fontWeight: FontWeight.w800),
+    ),
+  );
+}
+
 class _GameStats {
   const _GameStats({
     required this.game,
@@ -279,6 +436,7 @@ class _GameStats {
     required this.sessionsWithData,
     required this.problemLetters,
     required this.evolution,
+    required this.recentResults,
   });
 
   final ActivityType game;
@@ -289,6 +447,7 @@ class _GameStats {
   final int sessionsWithData;
   final List<String> problemLetters;
   final List<double> evolution;
+  final List<ActivityResult> recentResults;
 }
 
 class _SummaryCard extends StatelessWidget {
@@ -347,10 +506,15 @@ class _SummaryCard extends StatelessWidget {
 }
 
 class _ActivityProgressCard extends StatelessWidget {
-  const _ActivityProgressCard({required this.stats, required this.accent});
+  const _ActivityProgressCard({
+    required this.stats,
+    required this.accent,
+    required this.onDetails,
+  });
 
   final _GameStats stats;
   final Color accent;
+  final VoidCallback onDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -382,7 +546,7 @@ class _ActivityProgressCard extends StatelessWidget {
             final action = Align(
               alignment: Alignment.centerRight,
               child: FilledButton(
-                onPressed: () {},
+                onPressed: onDetails,
                 style: FilledButton.styleFrom(
                   backgroundColor: accent,
                   shape: RoundedRectangleBorder(
