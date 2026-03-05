@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/app_providers.dart';
-import '../screens/progress_dashboard_screen.dart';
-import '../screens/settings_screen.dart';
-import '../viewmodels/home_selection_view_model.dart';
 import '../viewmodels/settings_view_model.dart';
 import 'upper_text.dart';
 
@@ -13,6 +10,14 @@ const Color kGameHeaderBackground = Color(0xFFE9F0EE);
 const Color kGameSurface = Color(0xFFFDFEFE);
 const Color kGameStroke = Color(0xFFC9D5D3);
 const Color kGameAccent = Color(0xFF2C86EA);
+
+bool isPrimaryTabletLandscape(BuildContext context) {
+  final media = MediaQuery.sizeOf(context);
+  final orientation = MediaQuery.orientationOf(context);
+  return media.width >= 700 &&
+      media.width < 1200 &&
+      orientation == Orientation.landscape;
+}
 
 class GameScaffold extends ConsumerWidget {
   const GameScaffold({
@@ -106,25 +111,6 @@ class GameScaffold extends ConsumerWidget {
     await ref.read(ttsServiceProvider).speak(text);
   }
 
-  void _openLearnHome(BuildContext context) {
-    Navigator.of(context).popUntil((route) => route.isFirst);
-  }
-
-  void _openProgress(BuildContext context, WidgetRef ref) {
-    final category = ref.read(homeSelectionViewModelProvider).category;
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => ProgressDashboardScreen(category: category),
-      ),
-    );
-  }
-
-  void _openSettings(BuildContext context) {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (_) => const SettingsScreen()));
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final hasInstruction = (instructionText ?? '').trim().isNotEmpty;
@@ -135,6 +121,10 @@ class GameScaffold extends ConsumerWidget {
         hasInstruction &&
         media.width >= 1200 &&
         orientation == Orientation.landscape;
+    final isTabletLandscape =
+        enableDesktopShell &&
+        !isDesktopLandscape &&
+        isPrimaryTabletLandscape(context);
 
     final appBarActions = <Widget>[
       if (hasInstruction)
@@ -153,196 +143,121 @@ class GameScaffold extends ConsumerWidget {
     ];
 
     if (isDesktopLandscape) {
-      final current = progressCurrent ?? 0;
-      final total = progressTotal ?? 0;
-      final safeTotal = total <= 0 ? 1 : total;
-      final progress = (current / safeTotal).clamp(0.0, 1.0);
       return Scaffold(
         backgroundColor: const Color(0xFFF1F3F7),
         body: SafeArea(
-          child: Row(
-            children: [
-              Container(
-                width: 320,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF8FAFF),
-                  border: Border(right: BorderSide(color: Color(0xFFD7DFEC))),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 22, 24, 22),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 62,
-                            height: 62,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFEAF1FF),
-                              borderRadius: BorderRadius.circular(18),
-                            ),
-                            child: const Icon(
-                              Icons.menu_book_rounded,
-                              size: 34,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          const Expanded(
-                            child: UpperText(
-                              'EDUMUNDO\nALFABETIZACIÓN',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w900,
-                                height: 1.15,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 18),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFEAF1FF),
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        child: UpperText(
-                          'LECCIÓN ACTUAL\n${desktopLessonTitle ?? title}',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                            height: 1.15,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      _GameDesktopSidebarItem(
-                        icon: Icons.menu_book_rounded,
-                        label: 'APRENDER',
-                        active: true,
-                        onTap: () => _openLearnHome(context),
-                      ),
-                      const SizedBox(height: 10),
-                      _GameDesktopSidebarItem(
-                        icon: Icons.bar_chart_rounded,
-                        label: 'MI PROGRESO',
-                        onTap: () => _openProgress(context, ref),
-                      ),
-                      const SizedBox(height: 10),
-                      _GameDesktopSidebarItem(
-                        icon: Icons.settings_rounded,
-                        label: 'AJUSTES',
-                        onTap: () => _openSettings(context),
-                      ),
-                      const Spacer(),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFEFF4FF),
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const UpperText(
-                              'TU PROGRESO',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xFF5D6E8C),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(999),
-                                    child: LinearProgressIndicator(
-                                      value: progress,
-                                      minHeight: 12,
-                                      backgroundColor: const Color(0xFFD7DEEA),
-                                      color: kGameAccent,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                UpperText(
-                                  '$current/$total',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w900,
-                                    color: Color(0xFF2D66C3),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      FilledButton(
-                        onPressed: () => _openTechnicalAidsSheet(context, ref),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xFF0E1A3D),
-                          minimumSize: const Size.fromHeight(56),
-                        ),
-                        child: const UpperText('AYUDA TÉCNICA'),
-                      ),
-                    ],
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(36, 24, 36, 18),
+            child: Column(
+              children: [
+                UpperText(
+                  desktopHeadline ?? title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 58,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF121C3D),
+                    height: 1.05,
                   ),
                 ),
+                const SizedBox(height: 6),
+                UpperText(
+                  instructionText ?? '',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF4D638C),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Expanded(child: body),
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: OutlinedButton.icon(
+                    onPressed: () => _speakInstruction(context, ref),
+                    icon: const Icon(Icons.headset_rounded),
+                    label: const UpperText('ESCUCHAR INSTRUCCIÓN'),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(340, 66),
+                      side: const BorderSide(color: kGameAccent, width: 2.5),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(44),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (isTabletLandscape) {
+      return Scaffold(
+        backgroundColor: kGameBackground,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.fromLTRB(6, 4, 6, 4),
+                decoration: const BoxDecoration(
+                  color: kGameHeaderBackground,
+                  border: Border(
+                    bottom: BorderSide(color: Color(0xFFCFD8E5), width: 1),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.of(context).maybePop(),
+                      icon: const Icon(Icons.arrow_back_rounded),
+                      tooltip: 'VOLVER',
+                    ),
+                    Expanded(
+                      child: UpperText(
+                        title,
+                        maxLines: 1,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 21,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF182037),
+                        ),
+                      ),
+                    ),
+                    ...appBarActions,
+                  ],
+                ),
               ),
+              if (hasInstruction)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 6, 12, 2),
+                  child: UpperText(
+                    instructionText!,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF425A87),
+                    ),
+                  ),
+                ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(36, 24, 36, 18),
-                  child: Column(
-                    children: [
-                      UpperText(
-                        desktopHeadline ?? title,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 58,
-                          fontWeight: FontWeight.w900,
-                          color: Color(0xFF121C3D),
-                          height: 1.05,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      UpperText(
-                        instructionText ?? '',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF4D638C),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Expanded(child: body),
-                      const SizedBox(height: 12),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: OutlinedButton.icon(
-                          onPressed: () => _speakInstruction(context, ref),
-                          icon: const Icon(Icons.headset_rounded),
-                          label: const UpperText('ESCUCHAR INSTRUCCIÓN'),
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: const Size(340, 66),
-                            side: const BorderSide(
-                              color: kGameAccent,
-                              width: 2.5,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(44),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                  padding: const EdgeInsets.fromLTRB(10, 4, 10, 8),
+                  child: ScrollConfiguration(
+                    behavior: const _NoScrollBehavior(),
+                    child: MediaQuery(
+                      data: MediaQuery.of(
+                        context,
+                      ).copyWith(textScaler: const TextScaler.linear(0.94)),
+                      child: body,
+                    ),
                   ),
                 ),
               ),
@@ -382,53 +297,12 @@ class GameScaffold extends ConsumerWidget {
   }
 }
 
-class _GameDesktopSidebarItem extends StatelessWidget {
-  const _GameDesktopSidebarItem({
-    required this.icon,
-    required this.label,
-    this.active = false,
-    this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final bool active;
-  final VoidCallback? onTap;
+class _NoScrollBehavior extends MaterialScrollBehavior {
+  const _NoScrollBehavior();
 
   @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(999),
-        child: Ink(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          decoration: BoxDecoration(
-            color: active ? kGameAccent : Colors.transparent,
-            borderRadius: BorderRadius.circular(999),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                icon,
-                color: active ? Colors.white : const Color(0xFF51607C),
-              ),
-              const SizedBox(width: 10),
-              UpperText(
-                label,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: active ? Colors.white : const Color(0xFF1D2A49),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  ScrollPhysics getScrollPhysics(BuildContext context) {
+    return const NeverScrollableScrollPhysics();
   }
 }
 
