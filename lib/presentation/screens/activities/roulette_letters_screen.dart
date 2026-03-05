@@ -81,6 +81,9 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
           ? 'NO HAY OBJETOS DISPONIBLES PARA LA RULETA'
           : 'ELIGE VOCAL O NIVEL Y GIRA PARA VER OBJETOS CON ESA VOCAL';
     });
+    if (items.isNotEmpty) {
+      _refreshWheelPreview();
+    }
   }
 
   bool _matchesLevel(String word, int level) {
@@ -200,6 +203,7 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
       _turns = 0;
       _feedback = 'ELIGE VOCAL O NIVEL Y GIRA PARA VER OBJETOS CON ESA VOCAL';
     });
+    _refreshWheelPreview();
   }
 
   List<Item> _pickWheelItems(List<Item> eligible, {bool randomize = true}) {
@@ -309,6 +313,87 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
     return batch;
   }
 
+  List<Item> _eligibleItemsForVowelFrom(List<Item> source, String vowel) {
+    if (_mode == _RouletteMode.vocal) {
+      return source
+          .where((item) => containsLetter(item.word ?? '', vowel))
+          .toList();
+    }
+    return source.where((item) {
+      final word = item.word ?? '';
+      return _matchesLevel(word, _selectedLevel) && containsLetter(word, vowel);
+    }).toList();
+  }
+
+  void _refreshWheelPreview() {
+    final source = _baseByCategory();
+    if (source.isEmpty) {
+      setState(() {
+        _wheelItems = [];
+        _batchInitialItems = [];
+        _wordOptions = [];
+        _selectedItem = null;
+        _awaitingWordChoice = false;
+        _activeVowel = '?';
+        _feedback = 'NO HAY OBJETOS DISPONIBLES PARA ESTA CATEGORÍA';
+      });
+      return;
+    }
+
+    String chosenVowel = _selectedVowel;
+    if (_mode == _RouletteMode.vocal) {
+      if (_randomVowel) {
+        final shuffled = [..._vowels]..shuffle(_random);
+        chosenVowel = shuffled.firstWhere(
+          (v) => _eligibleItemsForVowelFrom(source, v).isNotEmpty,
+          orElse: () => _selectedVowel,
+        );
+      } else {
+        final selectedHasItems = _eligibleItemsForVowelFrom(
+          source,
+          _selectedVowel,
+        ).isNotEmpty;
+        if (!selectedHasItems) {
+          chosenVowel = _vowels.firstWhere(
+            (v) => _eligibleItemsForVowelFrom(source, v).isNotEmpty,
+            orElse: () => _selectedVowel,
+          );
+        }
+      }
+    } else {
+      chosenVowel = _pickVowelForLevel(source);
+    }
+
+    var eligible = _eligibleItemsForVowelFrom(source, chosenVowel);
+    if (eligible.isEmpty) {
+      for (final v in _vowels) {
+        final fallback = _eligibleItemsForVowelFrom(source, v);
+        if (fallback.isNotEmpty) {
+          chosenVowel = v;
+          eligible = fallback;
+          break;
+        }
+      }
+    }
+
+    final previewBatch = _pickWheelItems(eligible, randomize: true);
+    setState(() {
+      _selectedVowel = chosenVowel;
+      _wheelItems = previewBatch;
+      _batchInitialItems = [...previewBatch];
+      _wordOptions = [];
+      _selectedItem = null;
+      _awaitingWordChoice = false;
+      _turns = 0;
+      _activeVowel = previewBatch.isEmpty ? '?' : chosenVowel;
+      if (previewBatch.isEmpty) {
+        _feedback = 'NO HAY PALABRAS VÁLIDAS PARA LOS FILTROS ACTUALES';
+      } else if (!_feedback.startsWith('¡CORRECTO!')) {
+        _feedback = 'GIRA Y LUEGO ELIGE LA PALABRA CORRECTA';
+      }
+    });
+  }
+
   List<String> _buildWordOptions(Item selected, List<Item> wheel) {
     final selectedWord = (selected.word ?? '').trim();
     final distractors =
@@ -397,13 +482,8 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
                                     onSelectionChanged: (value) {
                                       setState(() {
                                         _mode = value.first;
-                                        _selectedItem = null;
-                                        _wheelItems = [];
-                                        _batchInitialItems = [];
-                                        _wordOptions = [];
-                                        _awaitingWordChoice = false;
-                                        _activeVowel = '?';
                                       });
+                                      _refreshWheelPreview();
                                     },
                                   ),
                                   const SizedBox(height: 8),
@@ -422,13 +502,8 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
                                               setState(() {
                                                 _selectedVowel = v;
                                                 _randomVowel = false;
-                                                _selectedItem = null;
-                                                _wheelItems = [];
-                                                _batchInitialItems = [];
-                                                _wordOptions = [];
-                                                _awaitingWordChoice = false;
-                                                _activeVowel = '?';
                                               });
+                                              _refreshWheelPreview();
                                             },
                                           );
                                         }),
@@ -438,13 +513,8 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
                                           onSelected: (_) {
                                             setState(() {
                                               _randomVowel = true;
-                                              _selectedItem = null;
-                                              _wheelItems = [];
-                                              _batchInitialItems = [];
-                                              _wordOptions = [];
-                                              _awaitingWordChoice = false;
-                                              _activeVowel = '?';
                                             });
+                                            _refreshWheelPreview();
                                           },
                                         ),
                                       ],
@@ -460,13 +530,8 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
                                           onSelected: (_) {
                                             setState(() {
                                               _selectedLevel = level;
-                                              _selectedItem = null;
-                                              _wheelItems = [];
-                                              _batchInitialItems = [];
-                                              _wordOptions = [];
-                                              _awaitingWordChoice = false;
-                                              _activeVowel = '?';
                                             });
+                                            _refreshWheelPreview();
                                           },
                                         );
                                       }).toList(),
@@ -696,13 +761,8 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
                       onSelectionChanged: (value) {
                         setState(() {
                           _mode = value.first;
-                          _selectedItem = null;
-                          _wheelItems = [];
-                          _batchInitialItems = [];
-                          _wordOptions = [];
-                          _awaitingWordChoice = false;
-                          _activeVowel = '?';
                         });
+                        _refreshWheelPreview();
                       },
                     ),
                     const SizedBox(height: 10),
@@ -719,13 +779,8 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
                                 setState(() {
                                   _selectedVowel = v;
                                   _randomVowel = false;
-                                  _selectedItem = null;
-                                  _wheelItems = [];
-                                  _batchInitialItems = [];
-                                  _wordOptions = [];
-                                  _awaitingWordChoice = false;
-                                  _activeVowel = '?';
                                 });
+                                _refreshWheelPreview();
                               },
                             );
                           }),
@@ -735,13 +790,8 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
                             onSelected: (_) {
                               setState(() {
                                 _randomVowel = true;
-                                _selectedItem = null;
-                                _wheelItems = [];
-                                _batchInitialItems = [];
-                                _wordOptions = [];
-                                _awaitingWordChoice = false;
-                                _activeVowel = '?';
                               });
+                              _refreshWheelPreview();
                             },
                           ),
                         ],
@@ -760,13 +810,8 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
                                 onSelected: (_) {
                                   setState(() {
                                     _selectedLevel = level;
-                                    _selectedItem = null;
-                                    _wheelItems = [];
-                                    _batchInitialItems = [];
-                                    _wordOptions = [];
-                                    _awaitingWordChoice = false;
-                                    _activeVowel = '?';
                                   });
+                                  _refreshWheelPreview();
                                 },
                               );
                             }).toList(),
