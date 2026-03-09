@@ -19,6 +19,8 @@ import '../../widgets/game_style.dart';
 import '../../widgets/upper_text.dart';
 import '../results_screen.dart';
 
+enum _FeedbackTone { neutral, success, error }
+
 class MatchImagePhraseScreen extends ConsumerStatefulWidget {
   const MatchImagePhraseScreen({
     super.key,
@@ -49,6 +51,7 @@ class _MatchImagePhraseScreenState
   bool _isLoading = true;
   String _feedback = 'UNE CADA FRASE CON SU IMAGEN';
   bool _isReinforcementRound = false;
+  _FeedbackTone _feedbackTone = _FeedbackTone.neutral;
 
   int _correct = 0;
   int _incorrect = 0;
@@ -102,6 +105,7 @@ class _MatchImagePhraseScreenState
       _feedback = reinforcement
           ? 'MINI-RONDA: REFUERZA LAS FRASES FALLADAS'
           : 'UNE CADA FRASE CON SU IMAGEN';
+      _feedbackTone = _FeedbackTone.neutral;
       _correct = 0;
       _incorrect = 0;
       _streak = 0;
@@ -167,6 +171,7 @@ class _MatchImagePhraseScreenState
           streak: _streak,
           totalCorrect: _correct,
         );
+        _feedbackTone = _FeedbackTone.success;
       } else {
         _incorrect++;
         _streak = 0;
@@ -176,6 +181,7 @@ class _MatchImagePhraseScreenState
           attemptsOnCurrent: attemptsOnCurrent,
           hint: 'LEE DESPACIO LA FRASE',
         );
+        _feedbackTone = _FeedbackTone.error;
       }
     });
 
@@ -432,6 +438,26 @@ class _MatchImagePhraseScreenState
         ? 324.0
         : 334.0;
     final solvedCount = _matchedByItem.length;
+    final feedbackConfig = switch (_feedbackTone) {
+      _FeedbackTone.success => (
+        const Color(0xFFEAF9EF),
+        const Color(0xFF8DDBA8),
+        const Color(0xFF1B6C3F),
+        Icons.check_circle_rounded,
+      ),
+      _FeedbackTone.error => (
+        const Color(0xFFFFEAEA),
+        const Color(0xFFF2A5A5),
+        const Color(0xFF9D2A2A),
+        Icons.error_rounded,
+      ),
+      _FeedbackTone.neutral => (
+        Colors.white,
+        const Color(0xFFD8E1EE),
+        const Color(0xFF2B3552),
+        Icons.info_outline,
+      ),
+    };
 
     return GameScaffold(
       title: 'RELACIONAR FRASES CON IMÁGENES',
@@ -477,29 +503,30 @@ class _MatchImagePhraseScreenState
                         ),
                         const SizedBox(height: 10),
                       ],
-                      Container(
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 180),
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 14,
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: feedbackConfig.$1,
                           borderRadius: BorderRadius.circular(18),
-                          border: Border.all(color: const Color(0xFFD8E1EE)),
+                          border: Border.all(
+                            color: feedbackConfig.$2,
+                            width: 1.8,
+                          ),
                         ),
                         child: Row(
                           children: [
-                            const Icon(
-                              Icons.info_outline,
-                              color: Color(0xFF5B6A87),
-                            ),
+                            Icon(feedbackConfig.$4, color: feedbackConfig.$3),
                             const SizedBox(width: 10),
                             Expanded(
                               child: UpperText(
                                 _feedback,
-                                style: const TextStyle(
-                                  color: Color(0xFF2B3552),
+                                style: TextStyle(
+                                  color: feedbackConfig.$3,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
