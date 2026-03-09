@@ -21,13 +21,6 @@ import 'progress_dashboard_screen.dart';
 import 'settings_screen.dart';
 import 'therapist_panel_screen.dart';
 
-String _categoryDisplayLabel(AppCategory category) {
-  if (category == AppCategory.mixta) {
-    return 'MIX DE COSAS';
-  }
-  return category.label;
-}
-
 String _titleCase(String value) {
   final words = value
       .trim()
@@ -679,6 +672,7 @@ class _HomeTab extends StatelessWidget {
                     ),
                     _HomeQuickCircle(
                       title: 'Meta hoy',
+                      subtitle: 'Racha ${rewards.currentStreak}',
                       icon: Icons.emoji_events_rounded,
                       ringColor: const Color(0xFFF1C321),
                       fillColor: const Color(0xFFFFF6D7),
@@ -686,75 +680,13 @@ class _HomeTab extends StatelessWidget {
                       onTap: onOpenProgress,
                     ),
                     _HomeQuickCircle(
-                      title: 'Stickers',
-                      icon: Icons.auto_awesome_rounded,
-                      ringColor: const Color(0xFF8E71FF),
-                      fillColor: const Color(0xFFF0EBFF),
-                      iconColor: const Color(0xFF8E71FF),
-                      onTap: onOpenAi,
-                    ),
-                    InkWell(
-                      borderRadius: BorderRadius.circular(18),
+                      title: 'Mix de cosas',
+                      subtitle: _categoryPickerLabel(category),
+                      icon: Icons.category_rounded,
+                      ringColor: category.color.withValues(alpha: 0.82),
+                      fillColor: category.color.withValues(alpha: 0.16),
+                      iconColor: category.color,
                       onTap: onPickCategory,
-                      child: Container(
-                        width: isTablet ? 250 : 220,
-                        height: isTablet ? 120 : 108,
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(18),
-                          border: Border.all(color: const Color(0xFFD6DFEC)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(
-                                0xFF1A2847,
-                              ).withValues(alpha: 0.05),
-                              blurRadius: 14,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: isTablet ? 54 : 48,
-                              height: isTablet ? 54 : 48,
-                              decoration: BoxDecoration(
-                                color: category.color.withValues(alpha: 0.18),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Icon(category.icon, color: category.color),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Text(
-                                    'Categoría',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: Color(0xFF7A87A5),
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  Text(
-                                    _categoryDisplayLabel(category),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: isTablet ? 20 : 17,
-                                      color: const Color(0xFF111D3A),
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
                   ],
                 ),
