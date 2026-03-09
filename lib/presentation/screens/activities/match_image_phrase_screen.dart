@@ -248,74 +248,128 @@ class _MatchImagePhraseScreenState
   }) {
     final matched = _matchedByItem[item.id];
     final expected = _expectedPhraseByItem[item.id] ?? '';
-    final imageZoom = compactDesktop ? 1.35 : 1.0;
+    final imageZoom = compactDesktop ? 1.2 : 1.0;
 
-    return GamePanel(
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        children: [
-          SizedBox(
-            height: imageHeight,
-            child: Transform.scale(
-              scale: imageZoom,
-              child: ActivityAssetImage(
-                assetPath: item.imageAsset,
-                semanticsLabel: expected,
-              ),
+    Widget buildCard(bool isHovering) {
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(color: const Color(0xFFE6EBF3), width: 1.8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
             ),
-          ),
-          const SizedBox(height: 8),
-          if (matched != null)
-            Container(
+          ],
+        ),
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 140),
+              height: imageHeight,
               width: double.infinity,
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: Colors.green.shade100,
-                border: Border.all(color: Colors.green.shade700),
+                color: const Color(0xFFF5F7FA),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: isHovering
+                      ? const Color(0xFF8DBEFF)
+                      : const Color(0xFFE3E8F1),
+                  width: isHovering ? 2.8 : 1.4,
+                ),
               ),
-              child: UpperText(matched, textAlign: TextAlign.center),
-            )
-          else
-            DragTarget<String>(
-              onWillAcceptWithDetails: (details) {
-                return details.data.isNotEmpty;
-              },
-              onAcceptWithDetails: (details) {
-                _handleDrop(item, details.data);
-              },
-              builder: (context, candidateData, rejected) {
-                return Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      width: 2,
-                      color: candidateData.isNotEmpty
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.outline,
-                    ),
-                  ),
-                  child: const UpperText(
-                    'SUELTA AQUÍ',
-                    textAlign: TextAlign.center,
-                  ),
-                );
-              },
-            ),
-          if (showHints && matched == null)
-            Padding(
-              padding: const EdgeInsets.only(top: 6),
-              child: UpperText(
-                'PISTA: ${countWords(expected)} PALABRAS',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
+              child: Transform.scale(
+                scale: imageZoom,
+                child: ActivityAssetImage(
+                  assetPath: item.imageAsset,
+                  semanticsLabel: expected,
+                ),
               ),
             ),
-        ],
-      ),
+            const SizedBox(height: 10),
+            if (matched != null)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(999),
+                  color: const Color(0xFFE8F0FF),
+                  border: Border.all(color: const Color(0xFFBFD4F8), width: 2),
+                ),
+                child: UpperText(
+                  matched,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF152241),
+                  ),
+                ),
+              )
+            else
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 140),
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(999),
+                  color: isHovering
+                      ? const Color(0xFFEAF3FF)
+                      : const Color(0xFFF8FAFD),
+                  border: Border.all(
+                    color: isHovering
+                        ? const Color(0xFF8DBEFF)
+                        : const Color(0xFFD9E1EE),
+                    width: isHovering ? 2.8 : 2,
+                  ),
+                ),
+                child: const UpperText(
+                  'ARRASTRA AQUÍ',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFFA4B3CA),
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ),
+            if (showHints && matched == null)
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: UpperText(
+                  'PISTA: ${countWords(expected)} PALABRAS',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF5B6A87),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      );
+    }
+
+    if (matched != null) {
+      return buildCard(false);
+    }
+
+    return DragTarget<String>(
+      onWillAcceptWithDetails: (details) => details.data.isNotEmpty,
+      onAcceptWithDetails: (details) => _handleDrop(item, details.data),
+      builder: (context, candidateData, rejected) {
+        return buildCard(candidateData.isNotEmpty);
+      },
     );
   }
 
@@ -325,25 +379,26 @@ class _MatchImagePhraseScreenState
     final width = MediaQuery.sizeOf(context).width;
     final isTabletLandscapePrimary = isPrimaryTabletLandscape(context);
     final isMobile = width < 900;
+    final isTablet = width >= 700 && width < 1200;
     final isDesktop = width >= 1000;
-    final contentWidth = isDesktop ? 1180.0 : 900.0;
-    final maxColumnsByWidth = width >= 1450
+    final contentWidth = isDesktop ? 1280.0 : 980.0;
+    final crossAxisCount = isMobile
+        ? 1
+        : isTablet
+        ? 2
+        : width >= 1450
         ? 4
-        : width >= 1180
-        ? 3
-        : 2;
-    final desiredColumns = _items.length >= 4 ? (_items.length / 2).ceil() : 2;
-    final crossAxisCount = desiredColumns.clamp(2, maxColumnsByWidth).toInt();
+        : 3;
     final imageHeight = isTabletLandscapePrimary
-        ? 150.0
+        ? 170.0
         : isDesktop
-        ? 175.0
-        : 190.0;
+        ? 185.0
+        : 194.0;
     final gridItemExtent = isTabletLandscapePrimary
-        ? 254.0
+        ? 306.0
         : isDesktop
-        ? 305.0
-        : 370.0;
+        ? 324.0
+        : 334.0;
     final solvedCount = _matchedByItem.length;
 
     return GameScaffold(
@@ -351,6 +406,7 @@ class _MatchImagePhraseScreenState
       instructionText: 'ARRASTRA LA FRASE HASTA LA IMAGEN CORRECTA',
       progressCurrent: solvedCount,
       progressTotal: _items.length,
+      enableDesktopShell: false,
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _items.isEmpty
@@ -389,12 +445,33 @@ class _MatchImagePhraseScreenState
                         ),
                         const SizedBox(height: 10),
                       ],
-                      GamePanel(
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: const Color(0xFFD8E1EE)),
+                        ),
                         child: Row(
                           children: [
-                            const Icon(Icons.info_outline),
+                            const Icon(
+                              Icons.info_outline,
+                              color: Color(0xFF5B6A87),
+                            ),
                             const SizedBox(width: 10),
-                            Expanded(child: UpperText(_feedback)),
+                            Expanded(
+                              child: UpperText(
+                                _feedback,
+                                style: const TextStyle(
+                                  color: Color(0xFF2B3552),
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -468,86 +545,64 @@ class _MatchImagePhraseScreenState
                                     !_matchedByItem.values.contains(phrase),
                               )
                               .toList();
-                          if (isTabletLandscapePrimary) {
-                            return GridView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: availablePhrases.length,
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3,
-                                    mainAxisSpacing: 8,
-                                    crossAxisSpacing: 8,
-                                    mainAxisExtent: 64,
-                                  ),
-                              itemBuilder: (context, index) {
-                                final phrase = availablePhrases[index];
+
+                          return Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 16,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEFF4FB),
+                              borderRadius: BorderRadius.circular(28),
+                              border: Border.all(
+                                color: const Color(0xFFBFD6F6),
+                                width: 2,
+                              ),
+                            ),
+                            child: Wrap(
+                              alignment: WrapAlignment.center,
+                              spacing: 12,
+                              runSpacing: 12,
+                              children: availablePhrases.map((phrase) {
                                 return Draggable<String>(
                                   data: phrase,
+                                  affinity: Axis.vertical,
+                                  maxSimultaneousDrags: 1,
+                                  dragAnchorStrategy: pointerDragAnchorStrategy,
                                   feedback: Material(
                                     color: Colors.transparent,
                                     child: ConstrainedBox(
                                       constraints: const BoxConstraints(
-                                        maxWidth: 260,
+                                        maxWidth: 280,
                                       ),
                                       child: Chip(
-                                        label: UpperText(phrase, maxLines: 3),
+                                        label: UpperText(phrase, maxLines: 2),
                                       ),
                                     ),
                                   ),
                                   childWhenDragging: Opacity(
                                     opacity: 0.35,
+                                    child: ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        maxWidth: 280,
+                                      ),
+                                      child: Chip(
+                                        label: UpperText(phrase, maxLines: 2),
+                                      ),
+                                    ),
+                                  ),
+                                  child: ConstrainedBox(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 280,
+                                    ),
                                     child: Chip(
                                       label: UpperText(phrase, maxLines: 2),
                                     ),
                                   ),
-                                  child: Chip(
-                                    label: UpperText(phrase, maxLines: 2),
-                                  ),
                                 );
-                              },
-                            );
-                          }
-                          return Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: availablePhrases
-                                .map(
-                                  (phrase) => Draggable<String>(
-                                    data: phrase,
-                                    feedback: Material(
-                                      color: Colors.transparent,
-                                      child: ConstrainedBox(
-                                        constraints: const BoxConstraints(
-                                          maxWidth: 220,
-                                        ),
-                                        child: Chip(
-                                          label: UpperText(phrase, maxLines: 3),
-                                        ),
-                                      ),
-                                    ),
-                                    childWhenDragging: Opacity(
-                                      opacity: 0.35,
-                                      child: ConstrainedBox(
-                                        constraints: const BoxConstraints(
-                                          maxWidth: 220,
-                                        ),
-                                        child: Chip(
-                                          label: UpperText(phrase, maxLines: 3),
-                                        ),
-                                      ),
-                                    ),
-                                    child: ConstrainedBox(
-                                      constraints: const BoxConstraints(
-                                        maxWidth: 220,
-                                      ),
-                                      child: Chip(
-                                        label: UpperText(phrase, maxLines: 3),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                                .toList(),
+                              }).toList(),
+                            ),
                           );
                         },
                       ),
