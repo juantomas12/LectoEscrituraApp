@@ -18,6 +18,7 @@ class LocalDatasetRepository implements DatasetRepository {
   final List<Item> _allItems = [];
   final Random _random = Random();
   final Map<String, String> _imageOverrides = {};
+  final Set<String> _availableAssets = <String>{};
 
   Future<Set<String>> _loadAvailableAssets() async {
     try {
@@ -66,6 +67,9 @@ class LocalDatasetRepository implements DatasetRepository {
     final decoded = jsonDecode(raw) as Map<String, dynamic>;
     final items = decoded['items'] as List<dynamic>? ?? const [];
     final availableAssets = await _loadAvailableAssets();
+    _availableAssets
+      ..clear()
+      ..addAll(availableAssets);
 
     _allItems
       ..clear()
@@ -95,9 +99,28 @@ class LocalDatasetRepository implements DatasetRepository {
 
   @override
   void setImageOverrides(Map<String, String> overrides) {
+    final filtered = <String, String>{};
+    for (final entry in overrides.entries) {
+      final itemId = entry.key.trim();
+      final path = entry.value.trim();
+      if (itemId.isEmpty || path.isEmpty) {
+        continue;
+      }
+
+      // Keep only valid packaged assets; invalid/stale overrides fall back to
+      // dataset image so activities never show broken image slots.
+      final isValidPackagedAsset = _availableAssets.contains(path);
+      final isBestEffortAssetPath =
+          _availableAssets.isEmpty && path.startsWith('assets/images/');
+      if (!isValidPackagedAsset && !isBestEffortAssetPath) {
+        continue;
+      }
+      filtered[itemId] = path;
+    }
+
     _imageOverrides
       ..clear()
-      ..addAll(overrides);
+      ..addAll(filtered);
   }
 
   @override
