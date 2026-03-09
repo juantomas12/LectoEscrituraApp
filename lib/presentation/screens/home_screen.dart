@@ -694,58 +694,23 @@ class _HomeTab extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: const Color(0xFFE3E8F1)),
                   ),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      if (constraints.maxWidth < 760) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Precisión de hoy: $accuracy% · Racha ${rewards.currentStreak} días',
-                              style: const TextStyle(
-                                color: Color(0xFF516282),
-                                fontWeight: FontWeight.w700,
-                                fontSize: 15,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: FilledButton.icon(
-                                onPressed: onOpenAi,
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: const Color(0xFFEF5B10),
-                                  foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(999),
-                                  ),
-                                ),
-                                icon: const Icon(
-                                  Icons.auto_awesome_rounded,
-                                  size: 18,
-                                ),
-                                label: const Text(
-                                  'IA',
-                                  style: TextStyle(fontWeight: FontWeight.w900),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      }
-                      return Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Precisión de hoy: $accuracy% · Racha ${rewards.currentStreak} días',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Color(0xFF516282),
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
                         children: [
-                          Expanded(
-                            child: Text(
-                              'Precisión de hoy: $accuracy% · Racha ${rewards.currentStreak} días',
-                              style: const TextStyle(
-                                color: Color(0xFF516282),
-                                fontWeight: FontWeight.w700,
-                                fontSize: 15,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
+                          const Spacer(),
                           FilledButton.icon(
                             onPressed: onOpenAi,
                             style: FilledButton.styleFrom(
@@ -765,8 +730,8 @@ class _HomeTab extends StatelessWidget {
                             ),
                           ),
                         ],
-                      );
-                    },
+                      ),
+                    ],
                   ),
                 ),
               ],
