@@ -786,19 +786,37 @@ class _AiResourceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final type = ActivityTypeX.fromKey(resource.requestedActivityTypeKey);
     final createdAt = resource.createdAt;
+    final palette = _ResourcePalette.fromType(type);
 
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFD6DFEE)),
+        border: Border.all(color: palette.borderColor, width: 1.6),
+        boxShadow: [
+          BoxShadow(
+            color: palette.accent.withValues(alpha: 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: palette.softBackground,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(palette.icon, color: palette.accent, size: 24),
+              ),
+              const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   resource.title,
@@ -820,7 +838,7 @@ class _AiResourceCard extends StatelessWidget {
                   resource.isFavorite
                       ? Icons.bookmark_rounded
                       : Icons.bookmark_border_rounded,
-                  color: const Color(0xFF2C7BEA),
+                  color: palette.accent,
                 ),
               ),
               IconButton(
@@ -851,15 +869,24 @@ class _AiResourceCard extends StatelessWidget {
             spacing: 6,
             runSpacing: 6,
             children: [
-              _InfoChip(label: gameLabel(type), icon: Icons.games_rounded),
+              _InfoChip(
+                label: gameLabel(type),
+                icon: Icons.games_rounded,
+                backgroundColor: palette.softBackground,
+                foregroundColor: palette.accent,
+              ),
               _InfoChip(
                 label: resource.categoryLabel,
                 icon: Icons.category_rounded,
+                backgroundColor: palette.softBackground,
+                foregroundColor: palette.accent,
               ),
               _InfoChip(
                 label:
                     '${createdAt.day.toString().padLeft(2, '0')}/${createdAt.month.toString().padLeft(2, '0')}/${createdAt.year}',
                 icon: Icons.event_rounded,
+                backgroundColor: palette.softBackground,
+                foregroundColor: palette.accent,
               ),
             ],
           ),
@@ -872,7 +899,7 @@ class _AiResourceCard extends StatelessWidget {
                   icon: const Icon(Icons.play_arrow_rounded),
                   label: const Text('Jugar'),
                   style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF2C7BEA),
+                    backgroundColor: palette.playButton,
                     foregroundColor: Colors.white,
                     minimumSize: const Size.fromHeight(42),
                     textStyle: const TextStyle(
@@ -896,8 +923,8 @@ class _AiResourceCard extends StatelessWidget {
                 ),
                 label: Text(resource.isFavorite ? 'Guardado' : 'Guardar'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF2C7BEA),
-                  side: const BorderSide(color: Color(0xFF2C7BEA)),
+                  foregroundColor: palette.accent,
+                  side: BorderSide(color: palette.accent),
                   minimumSize: const Size(112, 42),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -913,34 +940,125 @@ class _AiResourceCard extends StatelessWidget {
 }
 
 class _InfoChip extends StatelessWidget {
-  const _InfoChip({required this.label, required this.icon});
+  const _InfoChip({
+    required this.label,
+    required this.icon,
+    this.backgroundColor = const Color(0xFFF2F6FD),
+    this.foregroundColor = const Color(0xFF406196),
+  });
 
   final String label;
   final IconData icon;
+  final Color backgroundColor;
+  final Color foregroundColor;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        color: const Color(0xFFF2F6FD),
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: const Color(0xFF406196)),
+          Icon(icon, size: 14, color: foregroundColor),
           const SizedBox(width: 4),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF406196),
+              color: foregroundColor,
             ),
           ),
         ],
       ),
     );
+  }
+}
+
+class _ResourcePalette {
+  const _ResourcePalette({
+    required this.accent,
+    required this.playButton,
+    required this.softBackground,
+    required this.borderColor,
+    required this.icon,
+  });
+
+  final Color accent;
+  final Color playButton;
+  final Color softBackground;
+  final Color borderColor;
+  final IconData icon;
+
+  factory _ResourcePalette.fromType(ActivityType type) {
+    return switch (type) {
+      ActivityType.imagenPalabra => const _ResourcePalette(
+        accent: Color(0xFFFF9F43),
+        playButton: Color(0xFF2ECC71),
+        softBackground: Color(0xFFFFF1E3),
+        borderColor: Color(0xFFFFD7B2),
+        icon: Icons.abc_rounded,
+      ),
+      ActivityType.escribirPalabra => const _ResourcePalette(
+        accent: Color(0xFF10A5B5),
+        playButton: Color(0xFF20B486),
+        softBackground: Color(0xFFE4F7FA),
+        borderColor: Color(0xFFB9E9F0),
+        icon: Icons.edit_note_rounded,
+      ),
+      ActivityType.palabraPalabra => const _ResourcePalette(
+        accent: Color(0xFF2B8CEE),
+        playButton: Color(0xFF2ECC71),
+        softBackground: Color(0xFFE7F1FF),
+        borderColor: Color(0xFFBED7FA),
+        icon: Icons.house_rounded,
+      ),
+      ActivityType.imagenFrase => const _ResourcePalette(
+        accent: Color(0xFF7A6BF8),
+        playButton: Color(0xFF2ECC71),
+        softBackground: Color(0xFFEEEAFE),
+        borderColor: Color(0xFFD7CCFB),
+        icon: Icons.chat_bubble_rounded,
+      ),
+      ActivityType.letraObjetivo => const _ResourcePalette(
+        accent: Color(0xFFEF7D32),
+        playButton: Color(0xFF2ECC71),
+        softBackground: Color(0xFFFFEEDC),
+        borderColor: Color(0xFFFFD5AF),
+        icon: Icons.spellcheck_rounded,
+      ),
+      ActivityType.cambioExacto => const _ResourcePalette(
+        accent: Color(0xFF1DAA62),
+        playButton: Color(0xFF1DAA62),
+        softBackground: Color(0xFFE3F6EA),
+        borderColor: Color(0xFFBAE9CB),
+        icon: Icons.shopping_bag_rounded,
+      ),
+      ActivityType.ruletaLetras => const _ResourcePalette(
+        accent: Color(0xFF7D54D8),
+        playButton: Color(0xFF2ECC71),
+        softBackground: Color(0xFFEDE6FD),
+        borderColor: Color(0xFFD4C4F6),
+        icon: Icons.casino_rounded,
+      ),
+      ActivityType.discriminacion => const _ResourcePalette(
+        accent: Color(0xFF0F9C78),
+        playButton: Color(0xFF2ECC71),
+        softBackground: Color(0xFFE1F6F0),
+        borderColor: Color(0xFFBAEBDD),
+        icon: Icons.filter_center_focus_rounded,
+      ),
+      ActivityType.discriminacionInversa => const _ResourcePalette(
+        accent: Color(0xFFA55EEA),
+        playButton: Color(0xFF2ECC71),
+        softBackground: Color(0xFFF1E8FD),
+        borderColor: Color(0xFFE0CDF7),
+        icon: Icons.pets_rounded,
+      ),
+    };
   }
 }
