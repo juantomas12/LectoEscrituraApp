@@ -5,13 +5,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../application/providers/app_providers.dart';
 import '../../../core/utils/text_utils.dart';
+import '../../../domain/models/activity_result.dart';
 import '../../../domain/models/activity_type.dart';
 import '../../../domain/models/category.dart';
 import '../../../domain/models/difficulty.dart';
 import '../../../domain/models/item.dart';
+import '../../../domain/models/level.dart';
+import '../../viewmodels/progress_view_model.dart';
 import '../../widgets/activity_asset_image.dart';
 import '../../widgets/game_style.dart';
 import '../../widgets/upper_text.dart';
+import '../results_screen.dart';
 
 enum _RouletteMode { vocal, nivel }
 
@@ -54,6 +58,9 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
 
   List<Item> _initialPool = [];
   List<Item> _pool = [];
+  int _incorrectAnswers = 0;
+  DateTime _startedAt = DateTime.now();
+  bool _isFinishing = false;
 
   @override
   void initState() {
@@ -80,6 +87,9 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
       _feedback = items.isEmpty
           ? 'NO HAY OBJETOS DISPONIBLES PARA LA RULETA'
           : 'ELIGE VOCAL O NIVEL Y GIRA PARA VER OBJETOS CON ESA VOCAL';
+      _incorrectAnswers = 0;
+      _startedAt = DateTime.now();
+      _isFinishing = false;
     });
     if (items.isNotEmpty) {
       _refreshWheelPreview();
@@ -153,7 +163,7 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
     return 8;
   }
 
-  void _markCurrentAsSolved() {
+  Future<void> _markCurrentAsSolved() async {
     final selected = _selectedItem;
     if (selected == null || _isSpinning || !_awaitingWordChoice) {
       return;
@@ -180,6 +190,10 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
             : '¡CORRECTO! $solvedWord ELIMINADA. QUEDAN $remaining.';
       }
     });
+
+    if (remaining == 0) {
+      await _finishLevel();
+    }
   }
 
   void _restartGame() {
@@ -202,6 +216,9 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
       _isSpinning = false;
       _turns = 0;
       _feedback = 'ELIGE VOCAL O NIVEL Y GIRA PARA VER OBJETOS CON ESA VOCAL';
+      _incorrectAnswers = 0;
+      _startedAt = DateTime.now();
+      _isFinishing = false;
     });
     _refreshWheelPreview();
   }
@@ -385,6 +402,9 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
       _selectedItem = null;
       _awaitingWordChoice = false;
       _turns = 0;
+      _incorrectAnswers = 0;
+      _startedAt = DateTime.now();
+      _isFinishing = false;
       _activeVowel = previewBatch.isEmpty ? '?' : chosenVowel;
       if (previewBatch.isEmpty) {
         _feedback = 'NO HAY PALABRAS VÁLIDAS PARA LOS FILTROS ACTUALES';
@@ -421,11 +441,53 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
         normalizeForComparison(expected, ignoreAccents: true);
     if (!isCorrect) {
       setState(() {
+        _incorrectAnswers++;
         _feedback = 'INTENTA OTRA VEZ: OBSERVA EL OBJETO Y ELIGE SU PALABRA';
       });
       return;
     }
     _markCurrentAsSolved();
+  }
+
+  Future<void> _finishLevel() async {
+    if (!mounted || _isFinishing) {
+      return;
+    }
+    _isFinishing = true;
+
+    final totalSolved = _batchInitialItems.length;
+    final result = ActivityResult(
+      id: 'RES-${DateTime.now().millisecondsSinceEpoch}',
+      category: widget.category,
+      level: AppLevel.uno,
+      activityType: ActivityType.ruletaLetras,
+      correct: totalSolved,
+      incorrect: _incorrectAnswers,
+      durationInSeconds: DateTime.now().difference(_startedAt).inSeconds,
+      bestStreak: totalSolved,
+      createdAt: DateTime.now(),
+    );
+
+    await ref.read(progressViewModelProvider.notifier).saveResult(result);
+    if (!mounted) {
+      return;
+    }
+
+    final action = await Navigator.of(context).push<ResultAction>(
+      MaterialPageRoute(
+        builder: (_) =>
+            ResultsScreen(result: result, canReinforceErrors: false),
+      ),
+    );
+    if (!mounted) {
+      return;
+    }
+
+    if (action == ResultAction.repetir) {
+      _restartGame();
+      return;
+    }
+    Navigator.of(context).pop();
   }
 
   Widget _buildTabletLandscapeBody({
@@ -691,11 +753,10 @@ class _RouletteLettersScreenState extends ConsumerState<RouletteLettersScreen> {
     final isTablet = width >= 720;
 
     final totalWords = _totalWordsForCurrentCategory();
-    final remainingWords = _wheelItems.isNotEmpty
-        ? _wheelItems.length
-        : totalWords;
-    final solvedWords = max(0, totalWords - remainingWords);
-    final completed = _batchInitialItems.isNotEmpty && _wheelItems.isEmpty;
+    final hasBatch = _batchInitialItems.isNotEmpty;
+    final remainingWords = hasBatch ? _wheelItems.length : totalWords;
+    final solvedWords = hasBatch ? max(0, totalWords - remainingWords) : 0;
+    final completed = hasBatch && _wheelItems.isEmpty;
     final wheelItems = _wheelItems;
 
     if (isTabletLandscape) {
