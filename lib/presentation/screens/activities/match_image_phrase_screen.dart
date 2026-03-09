@@ -44,6 +44,7 @@ class _MatchImagePhraseScreenState
   final Map<String, int> _attemptsByItem = {};
   List<String> _phrases = [];
   final Map<String, String> _matchedByItem = {};
+  final Set<String> _errorHighlightItemIds = {};
 
   bool _isLoading = true;
   String _feedback = 'UNE CADA FRASE CON SU IMAGEN';
@@ -94,6 +95,7 @@ class _MatchImagePhraseScreenState
         ..addAll(phraseMap);
       _phrases = phrases;
       _matchedByItem.clear();
+      _errorHighlightItemIds.clear();
       _failedItemIds.clear();
       _attemptsByItem.clear();
       _isReinforcementRound = reinforcement;
@@ -156,6 +158,7 @@ class _MatchImagePhraseScreenState
     setState(() {
       _attemptsByItem[item.id] = attemptsOnCurrent;
       if (isCorrect) {
+        _errorHighlightItemIds.remove(item.id);
         _matchedByItem[item.id] = phrase;
         _correct++;
         _streak++;
@@ -168,12 +171,23 @@ class _MatchImagePhraseScreenState
         _incorrect++;
         _streak = 0;
         _failedItemIds.add(item.id);
+        _errorHighlightItemIds.add(item.id);
         _feedback = PedagogicalFeedback.retry(
           attemptsOnCurrent: attemptsOnCurrent,
           hint: 'LEE DESPACIO LA FRASE',
         );
       }
     });
+
+    if (!isCorrect) {
+      await Future<void>.delayed(const Duration(seconds: 1));
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _errorHighlightItemIds.remove(item.id);
+      });
+    }
 
     if (_matchedByItem.length == _items.length && _items.isNotEmpty) {
       await _finishActivity();
@@ -249,8 +263,22 @@ class _MatchImagePhraseScreenState
     final matched = _matchedByItem[item.id];
     final expected = _expectedPhraseByItem[item.id] ?? '';
     final imageZoom = compactDesktop ? 1.2 : 1.0;
+    final hasErrorFlash = _errorHighlightItemIds.contains(item.id);
 
     Widget buildCard(bool isHovering) {
+      final imageCardBorder = matched != null
+          ? const Color(0xFF7FD39A)
+          : hasErrorFlash
+          ? const Color(0xFFF06A6A)
+          : isHovering
+          ? const Color(0xFF8DBEFF)
+          : const Color(0xFFE3E8F1);
+      final imageCardFill = matched != null
+          ? const Color(0xFFEAF9EF)
+          : hasErrorFlash
+          ? const Color(0xFFFFEFEF)
+          : const Color(0xFFF5F7FA);
+
       return Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -273,13 +301,13 @@ class _MatchImagePhraseScreenState
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF5F7FA),
+                color: imageCardFill,
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: isHovering
-                      ? const Color(0xFF8DBEFF)
-                      : const Color(0xFFE3E8F1),
-                  width: isHovering ? 2.8 : 1.4,
+                  color: imageCardBorder,
+                  width: matched != null || hasErrorFlash || isHovering
+                      ? 2.8
+                      : 1.4,
                 ),
               ),
               child: Transform.scale(
@@ -300,8 +328,8 @@ class _MatchImagePhraseScreenState
                 ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(999),
-                  color: const Color(0xFFE8F0FF),
-                  border: Border.all(color: const Color(0xFFBFD4F8), width: 2),
+                  color: const Color(0xFFEAF9EF),
+                  border: Border.all(color: const Color(0xFF7FD39A), width: 2),
                 ),
                 child: UpperText(
                   matched,
@@ -309,7 +337,7 @@ class _MatchImagePhraseScreenState
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
-                    color: Color(0xFF152241),
+                    color: Color(0xFF1B6C3F),
                   ),
                 ),
               )
@@ -323,14 +351,18 @@ class _MatchImagePhraseScreenState
                 ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(999),
-                  color: isHovering
+                  color: hasErrorFlash
+                      ? const Color(0xFFFFEAEA)
+                      : isHovering
                       ? const Color(0xFFEAF3FF)
                       : const Color(0xFFF8FAFD),
                   border: Border.all(
-                    color: isHovering
+                    color: hasErrorFlash
+                        ? const Color(0xFFF06A6A)
+                        : isHovering
                         ? const Color(0xFF8DBEFF)
                         : const Color(0xFFD9E1EE),
-                    width: isHovering ? 2.8 : 2,
+                    width: hasErrorFlash || isHovering ? 2.8 : 2,
                   ),
                 ),
                 child: const UpperText(
