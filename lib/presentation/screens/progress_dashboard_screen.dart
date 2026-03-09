@@ -12,9 +12,14 @@ import '../viewmodels/progress_view_model.dart';
 import '../widgets/upper_text.dart';
 
 class ProgressDashboardScreen extends ConsumerWidget {
-  const ProgressDashboardScreen({super.key, required this.category});
+  const ProgressDashboardScreen({
+    super.key,
+    required this.category,
+    this.embedded = false,
+  });
 
   final AppCategory category;
+  final bool embedded;
 
   static const _trackedGames = [
     ActivityType.imagenPalabra,
@@ -111,6 +116,106 @@ class ProgressDashboardScreen extends ConsumerWidget {
         .toSet()
         .length;
 
+    final bodyContent = Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1280),
+        child: ListView(
+          padding: EdgeInsets.fromLTRB(24, embedded ? 20 : 12, 24, 24),
+          children: [
+            const UpperText(
+              '¡TU GRAN PROGRESO!',
+              style: TextStyle(
+                fontSize: 50,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF111A39),
+              ),
+            ),
+            const SizedBox(height: 4),
+            const UpperText(
+              'MIRA TODO LO QUE HAS APRENDIDO Y LOGRADO HOY',
+              style: TextStyle(
+                fontSize: 18,
+                color: Color(0xFF6A7894),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 18),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final compact = constraints.maxWidth < 640;
+                final cards = [
+                  _SummaryCard(
+                    icon: Icons.school_rounded,
+                    title: 'SESIONES TOTALES',
+                    value: '${filteredResults.length}',
+                    bubbleColor: const Color(0xFFDCEBFF),
+                    iconColor: const Color(0xFF2B8CEE),
+                  ),
+                  _SummaryCard(
+                    icon: Icons.star_rounded,
+                    title: 'ACIERTOS TOTALES',
+                    value: '$totalCorrectGlobal',
+                    bubbleColor: const Color(0xFFFFF2C9),
+                    iconColor: const Color(0xFFE3A904),
+                  ),
+                  _SummaryCard(
+                    icon: Icons.calendar_month_rounded,
+                    title: 'DÍAS ACTIVO',
+                    value: '$daysActive',
+                    bubbleColor: const Color(0xFFDDF7E8),
+                    iconColor: const Color(0xFF1CAA64),
+                  ),
+                ];
+
+                if (compact) {
+                  return Column(
+                    children: [
+                      for (final card in cards) ...[
+                        card,
+                        const SizedBox(height: 10),
+                      ],
+                    ],
+                  );
+                }
+
+                return Row(
+                  children: [
+                    for (var i = 0; i < cards.length; i++) ...[
+                      Expanded(child: cards[i]),
+                      if (i != cards.length - 1) const SizedBox(width: 12),
+                    ],
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 24),
+            const UpperText(
+              'DETALLE DE ACTIVIDADES',
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF1A2340),
+              ),
+            ),
+            const SizedBox(height: 12),
+            for (var i = 0; i < gameStats.length; i++) ...[
+              _ActivityProgressCard(
+                stats: gameStats[i],
+                accent: _accents[i % _accents.length],
+                onDetails: () =>
+                    _showGameDetails(context: context, stats: gameStats[i]),
+              ),
+              const SizedBox(height: 12),
+            ],
+          ],
+        ),
+      ),
+    );
+
+    if (embedded) {
+      return ColoredBox(color: _bg, child: bodyContent);
+    }
+
     return Scaffold(
       backgroundColor: _bg,
       appBar: AppBar(
@@ -118,101 +223,7 @@ class ProgressDashboardScreen extends ConsumerWidget {
         surfaceTintColor: Colors.transparent,
         title: const UpperText('PANEL DE PROGRESO'),
       ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 1280),
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-            children: [
-              const UpperText(
-                '¡TU GRAN PROGRESO!',
-                style: TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.w900,
-                  color: Color(0xFF111A39),
-                ),
-              ),
-              const SizedBox(height: 4),
-              const UpperText(
-                'MIRA TODO LO QUE HAS APRENDIDO Y LOGRADO HOY',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Color(0xFF6A7894),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 18),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final compact = constraints.maxWidth < 640;
-                  final cards = [
-                    _SummaryCard(
-                      icon: Icons.school_rounded,
-                      title: 'SESIONES TOTALES',
-                      value: '${filteredResults.length}',
-                      bubbleColor: const Color(0xFFDCEBFF),
-                      iconColor: const Color(0xFF2B8CEE),
-                    ),
-                    _SummaryCard(
-                      icon: Icons.star_rounded,
-                      title: 'ACIERTOS TOTALES',
-                      value: '$totalCorrectGlobal',
-                      bubbleColor: const Color(0xFFFFF2C9),
-                      iconColor: const Color(0xFFE3A904),
-                    ),
-                    _SummaryCard(
-                      icon: Icons.calendar_month_rounded,
-                      title: 'DÍAS ACTIVO',
-                      value: '$daysActive',
-                      bubbleColor: const Color(0xFFDDF7E8),
-                      iconColor: const Color(0xFF1CAA64),
-                    ),
-                  ];
-
-                  if (compact) {
-                    return Column(
-                      children: [
-                        for (final card in cards) ...[
-                          card,
-                          const SizedBox(height: 10),
-                        ],
-                      ],
-                    );
-                  }
-
-                  return Row(
-                    children: [
-                      for (var i = 0; i < cards.length; i++) ...[
-                        Expanded(child: cards[i]),
-                        if (i != cards.length - 1) const SizedBox(width: 12),
-                      ],
-                    ],
-                  );
-                },
-              ),
-              const SizedBox(height: 24),
-              const UpperText(
-                'DETALLE DE ACTIVIDADES',
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w900,
-                  color: Color(0xFF1A2340),
-                ),
-              ),
-              const SizedBox(height: 12),
-              for (var i = 0; i < gameStats.length; i++) ...[
-                _ActivityProgressCard(
-                  stats: gameStats[i],
-                  accent: _accents[i % _accents.length],
-                  onDetails: () =>
-                      _showGameDetails(context: context, stats: gameStats[i]),
-                ),
-                const SizedBox(height: 12),
-              ],
-            ],
-          ),
-        ),
-      ),
+      body: bodyContent,
     );
   }
 
