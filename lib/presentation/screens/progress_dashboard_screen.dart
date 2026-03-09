@@ -144,7 +144,7 @@ class ProgressDashboardScreen extends ConsumerWidget {
               const SizedBox(height: 18),
               LayoutBuilder(
                 builder: (context, constraints) {
-                  final compact = constraints.maxWidth < 980;
+                  final compact = constraints.maxWidth < 640;
                   final cards = [
                     _SummaryCard(
                       icon: Icons.school_rounded,
