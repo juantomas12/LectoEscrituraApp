@@ -5,6 +5,7 @@ import '../../application/providers/app_providers.dart';
 import '../../domain/models/app_settings.dart';
 import '../../domain/models/activity_type.dart';
 import '../../domain/models/category.dart';
+import '../utils/category_visuals.dart';
 import '../viewmodels/home_selection_view_model.dart';
 import '../viewmodels/progress_view_model.dart';
 import '../viewmodels/settings_view_model.dart';
@@ -693,35 +694,79 @@ class _HomeTab extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: const Color(0xFFE3E8F1)),
                   ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Precisión de hoy: $accuracy% · Racha ${rewards.currentStreak} días',
-                          style: const TextStyle(
-                            color: Color(0xFF516282),
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      if (constraints.maxWidth < 760) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Precisión de hoy: $accuracy% · Racha ${rewards.currentStreak} días',
+                              style: const TextStyle(
+                                color: Color(0xFF516282),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 15,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: FilledButton.icon(
+                                onPressed: onOpenAi,
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: const Color(0xFFEF5B10),
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(999),
+                                  ),
+                                ),
+                                icon: const Icon(
+                                  Icons.auto_awesome_rounded,
+                                  size: 18,
+                                ),
+                                label: const Text(
+                                  'IA',
+                                  style: TextStyle(fontWeight: FontWeight.w900),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Precisión de hoy: $accuracy% · Racha ${rewards.currentStreak} días',
+                              style: const TextStyle(
+                                color: Color(0xFF516282),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 15,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      FilledButton.icon(
-                        onPressed: onOpenAi,
-                        style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xFFEF5B10),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(999),
+                          const SizedBox(width: 10),
+                          FilledButton.icon(
+                            onPressed: onOpenAi,
+                            style: FilledButton.styleFrom(
+                              backgroundColor: const Color(0xFFEF5B10),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                            ),
+                            icon: const Icon(
+                              Icons.auto_awesome_rounded,
+                              size: 18,
+                            ),
+                            label: const Text(
+                              'IA',
+                              style: TextStyle(fontWeight: FontWeight.w900),
+                            ),
                           ),
-                        ),
-                        icon: const Icon(Icons.auto_awesome_rounded, size: 18),
-                        label: const Text(
-                          'IA',
-                          style: TextStyle(fontWeight: FontWeight.w900),
-                        ),
-                      ),
-                    ],
+                        ],
+                      );
+                    },
                   ),
                 ),
               ],
@@ -868,6 +913,98 @@ class _IslandHubScreen extends StatefulWidget {
 class _IslandHubScreenState extends State<_IslandHubScreen> {
   late AppCategory _selectedCategory = widget.initialCategory;
 
+  Future<void> _openCategorySelector() async {
+    final picked = await showModalBottomSheet<AppCategory>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Modificar categoría',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF131C37),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: widget.categories.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 8),
+                    itemBuilder: (context, index) {
+                      final category = widget.categories[index];
+                      final selected = category == _selectedCategory;
+                      return Material(
+                        color: selected
+                            ? widget.island.accentColor.withValues(alpha: 0.14)
+                            : const Color(0xFFF5F8FD),
+                        borderRadius: BorderRadius.circular(14),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(14),
+                          onTap: () => Navigator.of(context).pop(category),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 12,
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  category.icon,
+                                  color: selected
+                                      ? widget.island.accentColor
+                                      : const Color(0xFF5D6F94),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    _categoryPickerLabel(
+                                      category,
+                                    ).toUpperCase(),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      color: selected
+                                          ? widget.island.accentColor
+                                          : const Color(0xFF1A2745),
+                                    ),
+                                  ),
+                                ),
+                                if (selected)
+                                  Icon(
+                                    Icons.check_circle_rounded,
+                                    color: widget.island.accentColor,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() => _selectedCategory = picked);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isTablet = MediaQuery.sizeOf(context).width >= 900;
@@ -902,7 +1039,7 @@ class _IslandHubScreenState extends State<_IslandHubScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Elige categoría y luego el subjuego.',
+                  'Elige la categoría activa y luego el tipo de juego.',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.blueGrey.shade600,
@@ -910,35 +1047,67 @@ class _IslandHubScreenState extends State<_IslandHubScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: widget.categories.map((category) {
-                    final selected = category == _selectedCategory;
-                    return ChoiceChip(
-                      label: Text(_categoryPickerLabel(category).toUpperCase()),
-                      selected: selected,
-                      onSelected: (_) {
-                        setState(() => _selectedCategory = category);
-                      },
-                      selectedColor: widget.island.accentColor.withValues(
-                        alpha: 0.16,
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFFDCE5F2)),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Categoría activa: ${_categoryPickerLabel(_selectedCategory).toUpperCase()}',
+                          style: const TextStyle(
+                            color: Color(0xFF3B4F77),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ),
-                      side: BorderSide(
-                        color: selected
-                            ? widget.island.accentColor
-                            : const Color(0xFFD5DEEC),
+                      const SizedBox(width: 10),
+                      OutlinedButton.icon(
+                        onPressed: _openCategorySelector,
+                        icon: const Icon(Icons.tune_rounded, size: 18),
+                        label: const Text(
+                          'MODIFICAR CATEGORÍA',
+                          style: TextStyle(fontWeight: FontWeight.w900),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: widget.island.accentColor,
+                          side: BorderSide(color: widget.island.accentColor),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                        ),
                       ),
-                      labelStyle: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        color: selected
-                            ? widget.island.accentColor
-                            : const Color(0xFF4F6289),
-                      ),
-                    );
-                  }).toList(),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 18),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.extension_rounded,
+                      color: Color(0xFFEF5B10),
+                      size: 20,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Tipos de juego (${widget.games.length})',
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF1A2745),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
                 GridView.builder(
                   itemCount: widget.games.length,
                   shrinkWrap: true,
@@ -947,7 +1116,7 @@ class _IslandHubScreenState extends State<_IslandHubScreen> {
                     crossAxisCount: isTablet ? 2 : 1,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
-                    childAspectRatio: isTablet ? 2.8 : 2.2,
+                    childAspectRatio: isTablet ? 2.2 : 1.9,
                   ),
                   itemBuilder: (context, index) {
                     final game = widget.games[index];
@@ -976,6 +1145,7 @@ class _IslandHubScreenState extends State<_IslandHubScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
                                   game.title.toUpperCase(),
@@ -990,7 +1160,7 @@ class _IslandHubScreenState extends State<_IslandHubScreen> {
                                 const SizedBox(height: 2),
                                 Text(
                                   game.subtitle,
-                                  maxLines: 2,
+                                  maxLines: 3,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     fontSize: 13,
