@@ -1,10 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/app_providers.dart';
+import '../../core/utils/text_utils.dart';
 import '../../data/services/openai_session_copilot_service.dart';
 import '../../domain/models/ai_resource.dart';
+import '../../domain/models/activity_type.dart';
+import '../../domain/models/category.dart';
 import '../../domain/models/session_block.dart';
 import '../../domain/models/session_plan.dart';
+import 'ai_resource_studio_view_model.dart';
 import 'settings_view_model.dart';
 
 class SessionCopilotMessage {
@@ -64,6 +68,28 @@ class SessionWorkspaceState {
 }
 
 class SessionWorkspaceViewModel extends Notifier<SessionWorkspaceState> {
+  static const Set<String> _gameActionKeywords = {
+    'CREA',
+    'CREAR',
+    'GENERA',
+    'GENERAR',
+    'HAZ',
+    'HACER',
+    'QUIERO',
+    'NECESITO',
+    'PON',
+    'PONER',
+    'CAMBIA',
+    'CAMBIAR',
+    'USA',
+    'USAR',
+    'INCLUYE',
+    'AÑADE',
+    'ANADE',
+    'METE',
+    'METER',
+  };
+
   @override
   SessionWorkspaceState build() {
     final all = ref.read(sessionPlanRepositoryProvider).getAll();
@@ -263,6 +289,261 @@ class SessionWorkspaceViewModel extends Notifier<SessionWorkspaceState> {
     ];
   }
 
+  Future<_GameResolution?> _resolveGameResourceIfRequested({
+    required String prompt,
+    required SessionPlan session,
+    required String apiKey,
+    required String model,
+  }) async {
+    final request = _extractGameRequest(prompt);
+    if (request == null) {
+      return null;
+    }
+
+    final repository = ref.read(aiResourceRepositoryProvider);
+    final existing =
+        repository.findBestMatch(request.query) ??
+        repository.findBestMatch(prompt);
+    if (existing != null) {
+      return _GameResolution(
+        session: _linkSessionToResource(session, existing),
+        note: 'Juego encontrado en la base y vinculado: ${existing.title}.',
+      );
+    }
+
+    final generated = await ref
+        .read(openAiResourceGeneratorServiceProvider)
+        .generateResource(
+          instruction: _buildAutoGameInstruction(
+            prompt: prompt,
+            session: session,
+            gameName: request.displayName,
+          ),
+          ageRange: session.ageRange,
+          duration: session.durationLabel,
+          mode: session.modeLabel,
+          categoryLabel: session.domain,
+          difficultyLabel: 'AUTO POR EDAD',
+          apiKey: apiKey,
+          allowedWords: _availableWordsForSession(session.domain),
+          model: model,
+        );
+
+    await repository.save(generated);
+    ref.read(aiResourceStudioViewModelProvider.notifier).refresh();
+    return _GameResolution(
+      session: _linkSessionToResource(session, generated),
+      note:
+          'El juego no estaba en la base. Lo creé y guardé automáticamente: ${generated.title}.',
+    );
+  }
+
+  _GameRequest? _extractGameRequest(String prompt) {
+    final normalized = normalizeForComparison(prompt, ignoreAccents: true);
+    final hasAction = _containsAnyKeyword(normalized, _gameActionKeywords);
+    final extracted = _extractGameNameFromPrompt(prompt);
+    if (!hasAction || extracted.trim().isEmpty) {
+      return null;
+    }
+    final query = extracted.trim().isEmpty ? prompt.trim() : extracted.trim();
+    final boundedQuery = query.length > 120 ? query.substring(0, 120) : query;
+    final displayName = extracted.trim().isEmpty
+        ? 'JUEGO SOLICITADO'
+        : extracted.trim().toUpperCase();
+    return _GameRequest(query: boundedQuery.trim(), displayName: displayName);
+  }
+
+  String _extractGameNameFromPrompt(String prompt) {
+    final normalized = normalizeForComparison(prompt, ignoreAccents: true);
+    const knownGames = [
+      'RULETA DE PALABRAS',
+      'RULETA',
+      'JUEGO DE MEMORIA',
+      'MEMORIA',
+      'SOPA DE LETRAS',
+      'PALABRAS ENCADENADAS',
+      'ADIVINA LA PALABRA',
+      'ADIVINA',
+      'BINGO',
+      'TRIVIA',
+    ];
+    for (final game in knownGames) {
+      if (normalized.contains(game)) {
+        return game;
+      }
+    }
+
+    final match = RegExp(
+      r'(?:juego|mini\s*juego|actividad)\s+(?:de|del|tipo)\s+([A-Za-zÁÉÍÓÚÑáéíóúñ0-9 ]{3,80})',
+      caseSensitive: false,
+    ).firstMatch(prompt);
+    if (match == null) {
+      return '';
+    }
+
+    final candidate = (match.group(1) ?? '').trim();
+    if (candidate.isEmpty) {
+      return '';
+    }
+    final cut = candidate.split(RegExp(r'[\n\.,;:]')).first.trim();
+    final clean = cut
+        .split(
+          RegExp(r'\s+(?:para|con|y|que|donde|si)\s+', caseSensitive: false),
+        )
+        .first
+        .trim();
+    return clean.replaceFirst(
+      RegExp(r'^(el|la|los|las|un|una)\s+', caseSensitive: false),
+      '',
+    );
+  }
+
+  bool _containsAnyKeyword(String source, Set<String> keywords) {
+    for (final keyword in keywords) {
+      if (source.contains(keyword)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  List<String> _availableWordsForSession(String categoryLabel) {
+    final normalizedCategory = normalizeForComparison(
+      categoryLabel,
+      ignoreAccents: true,
+    );
+    var category = AppCategory.mixta;
+    for (final candidate in AppCategory.values) {
+      final normalizedLabel = normalizeForComparison(
+        candidate.label,
+        ignoreAccents: true,
+      );
+      final normalizedId = normalizeForComparison(
+        candidate.id,
+        ignoreAccents: true,
+      );
+      if (normalizedCategory == normalizedLabel ||
+          normalizedCategory == normalizedId) {
+        category = candidate;
+        break;
+      }
+    }
+    final dataset = ref.read(datasetRepositoryProvider);
+    final words =
+        dataset
+            .getAllItems()
+            .where((item) {
+              final word = (item.word ?? '').trim();
+              if (word.isEmpty ||
+                  item.activityType != ActivityType.imagenPalabra) {
+                return false;
+              }
+              return category == AppCategory.mixta || item.category == category;
+            })
+            .map((item) => item.word!.trim().toUpperCase())
+            .toSet()
+            .toList()
+          ..sort();
+
+    if (words.length <= 180) {
+      return words;
+    }
+    return words.take(180).toList();
+  }
+
+  String _buildAutoGameInstruction({
+    required String prompt,
+    required SessionPlan session,
+    required String gameName,
+  }) {
+    final objective = session.objective.trim().isEmpty
+        ? 'Refuerzo lector y de vocabulario adaptado a la edad.'
+        : session.objective.trim();
+    return '''
+CREA UN RECURSO IA PARA ESTA SESIÓN.
+JUEGO SOLICITADO: $gameName
+PETICIÓN DEL TERAPEUTA: $prompt
+OBJETIVO BASE DE LA SESIÓN: $objective
+
+REQUISITOS:
+- RESPETAR EL JUEGO PEDIDO (SI PIDE RULETA, DEBE SER RULETA).
+- ACTIVIDAD JUGABLE CON APOYO VISUAL.
+- OPCIONES DE RESPUESTA PENSADAS PARA MOSTRAR IMÁGENES.
+- PROPUESTA CLARA PARA USO EN TABLET.
+''';
+  }
+
+  SessionPlan _linkSessionToResource(SessionPlan session, AiResource resource) {
+    final nextBlocks = [...session.blocks];
+    final normalizedTitle = normalizeForComparison(
+      resource.title,
+      ignoreAccents: true,
+    );
+    final primaryGameLine = resource.miniGames.isEmpty
+        ? 'JUEGO PRINCIPAL: ${resource.title}.'
+        : resource.miniGames.first;
+    final linkedLine = 'RECURSO VINCULADO: ${resource.title}.';
+    var gameIndex = -1;
+    for (var i = 0; i < nextBlocks.length; i++) {
+      if (nextBlocks[i].hasGame) {
+        gameIndex = i;
+        break;
+      }
+    }
+
+    if (gameIndex >= 0) {
+      final block = nextBlocks[gameIndex];
+      final lines = [...block.lines];
+      final alreadyLinked = lines.any(
+        (line) => normalizeForComparison(
+          line,
+          ignoreAccents: true,
+        ).contains(normalizedTitle),
+      );
+      if (!alreadyLinked) {
+        lines.insert(0, primaryGameLine);
+        lines.insert(1, linkedLine);
+      }
+      nextBlocks[gameIndex] = block.copyWith(
+        hasGame: true,
+        lines: lines,
+        title: block.title.trim().isEmpty ? 'JUEGO GENERADO' : block.title,
+      );
+    } else {
+      final duration = (session.totalMinutes * 0.28).round().clamp(8, 20);
+      nextBlocks.add(
+        SessionBlock(
+          title: 'JUEGO GENERADO',
+          durationMin: duration,
+          hasGame: true,
+          lines: [
+            primaryGameLine,
+            linkedLine,
+            'ABRIR EL JUEGO INTERACTIVO DESDE EL BOTÓN DEL BLOQUE.',
+          ],
+        ),
+      );
+    }
+
+    return session.copyWith(
+      sourceResourceId: resource.id,
+      sourceResourceTitle: resource.title,
+      blocks: nextBlocks,
+    );
+  }
+
+  String _mergeAssistantMessage(String base, String? note) {
+    final trimmedNote = (note ?? '').trim();
+    if (trimmedNote.isEmpty) {
+      return base;
+    }
+    final trimmedBase = base.trim();
+    if (trimmedBase.isEmpty) {
+      return trimmedNote;
+    }
+    return '$trimmedBase\n$trimmedNote';
+  }
+
   Future<void> generateSessionFromResource(
     AiResource resource, {
     int? totalMinutesOverride,
@@ -337,13 +618,37 @@ class SessionWorkspaceViewModel extends Notifier<SessionWorkspaceState> {
                 .toList(),
           );
 
-      await saveSession(result.updatedSession);
+      var updatedSession = result.updatedSession;
+      var assistantMessage = result.assistantMessage;
+
+      try {
+        final gameResolution = await _resolveGameResourceIfRequested(
+          prompt: prompt,
+          session: updatedSession,
+          apiKey: settings.openAiApiKey.trim(),
+          model: model,
+        );
+        if (gameResolution != null) {
+          updatedSession = gameResolution.session;
+          assistantMessage = _mergeAssistantMessage(
+            assistantMessage,
+            gameResolution.note,
+          );
+        }
+      } catch (_) {
+        assistantMessage = _mergeAssistantMessage(
+          assistantMessage,
+          'No pude crear o vincular automáticamente el juego solicitado. Revisa API key/modelo e inténtalo de nuevo.',
+        );
+      }
+
+      await saveSession(updatedSession);
       state = state.copyWith(
         copilotMessages: [
           ...state.copilotMessages,
           SessionCopilotMessage(
             role: 'assistant',
-            text: result.assistantMessage,
+            text: assistantMessage,
             createdAt: DateTime.now(),
           ),
         ],
@@ -372,3 +677,17 @@ final sessionWorkspaceViewModelProvider =
     NotifierProvider<SessionWorkspaceViewModel, SessionWorkspaceState>(
       SessionWorkspaceViewModel.new,
     );
+
+class _GameRequest {
+  const _GameRequest({required this.query, required this.displayName});
+
+  final String query;
+  final String displayName;
+}
+
+class _GameResolution {
+  const _GameResolution({required this.session, this.note});
+
+  final SessionPlan session;
+  final String? note;
+}

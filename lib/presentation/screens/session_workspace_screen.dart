@@ -207,7 +207,7 @@ class _SessionWorkspaceScreenState
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     DropdownButtonFormField<String>(
-                      value: selectedResourceId,
+                      initialValue: selectedResourceId,
                       decoration: const InputDecoration(
                         labelText: 'RECURSO BASE',
                       ),
@@ -227,7 +227,7 @@ class _SessionWorkspaceScreenState
                     ),
                     const SizedBox(height: 10),
                     DropdownButtonFormField<int>(
-                      value: selectedMinutes,
+                      initialValue: selectedMinutes,
                       decoration: const InputDecoration(
                         labelText: 'TIEMPO TOTAL (MIN)',
                       ),
@@ -674,7 +674,7 @@ class _CenterPanel extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
-                      value: age,
+                      initialValue: age,
                       decoration: const InputDecoration(labelText: 'EDAD'),
                       items: _ageOptions
                           .map(
@@ -692,7 +692,7 @@ class _CenterPanel extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
-                      value: duration,
+                      initialValue: duration,
                       decoration: const InputDecoration(labelText: 'DURACIÓN'),
                       items: _durationOptions
                           .map(
@@ -710,7 +710,7 @@ class _CenterPanel extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<int>(
-                      value: minutes,
+                      initialValue: minutes,
                       decoration: const InputDecoration(
                         labelText: 'MINUTOS TOTALES',
                       ),
@@ -730,7 +730,7 @@ class _CenterPanel extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
-                      value: mode,
+                      initialValue: mode,
                       decoration: const InputDecoration(labelText: 'MODO'),
                       items: _modeOptions
                           .map(
@@ -748,7 +748,7 @@ class _CenterPanel extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
-                      value: category,
+                      initialValue: category,
                       decoration: const InputDecoration(labelText: 'CATEGORÍA'),
                       items: _categoryOptions
                           .map(
@@ -828,7 +828,7 @@ class _CenterPanel extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<int>(
-                      value: duration.clamp(5, 40),
+                      initialValue: duration.clamp(5, 40),
                       decoration: const InputDecoration(
                         labelText: 'DURACIÓN (MIN)',
                       ),

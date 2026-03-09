@@ -156,7 +156,7 @@ class _ImageManagerScreenState extends ConsumerState<ImageManagerScreen> {
                     ),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
-                      value: candidates.contains(selected)
+                      initialValue: candidates.contains(selected)
                           ? selected
                           : candidates.first,
                       items: candidates
@@ -291,7 +291,7 @@ class _ImageManagerScreenState extends ConsumerState<ImageManagerScreen> {
                         children: [
                           Expanded(
                             child: DropdownButtonFormField<AppCategory?>(
-                              value: _selectedCategory,
+                              initialValue: _selectedCategory,
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'CATEGORÍA',

@@ -16,7 +16,6 @@ import '../../viewmodels/progress_view_model.dart';
 import '../../viewmodels/settings_view_model.dart';
 import '../../widgets/activity_asset_image.dart';
 import '../../widgets/game_style.dart';
-import '../../widgets/routine_steps.dart';
 import '../../widgets/upper_text.dart';
 import '../results_screen.dart';
 
@@ -324,11 +323,227 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
     Navigator.of(context).pop();
   }
 
+  Widget _buildTabletLandscapeBody({
+    required BuildContext context,
+    required Item current,
+    required bool audioEnabled,
+    required bool showHints,
+    required int solvedCount,
+    required String firstLetter,
+  }) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1180),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              GameProgressHeader(
+                label: 'TU PROGRESO',
+                current: solvedCount,
+                total: _items.length,
+                trailingLabel: '⭐ $_correct',
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GamePanel(
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: ActivityAssetImage(
+                                assetPath: current.imageAsset,
+                                semanticsLabel: current.word,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            if (_mode == WriteMode.copia)
+                              UpperText(
+                                current.word ?? '',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.headlineSmall,
+                                textAlign: TextAlign.center,
+                              ),
+                            if (_mode == WriteMode.semicopia)
+                              UpperText(
+                                buildSemiCopyHint(current.word ?? ''),
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.headlineSmall,
+                                textAlign: TextAlign.center,
+                              ),
+                            if (_mode == WriteMode.silabas)
+                              UpperText(
+                                buildSyllableHint(
+                                  current.word ?? '',
+                                  revealAll: _triesForCurrent >= 2,
+                                ),
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.headlineSmall,
+                                textAlign: TextAlign.center,
+                              ),
+                            if (_mode == WriteMode.dictado)
+                              FilledButton.icon(
+                                onPressed: audioEnabled
+                                    ? () => _playAudio(current.word ?? '')
+                                    : null,
+                                icon: const Icon(Icons.volume_up_rounded),
+                                label: const UpperText('REPRODUCIR AUDIO'),
+                              ),
+                            if (showHints && _triesForCurrent >= 2) ...[
+                              const SizedBox(height: 8),
+                              UpperText(
+                                'PISTA: ${buildSemiCopyHint(current.word ?? '')}',
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          SegmentedButton<WriteMode>(
+                            segments: const [
+                              ButtonSegment(
+                                value: WriteMode.copia,
+                                label: UpperText('COPIA'),
+                              ),
+                              ButtonSegment(
+                                value: WriteMode.semicopia,
+                                label: UpperText('SEMICOPIA'),
+                              ),
+                              ButtonSegment(
+                                value: WriteMode.silabas,
+                                label: UpperText('SÍLABAS'),
+                              ),
+                              ButtonSegment(
+                                value: WriteMode.dictado,
+                                label: UpperText('DICTADO'),
+                              ),
+                            ],
+                            selected: {_mode},
+                            onSelectionChanged: (value) {
+                              setState(() {
+                                _mode = value.first;
+                                _controller.clear();
+                                _feedback = 'ESCRIBE LA PALABRA';
+                                _triesForCurrent = 0;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 8),
+                          GamePanel(
+                            child: UpperText(
+                              _feedback,
+                              maxLines: 4,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextField(
+                            controller: _controller,
+                            readOnly: _reducedKeyboard,
+                            textCapitalization: TextCapitalization.characters,
+                            style: Theme.of(context).textTheme.headlineSmall,
+                            onChanged: (value) {
+                              final upper = value.toUpperCase();
+                              if (upper != value) {
+                                _controller.value = _controller.value.copyWith(
+                                  text: upper,
+                                  selection: TextSelection.collapsed(
+                                    offset: upper.length,
+                                  ),
+                                );
+                              }
+                            },
+                            decoration: const InputDecoration(
+                              hintText: 'ESCRIBE AQUÍ',
+                              border: OutlineInputBorder(),
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: FilterChip(
+                                  selected: _guidedTrace,
+                                  onSelected: (value) =>
+                                      setState(() => _guidedTrace = value),
+                                  avatar: const Icon(
+                                    Icons.gesture_rounded,
+                                    size: 18,
+                                  ),
+                                  label: const UpperText('TRAZO'),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: FilterChip(
+                                  selected: _reducedKeyboard,
+                                  onSelected: (value) =>
+                                      setState(() => _reducedKeyboard = value),
+                                  avatar: const Icon(
+                                    Icons.keyboard_rounded,
+                                    size: 18,
+                                  ),
+                                  label: const UpperText('TECLADO'),
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (_reducedKeyboard) ...[
+                            const SizedBox(height: 8),
+                            GamePanel(
+                              padding: const EdgeInsets.all(8),
+                              child: _buildReducedKeyboard(current.word ?? ''),
+                            ),
+                          ],
+                          if (_triesForCurrent >= 2) ...[
+                            const SizedBox(height: 8),
+                            GamePanel(
+                              backgroundColor: Colors.amber.shade50,
+                              borderColor: Colors.amber.shade300,
+                              child: UpperText(
+                                'AYUDA: LA PALABRA EMPIEZA POR $firstLetter',
+                              ),
+                            ),
+                          ],
+                          const Spacer(),
+                          SizedBox(
+                            width: double.infinity,
+                            child: FilledButton(
+                              onPressed: _validate,
+                              child: const UpperText('VALIDAR'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsViewModelProvider);
     final current = _currentItem;
     final width = MediaQuery.sizeOf(context).width;
+    final isTabletLandscape = isPrimaryTabletLandscape(context);
     final isDesktop = width >= 1000;
     final contentWidth = isDesktop ? 900.0 : 760.0;
     final imageHeight = isDesktop ? 150.0 : 210.0;
@@ -351,6 +566,15 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
           ? const Center(child: CircularProgressIndicator())
           : current == null
           ? const Center(child: UpperText('NO HAY CONTENIDO DISPONIBLE'))
+          : isTabletLandscape
+          ? _buildTabletLandscapeBody(
+              context: context,
+              current: current,
+              audioEnabled: settings.audioEnabled,
+              showHints: settings.showHints,
+              solvedCount: solvedCount,
+              firstLetter: firstLetter,
+            )
           : Center(
               child: ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: contentWidth),
@@ -382,8 +606,6 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
                       ),
                       const SizedBox(height: 10),
                     ],
-                    RoutineSteps(currentStep: _triesForCurrent >= 2 ? 3 : 2),
-                    const SizedBox(height: 10),
                     GamePanel(
                       child: Row(
                         children: [

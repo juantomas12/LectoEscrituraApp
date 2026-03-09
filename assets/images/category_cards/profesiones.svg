@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 384" role="img" aria-label="PROFESIONES">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8D62DA" />
+      <stop offset="100%" stop-color="#7752C7" />
+    </linearGradient>
+    <linearGradient id="glass" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.34" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.18" />
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#000000" flood-opacity="0.23" />
+    </filter>
+  </defs>
+  <rect x="0" y="0" width="640" height="384" rx="36" fill="url(#bg)" />
+  <circle cx="530" cy="-30" r="170" fill="#FFFFFF" fill-opacity="0.10" />
+  <circle cx="-40" cy="300" r="180" fill="#FFFFFF" fill-opacity="0.08" />
+  <circle cx="610" cy="345" r="120" fill="#FFFFFF" fill-opacity="0.11" />
+  <rect x="44" y="42" width="552" height="300" rx="30" fill="url(#glass)" stroke="#FFFFFF" stroke-opacity="0.34" />
+  <g filter="url(#softShadow)">
+    <rect x="76" y="150" width="300" height="152" rx="24" fill="#FFFFFF" fill-opacity="0.18" stroke="#FFFFFF" stroke-opacity="0.52" />
+  </g>
+  <text x="78" y="104" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="800" fill="#FFFFFF">PROFESIONES</text>
+  <text x="78" y="134" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" fill="#EFE8FF">OFICIOS Y TRABAJOS</text>
+  <rect x="96" y="204" width="236" height="60" rx="999" fill="#FFFFFF" fill-opacity="0.90" />
+  <text x="214" y="244" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="800" fill="#7752C7">OFICIOS</text>
+  <rect x="426" y="144" width="154" height="154" rx="32" fill="#FFFFFF" fill-opacity="0.88" />
+  <path d="M470 196 L542 196 M470 224 L542 224 M470 252 L522 252" stroke="#8D62DA" stroke-width="12" stroke-linecap="round" />
+  <circle cx="456" cy="196" r="10" fill="#8D62DA" />
+  <circle cx="456" cy="224" r="10" fill="#8D62DA" />
+  <circle cx="456" cy="252" r="10" fill="#8D62DA" />
+</svg>

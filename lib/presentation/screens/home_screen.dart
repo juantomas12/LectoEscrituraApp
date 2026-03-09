@@ -460,150 +460,27 @@ class _HomeTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final rewards = progressVm.rewardsSummary();
-    final isTablet = MediaQuery.sizeOf(context).width >= 900;
-    final titleSize = isTablet ? 64.0 : 46.0;
-    final subtitleSize = isTablet ? 38.0 : 27.0;
+    final width = MediaQuery.sizeOf(context).width;
+    final isTablet = width >= 900;
+    final horizontalPadding = isTablet ? 28.0 : 20.0;
+    final contentWidth = isTablet ? 1080.0 : 760.0;
     final nextMilestone = rewards.currentStreak >= 5
         ? '¡Racha excelente!'
         : 'Estás a ${(5 - rewards.currentStreak).clamp(1, 5)} juegos de una racha de 5';
+    final playerName = profileName.split(' ').first;
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+    final learningTracks = Column(
+      children: _HomeScreenState._quickTracks.map((track) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 14),
+          child: _LearningCard(track: track, onTap: () => onTrackTap(track)),
+        );
+      }).toList(),
+    );
+
+    final savedResourcesPanel = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            _CircleIconButton(
-              icon: Icons.menu_rounded,
-              backgroundColor: const Color(0xFFDDE6F5),
-              iconColor: const Color(0xFF2C7BEA),
-              onTap: onMenuTap,
-            ),
-            const Expanded(
-              child: Text(
-                'EduMundo',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF2C7BEA),
-                ),
-              ),
-            ),
-            _CircleIconButton(
-              icon: Icons.auto_awesome_rounded,
-              backgroundColor: const Color(0xFF2C7BEA),
-              iconColor: Colors.white,
-              onTap: onProfileTap,
-            ),
-          ],
-        ),
-        const SizedBox(height: 22),
-        Text(
-          '¡Aprende Jugando!',
-          style: TextStyle(
-            fontSize: titleSize,
-            height: 1.02,
-            fontWeight: FontWeight.w900,
-            color: const Color(0xFF101A39),
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          'Hola, ${profileName.split(' ').first}. ¿Qué quieres practicar hoy?',
-          style: TextStyle(
-            fontSize: subtitleSize,
-            color: const Color(0xFF6A7898),
-            fontWeight: FontWeight.w600,
-            height: 1.15,
-          ),
-        ),
-        const SizedBox(height: 16),
-        InkWell(
-          borderRadius: BorderRadius.circular(20),
-          onTap: onPickCategory,
-          child: Ink(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: const Color(0xFFD7DFEC)),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF1A2847).withValues(alpha: 0.05),
-                  blurRadius: 15,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: category.color.withValues(alpha: 0.18),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(category.icon, color: category.color),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Categoría actual',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFF7A87A5),
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        _categoryDisplayLabel(category),
-                        style: const TextStyle(
-                          fontSize: 18,
-                          color: Color(0xFF111D3A),
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Icon(
-                  Icons.keyboard_arrow_right_rounded,
-                  size: 30,
-                  color: Color(0xFFAAB7D1),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 14),
-        const Text(
-          'Todos los juegos',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-            color: Color(0xFF203257),
-          ),
-        ),
-        const SizedBox(height: 14),
-        ..._HomeScreenState._quickTracks.map((track) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 14),
-            child: _LearningCard(track: track, onTap: () => onTrackTap(track)),
-          );
-        }),
-        _AiEntryCard(onTap: onOpenAi),
-        const SizedBox(height: 14),
-        _ProgressCard(
-          streak: rewards.currentStreak,
-          message: nextMilestone,
-          onTap: onOpenProgress,
-        ),
-        const SizedBox(height: 14),
         const Text(
           'Guardados IA',
           style: TextStyle(
@@ -630,7 +507,7 @@ class _HomeTab extends StatelessWidget {
             ),
           )
         else
-          ...savedResources.take(5).map((resource) {
+          ...savedResources.take(isTablet ? 6 : 5).map((resource) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: _SavedResourceCard(
@@ -643,6 +520,327 @@ class _HomeTab extends StatelessWidget {
             );
           }),
       ],
+    );
+
+    return ListView(
+      padding: EdgeInsets.fromLTRB(
+        horizontalPadding,
+        14,
+        horizontalPadding,
+        24,
+      ),
+      children: [
+        Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: contentWidth),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF4C98F5), Color(0xFF4387EE)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(isTablet ? 36 : 30),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF2B72D8).withValues(alpha: 0.34),
+                        blurRadius: 28,
+                        offset: const Offset(0, 14),
+                      ),
+                    ],
+                  ),
+                  padding: EdgeInsets.fromLTRB(
+                    isTablet ? 28 : 20,
+                    isTablet ? 24 : 18,
+                    isTablet ? 24 : 18,
+                    isTablet ? 28 : 20,
+                  ),
+                  child: Row(
+                    children: [
+                      InkWell(
+                        borderRadius: BorderRadius.circular(999),
+                        onTap: onMenuTap,
+                        child: Container(
+                          width: isTablet ? 92 : 74,
+                          height: isTablet ? 92 : 74,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: const Color(0xFFCFE0FB),
+                              width: 3,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.pets_rounded,
+                            color: const Color(0xFF4C98F5),
+                            size: isTablet ? 48 : 40,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'EduMundo',
+                              style: TextStyle(
+                                fontSize: isTablet ? 54 : 36,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                                height: 0.95,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              '¡Hola, $playerName! Explora colores, letras y retos.',
+                              style: TextStyle(
+                                fontSize: isTablet ? 25 : 20,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white.withValues(alpha: 0.96),
+                                height: 1.12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      InkWell(
+                        borderRadius: BorderRadius.circular(999),
+                        onTap: onProfileTap,
+                        child: Container(
+                          width: isTablet ? 92 : 72,
+                          height: isTablet ? 92 : 72,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFFFD830),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.star_rounded,
+                            color: const Color(0xFF1E2334),
+                            size: isTablet ? 50 : 40,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    _HomeQuickCircle(
+                      title: '¡Jugar!',
+                      icon: Icons.play_arrow_rounded,
+                      ringColor: const Color(0xFF57C46E),
+                      fillColor: const Color(0xFFE2F7E7),
+                      iconColor: const Color(0xFF57C46E),
+                      onTap: () =>
+                          onTrackTap(_HomeScreenState._quickTracks.first),
+                    ),
+                    _HomeQuickCircle(
+                      title: 'Meta hoy',
+                      icon: Icons.emoji_events_rounded,
+                      ringColor: const Color(0xFFF1C321),
+                      fillColor: const Color(0xFFFFF6D7),
+                      iconColor: const Color(0xFFF1C321),
+                      onTap: onOpenProgress,
+                    ),
+                    _HomeQuickCircle(
+                      title: 'Stickers',
+                      icon: Icons.auto_awesome_rounded,
+                      ringColor: const Color(0xFF8E71FF),
+                      fillColor: const Color(0xFFF0EBFF),
+                      iconColor: const Color(0xFF8E71FF),
+                      onTap: onOpenAi,
+                    ),
+                    InkWell(
+                      borderRadius: BorderRadius.circular(18),
+                      onTap: onPickCategory,
+                      child: Container(
+                        width: isTablet ? 250 : 220,
+                        height: isTablet ? 120 : 108,
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: const Color(0xFFD6DFEC)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(
+                                0xFF1A2847,
+                              ).withValues(alpha: 0.05),
+                              blurRadius: 14,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: isTablet ? 54 : 48,
+                              height: isTablet ? 54 : 48,
+                              decoration: BoxDecoration(
+                                color: category.color.withValues(alpha: 0.18),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(category.icon, color: category.color),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    'Categoría',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Color(0xFF7A87A5),
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  Text(
+                                    _categoryDisplayLabel(category),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: isTablet ? 20 : 17,
+                                      color: const Color(0xFF111D3A),
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                const Text(
+                  '¡A aprender!',
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF0F1936),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                if (isTablet)
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(flex: 3, child: learningTracks),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          children: [
+                            _AiEntryCard(onTap: onOpenAi),
+                            const SizedBox(height: 14),
+                            _ProgressCard(
+                              streak: rewards.currentStreak,
+                              message: nextMilestone,
+                              onTap: onOpenProgress,
+                            ),
+                            const SizedBox(height: 14),
+                            savedResourcesPanel,
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                else ...[
+                  learningTracks,
+                  _AiEntryCard(onTap: onOpenAi),
+                  const SizedBox(height: 14),
+                  _ProgressCard(
+                    streak: rewards.currentStreak,
+                    message: nextMilestone,
+                    onTap: onOpenProgress,
+                  ),
+                  const SizedBox(height: 14),
+                  savedResourcesPanel,
+                ],
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _HomeQuickCircle extends StatelessWidget {
+  const _HomeQuickCircle({
+    required this.title,
+    required this.icon,
+    required this.ringColor,
+    required this.fillColor,
+    required this.iconColor,
+    required this.onTap,
+  });
+
+  final String title;
+  final IconData icon;
+  final Color ringColor;
+  final Color fillColor;
+  final Color iconColor;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isTablet = MediaQuery.sizeOf(context).width >= 900;
+    final size = isTablet ? 150.0 : 130.0;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: onTap,
+        child: SizedBox(
+          width: size,
+          child: Column(
+            children: [
+              Container(
+                width: size,
+                height: size,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: ringColor, width: 5),
+                ),
+                child: Center(
+                  child: Container(
+                    width: size * 0.56,
+                    height: size * 0.56,
+                    decoration: BoxDecoration(
+                      color: fillColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(icon, color: iconColor, size: size * 0.28),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                title.toUpperCase(),
+                style: TextStyle(
+                  fontSize: isTablet ? 24 : 18,
+                  color: const Color(0xFF1E2E4D),
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -1112,25 +1310,65 @@ class _LearningCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isTablet = MediaQuery.sizeOf(context).width >= 900;
-    final iconBox = isTablet ? 110.0 : 94.0;
-    final titleSize = isTablet ? 30.0 : 24.0;
-    final subtitleSize = isTablet ? 19.0 : 16.0;
+    final iconBox = isTablet ? 116.0 : 98.0;
+    final titleSize = isTablet ? 46.0 : 38.0;
+    final subtitleSize = isTablet ? 17.0 : 15.0;
+    final (mainColor, darkColor) = switch (track.gameType) {
+      ActivityType.letraObjetivo => (
+        const Color(0xFFFA5B0A),
+        const Color(0xFFD84B06),
+      ),
+      ActivityType.palabraPalabra => (
+        const Color(0xFF67C975),
+        const Color(0xFF44A855),
+      ),
+      ActivityType.imagenPalabra => (
+        const Color(0xFF4B92EA),
+        const Color(0xFF2B73D5),
+      ),
+      ActivityType.escribirPalabra => (
+        const Color(0xFFF1A42A),
+        const Color(0xFFCF8413),
+      ),
+      ActivityType.imagenFrase => (
+        const Color(0xFF27B5C0),
+        const Color(0xFF1896A0),
+      ),
+      ActivityType.ruletaLetras => (
+        const Color(0xFF8B6BE8),
+        const Color(0xFF6D50C8),
+      ),
+      ActivityType.discriminacion => (
+        const Color(0xFF2FB374),
+        const Color(0xFF21905B),
+      ),
+      ActivityType.discriminacionInversa => (
+        const Color(0xFFF08C33),
+        const Color(0xFFCF6D19),
+      ),
+      ActivityType.cambioExacto => (
+        const Color(0xFFD756A4),
+        const Color(0xFFB73F87),
+      ),
+    };
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(44),
         onTap: onTap,
         child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
+          padding: EdgeInsets.symmetric(
+            horizontal: isTablet ? 22 : 18,
+            vertical: isTablet ? 18 : 14,
+          ),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: const Color(0xFFE4EAF4)),
+            color: mainColor,
+            borderRadius: BorderRadius.circular(44),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF122041).withValues(alpha: 0.05),
-                blurRadius: 16,
+                color: darkColor.withValues(alpha: 0.95),
+                blurRadius: 0,
                 offset: const Offset(0, 8),
               ),
             ],
@@ -1141,12 +1379,12 @@ class _LearningCard extends StatelessWidget {
                 width: iconBox,
                 height: iconBox,
                 decoration: BoxDecoration(
-                  color: track.backgroundColor,
-                  borderRadius: BorderRadius.circular(28),
+                  color: Colors.white.withValues(alpha: 0.20),
+                  shape: BoxShape.circle,
                 ),
                 child: Icon(
                   track.icon,
-                  color: track.iconColor,
+                  color: Colors.white,
                   size: isTablet ? 52 : 46,
                 ),
               ),
@@ -1156,11 +1394,11 @@ class _LearningCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      track.title,
+                      track.title.toUpperCase(),
                       style: TextStyle(
                         fontSize: titleSize,
                         fontWeight: FontWeight.w900,
-                        color: const Color(0xFF111D3A),
+                        color: Colors.white,
                         height: 1.0,
                       ),
                       maxLines: 1,
@@ -1171,7 +1409,7 @@ class _LearningCard extends StatelessWidget {
                       track.subtitle,
                       style: TextStyle(
                         fontSize: subtitleSize,
-                        color: const Color(0xFF56698B),
+                        color: Colors.white.withValues(alpha: 0.88),
                         height: 1.2,
                       ),
                       maxLines: 2,
@@ -1181,9 +1419,9 @@ class _LearningCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              const Icon(
+              Icon(
                 Icons.chevron_right_rounded,
-                color: Color(0xFFC0CBDE),
+                color: Colors.white.withValues(alpha: 0.88),
                 size: 38,
               ),
             ],
@@ -1671,40 +1909,6 @@ class _BottomNavItem extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CircleIconButton extends StatelessWidget {
-  const _CircleIconButton({
-    required this.icon,
-    required this.backgroundColor,
-    required this.iconColor,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final Color backgroundColor;
-  final Color iconColor;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(999),
-        onTap: onTap,
-        child: Ink(
-          width: 58,
-          height: 58,
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: iconColor, size: 30),
         ),
       ),
     );

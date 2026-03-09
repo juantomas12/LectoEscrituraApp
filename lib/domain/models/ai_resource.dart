@@ -21,6 +21,7 @@ class AiResource {
     required this.playableQuestions,
     required this.createdAt,
     required this.rawJson,
+    this.requestedActivityTypeKey = '',
     this.isFavorite = false,
   });
 
@@ -43,6 +44,7 @@ class AiResource {
   final List<AiQuizQuestion> playableQuestions;
   final DateTime createdAt;
   final String rawJson;
+  final String requestedActivityTypeKey;
   final bool isFavorite;
 
   AiResource copyWith({
@@ -65,6 +67,7 @@ class AiResource {
     List<AiQuizQuestion>? playableQuestions,
     DateTime? createdAt,
     String? rawJson,
+    String? requestedActivityTypeKey,
     bool? isFavorite,
   }) {
     return AiResource(
@@ -87,6 +90,8 @@ class AiResource {
       playableQuestions: playableQuestions ?? this.playableQuestions,
       createdAt: createdAt ?? this.createdAt,
       rawJson: rawJson ?? this.rawJson,
+      requestedActivityTypeKey:
+          requestedActivityTypeKey ?? this.requestedActivityTypeKey,
       isFavorite: isFavorite ?? this.isFavorite,
     );
   }
@@ -114,6 +119,7 @@ class AiResource {
           .toList(),
       'createdAt': createdAt.toIso8601String(),
       'rawJson': rawJson,
+      'requestedActivityTypeKey': requestedActivityTypeKey,
       'isFavorite': isFavorite,
     };
   }
@@ -161,6 +167,8 @@ class AiResource {
           DateTime.tryParse((map['createdAt'] ?? '').toString()) ??
           DateTime.now(),
       rawJson: (map['rawJson'] ?? '').toString(),
+      requestedActivityTypeKey: (map['requestedActivityTypeKey'] ?? '')
+          .toString(),
       isFavorite: map['isFavorite'] as bool? ?? false,
     );
   }

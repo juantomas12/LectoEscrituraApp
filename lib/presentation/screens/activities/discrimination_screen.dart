@@ -14,7 +14,6 @@ import '../../../domain/models/level.dart';
 import '../../viewmodels/progress_view_model.dart';
 import '../../widgets/activity_asset_image.dart';
 import '../../widgets/game_style.dart';
-import '../../widgets/routine_steps.dart';
 import '../../widgets/upper_text.dart';
 import '../results_screen.dart';
 
@@ -275,6 +274,7 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
+    final isTabletLandscapePrimary = isPrimaryTabletLandscape(context);
     final crossAxisCount = width < 760
         ? 2
         : width < 1100
@@ -297,15 +297,20 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 1160),
                 child: ListView(
+                  physics: isTabletLandscapePrimary
+                      ? const NeverScrollableScrollPhysics()
+                      : null,
                   padding: const EdgeInsets.all(16),
                   children: [
-                    GameProgressHeader(
-                      label: 'TU PROGRESO',
-                      current: solvedCount,
-                      total: _roundTargets.length,
-                      trailingLabel: '⭐ $_correct',
-                    ),
-                    const SizedBox(height: 10),
+                    if (!isTabletLandscapePrimary) ...[
+                      GameProgressHeader(
+                        label: 'TU PROGRESO',
+                        current: solvedCount,
+                        total: _roundTargets.length,
+                        trailingLabel: '⭐ $_correct',
+                      ),
+                      const SizedBox(height: 10),
+                    ],
                     if (_isReinforcementRound) ...[
                       GamePanel(
                         backgroundColor: Colors.orange.shade50,
@@ -324,8 +329,6 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
                       ),
                       const SizedBox(height: 10),
                     ],
-                    RoutineSteps(currentStep: _answered ? 4 : 2),
-                    const SizedBox(height: 10),
                     GamePanel(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -373,7 +376,7 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
                         crossAxisCount: crossAxisCount,
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 10,
-                        mainAxisExtent: 200,
+                        mainAxisExtent: isTabletLandscapePrimary ? 170 : 200,
                       ),
                       itemCount: _options.length,
                       itemBuilder: (context, index) {

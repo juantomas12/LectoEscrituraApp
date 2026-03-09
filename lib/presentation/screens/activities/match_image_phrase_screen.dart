@@ -323,6 +323,7 @@ class _MatchImagePhraseScreenState
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsViewModelProvider);
     final width = MediaQuery.sizeOf(context).width;
+    final isTabletLandscapePrimary = isPrimaryTabletLandscape(context);
     final isMobile = width < 900;
     final isDesktop = width >= 1000;
     final contentWidth = isDesktop ? 1180.0 : 900.0;
@@ -333,8 +334,16 @@ class _MatchImagePhraseScreenState
         : 2;
     final desiredColumns = _items.length >= 4 ? (_items.length / 2).ceil() : 2;
     final crossAxisCount = desiredColumns.clamp(2, maxColumnsByWidth).toInt();
-    final imageHeight = isDesktop ? 175.0 : 190.0;
-    final gridItemExtent = isDesktop ? 305.0 : 370.0;
+    final imageHeight = isTabletLandscapePrimary
+        ? 150.0
+        : isDesktop
+        ? 175.0
+        : 190.0;
+    final gridItemExtent = isTabletLandscapePrimary
+        ? 254.0
+        : isDesktop
+        ? 305.0
+        : 370.0;
     final solvedCount = _matchedByItem.length;
 
     return GameScaffold(
@@ -353,13 +362,15 @@ class _MatchImagePhraseScreenState
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
-                      GameProgressHeader(
-                        label: 'TU PROGRESO',
-                        current: solvedCount,
-                        total: _items.length,
-                        trailingLabel: '⭐ $_correct',
-                      ),
-                      const SizedBox(height: 10),
+                      if (!isTabletLandscapePrimary) ...[
+                        GameProgressHeader(
+                          label: 'TU PROGRESO',
+                          current: solvedCount,
+                          total: _items.length,
+                          trailingLabel: '⭐ $_correct',
+                        ),
+                        const SizedBox(height: 10),
+                      ],
                       if (_isReinforcementRound) ...[
                         GamePanel(
                           backgroundColor: Colors.orange.shade50,
@@ -449,50 +460,96 @@ class _MatchImagePhraseScreenState
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: _phrases
-                            .where(
-                              (phrase) =>
-                                  !_matchedByItem.values.contains(phrase),
-                            )
-                            .map(
-                              (phrase) => Draggable<String>(
-                                data: phrase,
-                                feedback: Material(
-                                  color: Colors.transparent,
-                                  child: ConstrainedBox(
-                                    constraints: const BoxConstraints(
-                                      maxWidth: 220,
-                                    ),
-                                    child: Chip(
-                                      label: UpperText(phrase, maxLines: 3),
+                      Builder(
+                        builder: (context) {
+                          final availablePhrases = _phrases
+                              .where(
+                                (phrase) =>
+                                    !_matchedByItem.values.contains(phrase),
+                              )
+                              .toList();
+                          if (isTabletLandscapePrimary) {
+                            return GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: availablePhrases.length,
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3,
+                                    mainAxisSpacing: 8,
+                                    crossAxisSpacing: 8,
+                                    mainAxisExtent: 64,
+                                  ),
+                              itemBuilder: (context, index) {
+                                final phrase = availablePhrases[index];
+                                return Draggable<String>(
+                                  data: phrase,
+                                  feedback: Material(
+                                    color: Colors.transparent,
+                                    child: ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        maxWidth: 260,
+                                      ),
+                                      child: Chip(
+                                        label: UpperText(phrase, maxLines: 3),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                childWhenDragging: Opacity(
-                                  opacity: 0.35,
-                                  child: ConstrainedBox(
-                                    constraints: const BoxConstraints(
-                                      maxWidth: 220,
-                                    ),
+                                  childWhenDragging: Opacity(
+                                    opacity: 0.35,
                                     child: Chip(
-                                      label: UpperText(phrase, maxLines: 3),
+                                      label: UpperText(phrase, maxLines: 2),
                                     ),
-                                  ),
-                                ),
-                                child: ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    maxWidth: 220,
                                   ),
                                   child: Chip(
-                                    label: UpperText(phrase, maxLines: 3),
+                                    label: UpperText(phrase, maxLines: 2),
                                   ),
-                                ),
-                              ),
-                            )
-                            .toList(),
+                                );
+                              },
+                            );
+                          }
+                          return Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: availablePhrases
+                                .map(
+                                  (phrase) => Draggable<String>(
+                                    data: phrase,
+                                    feedback: Material(
+                                      color: Colors.transparent,
+                                      child: ConstrainedBox(
+                                        constraints: const BoxConstraints(
+                                          maxWidth: 220,
+                                        ),
+                                        child: Chip(
+                                          label: UpperText(phrase, maxLines: 3),
+                                        ),
+                                      ),
+                                    ),
+                                    childWhenDragging: Opacity(
+                                      opacity: 0.35,
+                                      child: ConstrainedBox(
+                                        constraints: const BoxConstraints(
+                                          maxWidth: 220,
+                                        ),
+                                        child: Chip(
+                                          label: UpperText(phrase, maxLines: 3),
+                                        ),
+                                      ),
+                                    ),
+                                    child: ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        maxWidth: 220,
+                                      ),
+                                      child: Chip(
+                                        label: UpperText(phrase, maxLines: 3),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          );
+                        },
                       ),
                     ],
                   ),

@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import '../../core/utils/text_utils.dart';
 import '../../domain/models/ai_resource.dart';
 import '../../domain/models/ai_quiz_question.dart';
+import '../../domain/models/activity_type.dart';
 
 class OpenAiResourceGeneratorService {
   OpenAiResourceGeneratorService({http.Client? client})
@@ -25,6 +26,7 @@ class OpenAiResourceGeneratorService {
     required String mode,
     required String categoryLabel,
     required String difficultyLabel,
+    ActivityType? requestedGameType,
     String? apiKey,
     required List<String> allowedWords,
     String? model,
@@ -46,6 +48,7 @@ class OpenAiResourceGeneratorService {
       mode: mode,
       categoryLabel: categoryLabel,
       difficultyLabel: difficultyLabel,
+      requestedGameType: requestedGameType,
       allowedWords: allowedWords,
     );
 
@@ -112,6 +115,7 @@ class OpenAiResourceGeneratorService {
       playableQuestions: effectivePlayable,
       createdAt: now,
       rawJson: jsonEncode(parsed),
+      requestedActivityTypeKey: requestedGameType?.key ?? '',
     );
   }
 
@@ -550,6 +554,9 @@ REGLAS:
 - CONTENIDO CLARO, ACCIONABLE Y APTO PARA NIÑOS.
 - SIEMPRE INCLUYE PREGUNTAS Y UNA PROPUESTA DE MINI-JUEGO.
 - INCLUYE AL MENOS 3 MINI-JUEGOS DISTINTOS EN mini_games.
+- SI EN EL OBJETIVO DEL PROFESIONAL SE PIDE UN JUEGO CONCRETO (EJ: RULETA), USA ESE MISMO JUEGO EN title Y COMO PRIMER ELEMENTO DE mini_games.
+- NO SUSTITUYAS LA MECÁNICA PEDIDA POR OTRA DISTINTA.
+- SI TIPO_DE_JUEGO_APP VIENE INFORMADO, RESPÉTALO COMO MECÁNICA PRINCIPAL.
 - GENERA ENTRE 4 Y 6 PREGUNTAS TIPO TEST EN playable_questions.
 - CADA PREGUNTA DEBE TENER 3 OPCIONES.
 - correct_index DEBE SER 0, 1 O 2.
@@ -566,6 +573,7 @@ REGLAS:
     required String mode,
     required String categoryLabel,
     required String difficultyLabel,
+    required ActivityType? requestedGameType,
     required List<String> allowedWords,
   }) {
     final normalizedWords =
@@ -580,6 +588,10 @@ REGLAS:
         ? ''
         : '\nPALABRAS DISPONIBLES PARA OPCIONES VISUALES:\n${normalizedWords.join(', ')}\n';
 
+    final requestedGameLine = requestedGameType == null
+        ? 'AUTO'
+        : '${requestedGameType.key} (${requestedGameType.label})';
+
     return '''
 OBJETIVO DEL PROFESIONAL:
 $instruction
@@ -590,10 +602,13 @@ PARÁMETROS:
 - MODO: $mode
 - CATEGORÍA: $categoryLabel
 - DIFICULTAD: $difficultyLabel
+- TIPO_DE_JUEGO_APP: $requestedGameLine
 $wordsBlock
 
 QUEREMOS UNA ACTIVIDAD QUE SE PUEDA MOSTRAR EN UNA SOLA PANTALLA DE TABLET.
 ADEMÁS, INCLUYE UNA FICHA DE LECTURA CORTA (investigation_text) PARA CONTESTAR LAS PREGUNTAS.
+RESPETA LITERALMENTE EL TIPO DE JUEGO PEDIDO EN OBJETIVO DEL PROFESIONAL.
+SI TIPO_DE_JUEGO_APP NO ES AUTO, MANTÉN ESA MECÁNICA COMO PRINCIPAL Y PON SU NOMBRE COMO PRIMER ELEMENTO DE mini_games.
 EN playable_questions, LAS OPCIONES DE RESPUESTA DEBEN SER PALABRAS CONCRETAS (OBJETOS) PARA PODER MOSTRAR IMAGEN.
 SI EXISTE LA LISTA DE PALABRAS DISPONIBLES, USA SOLO ESAS PALABRAS EN options.
 ''';

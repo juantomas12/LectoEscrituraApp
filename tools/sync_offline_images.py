@@ -45,6 +45,7 @@ DEFAULT_TIMEOUT = 20
 DEFAULT_MIN_WIDTH = 640
 DEFAULT_MIN_HEIGHT = 480
 DEFAULT_MAX_BYTES = 8 * 1024 * 1024
+DEFAULT_AUTO_COMPRESS_OVER_MB = 1.0
 ALLOWED_MIME = {"image/jpeg", "image/png", "image/webp"}
 CATEGORY_HINTS = {
     "COSAS DE CASA": "HOME OBJECT",
@@ -814,6 +815,94 @@ def _download_binary(url: str, timeout: int = DEFAULT_TIMEOUT) -> bytes:
         return response.read()
 
 
+def _compress_if_needed(
+    content: bytes,
+    mime: str,
+    auto_compress_over_bytes: int,
+) -> tuple[bytes, str]:
+    if auto_compress_over_bytes <= 0 or len(content) <= auto_compress_over_bytes:
+        return content, mime
+
+    if Image is None:
+        _log("[WARN] PILLOW NO DISPONIBLE: NO SE APLICÓ COMPRESIÓN AUTOMÁTICA.")
+        return content, mime
+
+    try:
+        source = Image.open(BytesIO(content))
+    except Exception:
+        return content, mime
+
+    normalized_mime = mime if mime in ALLOWED_MIME else "image/jpeg"
+    best_bytes = content
+    best_mime = normalized_mime
+
+    def _keep_if_better(candidate_bytes: bytes, candidate_mime: str) -> None:
+        nonlocal best_bytes, best_mime
+        if len(candidate_bytes) < len(best_bytes):
+            best_bytes = candidate_bytes
+            best_mime = candidate_mime
+
+    try:
+        if normalized_mime == "image/jpeg":
+            rgb = source.convert("RGB")
+            for quality in (88, 82, 76, 70, 64, 58, 52):
+                buffer = BytesIO()
+                rgb.save(
+                    buffer,
+                    format="JPEG",
+                    quality=quality,
+                    optimize=True,
+                    progressive=True,
+                )
+                _keep_if_better(buffer.getvalue(), "image/jpeg")
+                if len(best_bytes) <= auto_compress_over_bytes:
+                    break
+        elif normalized_mime == "image/webp":
+            rgb = source.convert("RGB")
+            for quality in (86, 80, 74, 68, 62, 56, 50):
+                buffer = BytesIO()
+                rgb.save(
+                    buffer,
+                    format="WEBP",
+                    quality=quality,
+                    method=6,
+                )
+                _keep_if_better(buffer.getvalue(), "image/webp")
+                if len(best_bytes) <= auto_compress_over_bytes:
+                    break
+        else:
+            # PNG: OPTIMIZE FIRST, THEN FALL BACK TO JPEG WHEN THERE IS NO ALPHA.
+            png_buffer = BytesIO()
+            source.save(png_buffer, format="PNG", optimize=True, compress_level=9)
+            _keep_if_better(png_buffer.getvalue(), "image/png")
+
+            has_alpha = source.mode in ("RGBA", "LA") or "transparency" in source.info
+            if not has_alpha:
+                rgb = source.convert("RGB")
+                for quality in (86, 78, 70, 62):
+                    jpg_buffer = BytesIO()
+                    rgb.save(
+                        jpg_buffer,
+                        format="JPEG",
+                        quality=quality,
+                        optimize=True,
+                        progressive=True,
+                    )
+                    _keep_if_better(jpg_buffer.getvalue(), "image/jpeg")
+                    if len(best_bytes) <= auto_compress_over_bytes:
+                        break
+    except Exception:
+        return content, mime
+
+    if len(best_bytes) < len(content):
+        saved_kb = (len(content) - len(best_bytes)) / 1024
+        _log(
+            f"[COMPRESS] {len(content)} -> {len(best_bytes)} BYTES "
+            f"({saved_kb:.1f} KB AHORRADOS)"
+        )
+    return best_bytes, best_mime
+
+
 def _build_query(item: Dict[str, Any]) -> str:
     category = str(item.get("category", "")).strip()
     word = str(item.get("word") or "").strip()
@@ -1094,6 +1183,12 @@ def main() -> int:
     parser.add_argument("--interactive", action="store_true")
     parser.add_argument("--preview-candidates", type=int, default=5)
     parser.add_argument("--auto-retry-candidates", type=int, default=6)
+    parser.add_argument(
+        "--auto-compress-over-mb",
+        type=float,
+        default=DEFAULT_AUTO_COMPRESS_OVER_MB,
+        help="COMPRESIÓN AUTOMÁTICA SI EL ARCHIVO SUPERA ESTE TAMAÑO (MB). 0 = DESACTIVAR.",
+    )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--sleep", type=float, default=0.15)
 
@@ -1132,6 +1227,7 @@ def main() -> int:
         providers = [provider for provider in providers if provider.lower() != "google_cse"]
 
     query_cache: Dict[str, List[Dict[str, Any]]] = {}
+    auto_compress_over_bytes = max(0, int(args.auto_compress_over_mb * 1024 * 1024))
 
     updated = 0
     skipped = 0
@@ -1287,11 +1383,17 @@ def main() -> int:
                     chosen = ranked_candidate
                     chosen_query = str(chosen.get("_query", ""))
                     mime = chosen.get("mime") or _infer_mime_from_url(chosen.get("image_url", "")) or "image/jpeg"
-                    ext = _mime_to_ext(mime)
+                    compressed_content, stored_mime = _compress_if_needed(
+                        content=content,
+                        mime=mime,
+                        auto_compress_over_bytes=auto_compress_over_bytes,
+                    )
+                    ext = _mime_to_ext(stored_mime)
                     file_name = f"{_slug(item_id)}{ext}"
                     relative_path = Path("assets") / "images" / category_slug / file_name
                     absolute_path = root / relative_path
-                    selected_content = content
+                    selected_content = compressed_content
+                    mime = stored_mime
                     break
 
                 if selected_content is None:

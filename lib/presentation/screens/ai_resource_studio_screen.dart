@@ -11,11 +11,251 @@ import '../../domain/models/ai_quiz_question.dart';
 import '../../domain/models/ai_resource.dart';
 import '../../domain/models/activity_type.dart';
 import '../../domain/models/category.dart';
+import '../utils/category_visuals.dart';
 import '../viewmodels/ai_resource_studio_view_model.dart';
 import '../viewmodels/settings_view_model.dart';
 import '../widgets/activity_asset_image.dart';
 import '../widgets/upper_text.dart';
 import 'session_workspace_screen.dart';
+
+const _aiStudioGameChoices = <ActivityType>[
+  ActivityType.imagenPalabra,
+  ActivityType.escribirPalabra,
+  ActivityType.palabraPalabra,
+  ActivityType.imagenFrase,
+  ActivityType.letraObjetivo,
+  ActivityType.cambioExacto,
+  ActivityType.ruletaLetras,
+  ActivityType.discriminacion,
+  ActivityType.discriminacionInversa,
+];
+
+String _studioGameLabel(ActivityType type) {
+  return switch (type) {
+    ActivityType.imagenPalabra => 'IMAGEN Y PALABRA',
+    ActivityType.escribirPalabra => 'ESCRIBIR PALABRA',
+    ActivityType.palabraPalabra => 'PALABRA CON PALABRA',
+    ActivityType.imagenFrase => 'IMAGEN Y FRASE',
+    ActivityType.letraObjetivo => 'LETRAS Y VOCALES',
+    ActivityType.cambioExacto => 'TIENDA DE CHUCHES',
+    ActivityType.ruletaLetras => 'RULETA DE LETRAS',
+    ActivityType.discriminacion => 'DISCRIMINACIÓN',
+    ActivityType.discriminacionInversa => 'DISCRIMINACIÓN INVERSA',
+  };
+}
+
+String _studioGameDescription(ActivityType type) {
+  return switch (type) {
+    ActivityType.imagenPalabra =>
+      'ASOCIA CADA IMAGEN CON SU PALABRA Y REFUERZA VOCABULARIO.',
+    ActivityType.escribirPalabra =>
+      'OBSERVA LA IMAGEN Y ESCRIBE LA PALABRA CORRECTA PASO A PASO.',
+    ActivityType.palabraPalabra =>
+      'RELACIONA PALABRAS ENTRE SÍ PARA TRABAJAR SIGNIFICADO Y MEMORIA.',
+    ActivityType.imagenFrase =>
+      'UNE UNA FRASE CON LA IMAGEN CORRECTA PARA COMPRENSIÓN LECTORA.',
+    ActivityType.letraObjetivo =>
+      'ENTRENA LETRAS Y VOCALES EN CONTEXTOS VISUALES ADAPTADOS.',
+    ActivityType.cambioExacto =>
+      'TRABAJA DINERO Y CÁLCULO MENTAL CON RETOS DE CAMBIO EXACTO.',
+    ActivityType.ruletaLetras =>
+      'LA RULETA DEFINE RETOS DINÁMICOS PARA CONCIENCIA FONOLÓGICA.',
+    ActivityType.discriminacion =>
+      'MEJORA ATENCIÓN VISUAL ENCONTRANDO OPCIONES CORRECTAS.',
+    ActivityType.discriminacionInversa =>
+      'IDENTIFICA EL INTRUSO Y PRACTICA DISCRIMINACIÓN AVANZADA.',
+  };
+}
+
+class _StudioGameVisual {
+  const _StudioGameVisual({
+    required this.focusTag,
+    required this.storyIcons,
+    required this.storyChips,
+    required this.icon,
+    required this.startColor,
+    required this.endColor,
+  });
+
+  final String focusTag;
+  final List<IconData> storyIcons;
+  final List<String> storyChips;
+  final IconData icon;
+  final Color startColor;
+  final Color endColor;
+}
+
+const _studioGameVisuals = <ActivityType, _StudioGameVisual>{
+  ActivityType.imagenPalabra: _StudioGameVisual(
+    focusTag: 'VOCABULARIO',
+    storyIcons: [
+      Icons.image_rounded,
+      Icons.text_fields_rounded,
+      Icons.link_rounded,
+    ],
+    storyChips: ['IMAGEN', 'PALABRA'],
+    icon: Icons.image_search_rounded,
+    startColor: Color(0xFF7AD7F0),
+    endColor: Color(0xFF72E6B4),
+  ),
+  ActivityType.escribirPalabra: _StudioGameVisual(
+    focusTag: 'ESCRITURA',
+    storyIcons: [
+      Icons.edit_rounded,
+      Icons.spellcheck_rounded,
+      Icons.draw_rounded,
+    ],
+    storyChips: ['TRAZO', 'COPIA'],
+    icon: Icons.edit_note_rounded,
+    startColor: Color(0xFFFFC66A),
+    endColor: Color(0xFFFF9E7C),
+  ),
+  ActivityType.palabraPalabra: _StudioGameVisual(
+    focusTag: 'RELACIÓN',
+    storyIcons: [
+      Icons.short_text_rounded,
+      Icons.compare_arrows_rounded,
+      Icons.menu_book_rounded,
+    ],
+    storyChips: ['PALABRAS', 'RELACIÓN'],
+    icon: Icons.compare_arrows_rounded,
+    startColor: Color(0xFFA4A0FF),
+    endColor: Color(0xFF8D86F8),
+  ),
+  ActivityType.imagenFrase: _StudioGameVisual(
+    focusTag: 'COMPRENSIÓN',
+    storyIcons: [
+      Icons.image_rounded,
+      Icons.notes_rounded,
+      Icons.auto_stories_rounded,
+    ],
+    storyChips: ['FRASE', 'LECTURA'],
+    icon: Icons.auto_stories_rounded,
+    startColor: Color(0xFF88D4FF),
+    endColor: Color(0xFF6EC5FF),
+  ),
+  ActivityType.letraObjetivo: _StudioGameVisual(
+    focusTag: 'LETRAS',
+    storyIcons: [
+      Icons.sort_by_alpha_rounded,
+      Icons.text_fields_rounded,
+      Icons.hearing_rounded,
+    ],
+    storyChips: ['LETRAS', 'VOCALES'],
+    icon: Icons.sort_by_alpha_rounded,
+    startColor: Color(0xFF90E7D7),
+    endColor: Color(0xFF76D6E8),
+  ),
+  ActivityType.cambioExacto: _StudioGameVisual(
+    focusTag: 'EUROS',
+    storyIcons: [
+      Icons.attach_money_rounded,
+      Icons.shopping_bag_rounded,
+      Icons.calculate_rounded,
+    ],
+    storyChips: ['TIENDA', 'EUROS'],
+    icon: Icons.local_mall_rounded,
+    startColor: Color(0xFFFFC2A0),
+    endColor: Color(0xFFFF9FC6),
+  ),
+  ActivityType.ruletaLetras: _StudioGameVisual(
+    focusTag: 'RULETA',
+    storyIcons: [
+      Icons.casino_rounded,
+      Icons.refresh_rounded,
+      Icons.text_fields_rounded,
+    ],
+    storyChips: ['RULETA', 'RETO'],
+    icon: Icons.casino_rounded,
+    startColor: Color(0xFFFFD17A),
+    endColor: Color(0xFFFFC36A),
+  ),
+  ActivityType.discriminacion: _StudioGameVisual(
+    focusTag: 'ATENCIÓN',
+    storyIcons: [
+      Icons.visibility_rounded,
+      Icons.center_focus_strong_rounded,
+      Icons.check_circle_rounded,
+    ],
+    storyChips: ['ATENCIÓN', 'SELECCIÓN'],
+    icon: Icons.visibility_rounded,
+    startColor: Color(0xFF92E6B3),
+    endColor: Color(0xFF71D9D0),
+  ),
+  ActivityType.discriminacionInversa: _StudioGameVisual(
+    focusTag: 'INTRUSO',
+    storyIcons: [
+      Icons.search_rounded,
+      Icons.remove_circle_rounded,
+      Icons.psychology_alt_rounded,
+    ],
+    storyChips: ['INTRUSO', 'DETECTIVE'],
+    icon: Icons.change_circle_rounded,
+    startColor: Color(0xFFFFB7D5),
+    endColor: Color(0xFFFFA899),
+  ),
+};
+
+class _StudioModeVisual {
+  const _StudioModeVisual({
+    required this.value,
+    required this.icon,
+    required this.title,
+    required this.description,
+    required this.color,
+  });
+
+  final String value;
+  final IconData icon;
+  final String title;
+  final String description;
+  final Color color;
+}
+
+const _studioModeVisuals = <_StudioModeVisual>[
+  _StudioModeVisual(
+    value: 'SITUACIÓN DE APRENDIZAJE',
+    icon: Icons.auto_stories_rounded,
+    title: 'SITUACIÓN REAL',
+    description: 'SECUENCIA COMPLETA CON OBJETIVO, PASOS Y CIERRE.',
+    color: Color(0xFF0F8A6A),
+  ),
+  _StudioModeVisual(
+    value: 'ACTIVIDAD DE PREGUNTAS',
+    icon: Icons.quiz_rounded,
+    title: 'PREGUNTAS GUIADAS',
+    description: 'TRABAJO DIRECTO CON PREGUNTAS CORTAS Y RETROALIMENTACIÓN.',
+    color: Color(0xFF1E79B8),
+  ),
+  _StudioModeVisual(
+    value: 'MINI-JUEGO GUIADO',
+    icon: Icons.sports_esports_rounded,
+    title: 'MINI-JUEGO',
+    description: 'FORMATO LÚDICO CON RETOS CORTOS Y RESPUESTA INMEDIATA.',
+    color: Color(0xFFAD5F00),
+  ),
+];
+
+ActivityType? _activityTypeFromStoredKey(String rawKey) {
+  final normalized = rawKey.trim().toUpperCase();
+  if (normalized.isEmpty) {
+    return null;
+  }
+  for (final type in ActivityType.values) {
+    if (type.key == normalized) {
+      return type;
+    }
+  }
+  return null;
+}
+
+String _resourceRequestedGameLabel(AiResource resource) {
+  final type = _activityTypeFromStoredKey(resource.requestedActivityTypeKey);
+  if (type == null) {
+    return 'JUEGO APP: AUTO';
+  }
+  return 'JUEGO APP: ${_studioGameLabel(type)}';
+}
 
 class AiResourceStudioScreen extends ConsumerStatefulWidget {
   const AiResourceStudioScreen({super.key});
@@ -28,6 +268,7 @@ class AiResourceStudioScreen extends ConsumerStatefulWidget {
 class _AiResourceStudioScreenState
     extends ConsumerState<AiResourceStudioScreen> {
   static const _maxPromptLength = 1000;
+  static const _wizardTotalSteps = 3;
 
   final _instructionController = TextEditingController();
   final _apiKeyController = TextEditingController();
@@ -39,8 +280,767 @@ class _AiResourceStudioScreenState
   String _duration = '10-15 MIN';
   String _mode = 'SITUACIÓN DE APRENDIZAJE';
   AppCategory _category = AppCategory.mixta;
+  ActivityType _requestedGameType = ActivityType.imagenPalabra;
+  int _wizardStep = 0;
+  bool _showWizard = true;
   bool _onlyFavorites = false;
   AiResource? _selectedResource;
+
+  bool get _hasInstruction => _instructionController.text.trim().isNotEmpty;
+
+  bool _canMoveForwardFromCurrentStep() {
+    if (_wizardStep == 0) {
+      return _hasInstruction;
+    }
+    return true;
+  }
+
+  void _goToNextStep() {
+    if (!_canMoveForwardFromCurrentStep()) {
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      messenger?.hideCurrentSnackBar();
+      messenger?.showSnackBar(
+        const SnackBar(
+          content: UpperText('ESCRIBE EL CASO PARA PODER CONTINUAR'),
+        ),
+      );
+      return;
+    }
+    if (_wizardStep >= _wizardTotalSteps - 1) {
+      return;
+    }
+    setState(() {
+      _wizardStep++;
+    });
+  }
+
+  void _goToPreviousStep() {
+    if (_wizardStep <= 0) {
+      return;
+    }
+    setState(() {
+      _wizardStep--;
+    });
+  }
+
+  Widget _buildWizardMilestones(BuildContext context) {
+    final milestones = <(String label, IconData icon)>[
+      ('CASO', Icons.edit_note_rounded),
+      ('DISEÑO', Icons.palette_rounded),
+      ('GENERAR', Icons.auto_awesome_rounded),
+    ];
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: List<Widget>.generate(milestones.length, (index) {
+        final isActive = _wizardStep == index;
+        final isCompleted = _wizardStep > index;
+        final fg = isActive || isCompleted ? Colors.white : colorScheme.primary;
+        final bg = isActive
+            ? colorScheme.primary
+            : isCompleted
+            ? const Color(0xFF0F8A6A)
+            : colorScheme.primary.withValues(alpha: 0.10);
+        final border = isActive || isCompleted
+            ? Colors.transparent
+            : colorScheme.primary.withValues(alpha: 0.24);
+
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 220),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: border),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                isCompleted ? Icons.check_rounded : milestones[index].$2,
+                size: 16,
+                color: fg,
+              ),
+              const SizedBox(width: 6),
+              UpperText(
+                milestones[index].$1,
+                style: TextStyle(
+                  color: fg,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildStudioGamePreview({
+    required _StudioGameVisual visual,
+    required String semanticsLabel,
+    double height = 112,
+    double borderRadius = 14,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final storyIcons = visual.storyIcons.isEmpty
+        ? const [
+            Icons.toys_rounded,
+            Icons.star_rounded,
+            Icons.auto_awesome_rounded,
+          ]
+        : visual.storyIcons;
+    final storyChips = visual.storyChips.isEmpty
+        ? const ['JUEGO', 'CLASE']
+        : visual.storyChips;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(borderRadius),
+      child: Semantics(
+        label: semanticsLabel,
+        child: SizedBox(
+          height: height,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [visual.startColor, visual.endColor],
+                  ),
+                ),
+              ),
+              Positioned(
+                right: -20,
+                top: -20,
+                child: Container(
+                  width: 92,
+                  height: 92,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.24),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+              Positioned(
+                left: -24,
+                bottom: -26,
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.16),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 10,
+                top: 10,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.92),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: UpperText(
+                    visual.focusTag,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 14, 12, 12),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.90),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.95),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.08),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          alignment: WrapAlignment.center,
+                          children: List<Widget>.generate(3, (index) {
+                            final icon = storyIcons[index % storyIcons.length];
+                            return Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                color: visual.endColor.withValues(alpha: 0.22),
+                                borderRadius: BorderRadius.circular(9),
+                              ),
+                              child: Icon(
+                                icon,
+                                size: 18,
+                                color: colorScheme.primary,
+                              ),
+                            );
+                          }),
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          alignment: WrapAlignment.center,
+                          children: storyChips.map((chip) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: visual.startColor.withValues(
+                                  alpha: 0.20,
+                                ),
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: UpperText(
+                                chip,
+                                style: const TextStyle(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 10,
+                bottom: 8,
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.94),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    visual.icon,
+                    color: colorScheme.primary,
+                    size: 19,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStepTwoStudioDesign(BuildContext context) {
+    final selectedVisual =
+        _studioGameVisuals[_requestedGameType] ??
+        _studioGameVisuals[ActivityType.imagenPalabra]!;
+    final selectedCategoryColor = _category.color;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const UpperText(
+          '2) DISEÑA TU EXPERIENCIA',
+          style: TextStyle(fontWeight: FontWeight.w900),
+        ),
+        const SizedBox(height: 4),
+        UpperText(
+          'SELECCIONA UN SOLO JUEGO BASE Y COMPLETA LOS AJUSTES VISUALES.',
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                selectedVisual.startColor,
+                selectedVisual.endColor,
+                Colors.white,
+              ],
+            ),
+            border: Border.all(
+              color: colorScheme.primary.withValues(alpha: 0.24),
+              width: 1.4,
+            ),
+          ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final compact = constraints.maxWidth < 760;
+              final selectionBadge = Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.78),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.radio_button_checked_rounded, size: 14),
+                    SizedBox(width: 4),
+                    UpperText(
+                      'SELECCIÓN ÚNICA',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+              final gameInfo = Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  UpperText(
+                    _studioGameLabel(_requestedGameType),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  UpperText(
+                    _studioGameDescription(_requestedGameType),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              );
+              final preview = _buildStudioGamePreview(
+                visual: selectedVisual,
+                semanticsLabel: _studioGameLabel(_requestedGameType),
+                height: compact ? 94 : 88,
+                borderRadius: 12,
+              );
+
+              if (compact) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    preview,
+                    const SizedBox(height: 10),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: gameInfo),
+                        const SizedBox(width: 8),
+                        selectionBadge,
+                      ],
+                    ),
+                  ],
+                );
+              }
+
+              return Row(
+                children: [
+                  SizedBox(width: 210, child: preview),
+                  const SizedBox(width: 12),
+                  Expanded(child: gameInfo),
+                  const SizedBox(width: 10),
+                  selectionBadge,
+                ],
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 10),
+        UpperText(
+          'JUEGO APP A GENERAR',
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+        ),
+        const SizedBox(height: 8),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            const spacing = 12.0;
+            final width = constraints.maxWidth;
+            final cardWidth = width >= 1060
+                ? (width - (spacing * 3)) / 4
+                : width >= 780
+                ? (width - (spacing * 2)) / 3
+                : width >= 520
+                ? (width - spacing) / 2
+                : width;
+
+            return Wrap(
+              spacing: spacing,
+              runSpacing: spacing,
+              children: _aiStudioGameChoices.map((gameType) {
+                final visual = _studioGameVisuals[gameType]!;
+                final selected = _requestedGameType == gameType;
+                final borderColor = selected
+                    ? colorScheme.primary
+                    : colorScheme.outline.withValues(alpha: 0.35);
+                final surfaceColor = selected
+                    ? colorScheme.primary.withValues(alpha: 0.08)
+                    : Colors.white;
+
+                return SizedBox(
+                  width: cardWidth,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    decoration: BoxDecoration(
+                      color: surfaceColor,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: borderColor,
+                        width: selected ? 2.1 : 1.2,
+                      ),
+                      boxShadow: selected
+                          ? [
+                              BoxShadow(
+                                color: colorScheme.primary.withValues(
+                                  alpha: 0.20,
+                                ),
+                                blurRadius: 14,
+                                offset: const Offset(0, 6),
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(18),
+                        onTap: () =>
+                            setState(() => _requestedGameType = gameType),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 30,
+                                    height: 30,
+                                    decoration: BoxDecoration(
+                                      color: visual.endColor,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Icon(
+                                      visual.icon,
+                                      size: 18,
+                                      color: colorScheme.primary,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Icon(
+                                    selected
+                                        ? Icons.check_circle_rounded
+                                        : Icons.radio_button_unchecked_rounded,
+                                    color: selected
+                                        ? colorScheme.primary
+                                        : colorScheme.outline,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              SizedBox(
+                                width: double.infinity,
+                                child: _buildStudioGamePreview(
+                                  visual: visual,
+                                  semanticsLabel: _studioGameLabel(gameType),
+                                  height: 118,
+                                  borderRadius: 12,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              UpperText(
+                                _studioGameLabel(gameType),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(fontWeight: FontWeight.w900),
+                              ),
+                              const SizedBox(height: 3),
+                              UpperText(
+                                _studioGameDescription(gameType),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            );
+          },
+        ),
+        const SizedBox(height: 14),
+        UpperText(
+          'MODO',
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+        ),
+        const SizedBox(height: 8),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            const spacing = 12.0;
+            final width = constraints.maxWidth;
+            final cardWidth = width >= 940
+                ? (width - (spacing * 2)) / 3
+                : width >= 620
+                ? (width - spacing) / 2
+                : width;
+
+            return Wrap(
+              spacing: spacing,
+              runSpacing: spacing,
+              children: _studioModeVisuals.map((option) {
+                final selected = _mode == option.value;
+                return SizedBox(
+                  width: cardWidth,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: selected
+                          ? option.color.withValues(alpha: 0.12)
+                          : Colors.white,
+                      border: Border.all(
+                        color: selected
+                            ? option.color
+                            : colorScheme.outline.withValues(alpha: 0.40),
+                        width: selected ? 1.8 : 1.1,
+                      ),
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(16),
+                        onTap: () => setState(() => _mode = option.value),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 34,
+                                height: 34,
+                                decoration: BoxDecoration(
+                                  color: option.color.withValues(alpha: 0.18),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(
+                                  option.icon,
+                                  size: 20,
+                                  color: option.color,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    UpperText(
+                                      option.title,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w900,
+                                          ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    UpperText(
+                                      option.description,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Icon(
+                                selected
+                                    ? Icons.check_circle_rounded
+                                    : Icons.circle_outlined,
+                                color: selected
+                                    ? option.color
+                                    : colorScheme.outline,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            );
+          },
+        ),
+        const SizedBox(height: 14),
+        UpperText(
+          'CATEGORÍA',
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+        ),
+        const SizedBox(height: 8),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            const spacing = 10.0;
+            final width = constraints.maxWidth;
+            final cardWidth = width >= 1020
+                ? (width - (spacing * 3)) / 4
+                : width >= 730
+                ? (width - (spacing * 2)) / 3
+                : width >= 460
+                ? (width - spacing) / 2
+                : width;
+
+            return Wrap(
+              spacing: spacing,
+              runSpacing: spacing,
+              children: AppCategory.values.map((category) {
+                final selected = _category == category;
+                final color = category.color;
+                return SizedBox(
+                  width: cardWidth,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(14),
+                      onTap: () => setState(() => _category = category),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 11,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          color: selected
+                              ? color.withValues(alpha: 0.16)
+                              : Colors.white,
+                          border: Border.all(
+                            color: selected
+                                ? color
+                                : colorScheme.outline.withValues(alpha: 0.45),
+                            width: selected ? 1.8 : 1.1,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                color: color.withValues(alpha: 0.18),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                category.icon,
+                                color: color,
+                                size: 18,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: UpperText(
+                                category.label,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(fontWeight: FontWeight.w800),
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Icon(
+                              selected
+                                  ? Icons.check_circle_rounded
+                                  : Icons.radio_button_unchecked_rounded,
+                              color: selected ? color : colorScheme.outline,
+                              size: 18,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            );
+          },
+        ),
+        const SizedBox(height: 10),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: selectedCategoryColor.withValues(alpha: 0.10),
+            border: Border.all(
+              color: selectedCategoryColor.withValues(alpha: 0.45),
+            ),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(_category.icon, color: selectedCategoryColor),
+              const SizedBox(width: 8),
+              Expanded(
+                child: UpperText(
+                  'CATEGORÍA ACTIVA: ${_category.label}. ESTA SE USARÁ PARA PRIORIZAR IMÁGENES Y VOCABULARIO EN LA GENERACIÓN.',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w700),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 
   @override
   void dispose() {
@@ -122,6 +1122,7 @@ class _AiResourceStudioScreenState
           mode: _mode,
           categoryLabel: _category.label,
           difficultyLabel: 'AUTO POR EDAD',
+          requestedGameType: _requestedGameType,
           apiKey: apiKey,
           allowedWords: _availableWordsForGeneration(),
           model: _modelController.text.trim(),
@@ -132,6 +1133,8 @@ class _AiResourceStudioScreenState
     }
     setState(() {
       _selectedResource = generated;
+      _showWizard = false;
+      _wizardStep = 0;
     });
   }
 
@@ -197,364 +1200,566 @@ class _AiResourceStudioScreenState
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Color(0xFFFFEEF4), Color(0xFFEAF9F4)],
-                  ),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primary.withValues(alpha: 0.20),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const UpperText(
-                      'DESCRIBE TU OBJETIVO Y LA IA GENERARÁ LA ACTIVIDAD EN SEGUNDOS',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 20,
-                      ),
+              if (_showWizard) ...[
+                Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFFFFEEF4), Color(0xFFEAF9F4)],
                     ),
-                    const SizedBox(height: 12),
-                    UpperText(
-                      'TU INSTRUCCIÓN (${_instructionController.text.length}/$_maxPromptLength)',
-                      style: Theme.of(context).textTheme.titleLarge,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.20),
                     ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: _instructionController,
-                      maxLength: _maxPromptLength,
-                      minLines: 4,
-                      maxLines: 6,
-                      onChanged: (_) => setState(() {}),
-                      decoration: InputDecoration(
-                        hintText:
-                            'EJEMPLO: CREA UNA ACTIVIDAD CON VOCAL E PARA NIÑOS DE 7 A 12, CON 8 PREGUNTAS Y APOYO VISUAL.',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const UpperText(
+                        'ASISTENTE PASO A PASO',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 20,
                         ),
                       ),
+                      const SizedBox(height: 6),
+                      UpperText(
+                        'PASO ${_wizardStep + 1} DE $_wizardTotalSteps',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w900),
+                      ),
+                      const SizedBox(height: 8),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(999),
+                        child: LinearProgressIndicator(
+                          minHeight: 9,
+                          value: (_wizardStep + 1) / _wizardTotalSteps,
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.14),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      _buildWizardMilestones(context),
+                      const SizedBox(height: 12),
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 220),
+                        switchInCurve: Curves.easeOutCubic,
+                        switchOutCurve: Curves.easeInCubic,
+                        child: Container(
+                          key: ValueKey(_wizardStep),
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.72),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primary.withValues(alpha: 0.20),
+                            ),
+                          ),
+                          child: _wizardStep == 0
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const UpperText(
+                                      '1) CUÉNTAME EL CASO QUE QUIERES TRABAJAR',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    UpperText(
+                                      'INSTRUCCIÓN (${_instructionController.text.length}/$_maxPromptLength)',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.titleLarge,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    TextField(
+                                      controller: _instructionController,
+                                      maxLength: _maxPromptLength,
+                                      minLines: 5,
+                                      maxLines: 7,
+                                      onChanged: (_) => setState(() {}),
+                                      decoration: InputDecoration(
+                                        hintText:
+                                            'EJEMPLO: QUIERO TRABAJAR VOCAL E EN PRIMARIA, CON APOYO VISUAL Y PREGUNTAS CORTAS.',
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    UpperText(
+                                      'ESCRIBE EL OBJETIVO COMO SI SE LO EXPLICARAS A OTRA PROFESIONAL.',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodySmall,
+                                    ),
+                                  ],
+                                )
+                              : _wizardStep == 1
+                              ? _buildStepTwoStudioDesign(context)
+                              : Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const UpperText(
+                                      '3) AJUSTES FINALES Y GENERACIÓN',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    UpperText(
+                                      'RANGO DE EDAD',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w900,
+                                          ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Wrap(
+                                      spacing: 8,
+                                      runSpacing: 8,
+                                      children: [
+                                        ...[
+                                          'AUTO',
+                                          'INFANTIL (3-6)',
+                                          'INFANTIL (7-12)',
+                                          'ADOLESCENTES',
+                                          'ADULTOS',
+                                          'MAYORES',
+                                        ].map((option) {
+                                          return ChoiceChip(
+                                            selected: _ageRange == option,
+                                            label: UpperText(option),
+                                            onSelected: (_) => setState(
+                                              () => _ageRange = option,
+                                            ),
+                                          );
+                                        }),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    UpperText(
+                                      'DURACIÓN',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w900,
+                                          ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Wrap(
+                                      spacing: 8,
+                                      runSpacing: 8,
+                                      children: [
+                                        ...[
+                                          'AUTO',
+                                          '1-3 MIN',
+                                          '5-10 MIN',
+                                          '10-15 MIN',
+                                          '15-20 MIN',
+                                        ].map((option) {
+                                          return ChoiceChip(
+                                            selected: _duration == option,
+                                            label: UpperText(option),
+                                            onSelected: (_) => setState(
+                                              () => _duration = option,
+                                            ),
+                                          );
+                                        }),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    if (!kIsWeb) ...[
+                                      TextField(
+                                        controller: _apiKeyController,
+                                        obscureText: true,
+                                        onChanged: (value) {
+                                          ref
+                                              .read(
+                                                settingsViewModelProvider
+                                                    .notifier,
+                                              )
+                                              .setOpenAiApiKey(value);
+                                        },
+                                        decoration: InputDecoration(
+                                          labelText:
+                                              'OPENAI API KEY (SE GUARDA SOLO EN ESTE DISPOSITIVO)',
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              14,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                    TextField(
+                                      controller: _modelController,
+                                      onChanged: (value) {
+                                        ref
+                                            .read(
+                                              settingsViewModelProvider
+                                                  .notifier,
+                                            )
+                                            .setOpenAiModel(value);
+                                      },
+                                      decoration: InputDecoration(
+                                        labelText: 'MODELO OPENAI',
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      kIsWeb
+                                          ? 'En web la API key se usa solo en servidor.'
+                                          : settings.openAiApiKey.isNotEmpty
+                                          ? 'Usando API key guardada en ajustes locales.'
+                                          : 'Introduce tu API key para usar funciones IA en este dispositivo.',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodySmall,
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Container(
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary
+                                            .withValues(alpha: 0.10),
+                                        border: Border.all(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                              .withValues(alpha: 0.25),
+                                        ),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const UpperText(
+                                            'RESUMEN',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          UpperText(
+                                            'JUEGO: ${_studioGameLabel(_requestedGameType)}',
+                                          ),
+                                          UpperText('MODO: $_mode'),
+                                          UpperText(
+                                            'CATEGORÍA: ${_category.label}',
+                                          ),
+                                          UpperText('EDAD: $_ageRange'),
+                                          UpperText('DURACIÓN: $_duration'),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 220),
+                            child: OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                minimumSize: const Size(0, 50),
+                              ),
+                              onPressed: _wizardStep == 0
+                                  ? null
+                                  : _goToPreviousStep,
+                              icon: const Icon(Icons.arrow_back_rounded),
+                              label: const UpperText('ANTERIOR'),
+                            ),
+                          ),
+                          const Spacer(),
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 260),
+                            child: _wizardStep < _wizardTotalSteps - 1
+                                ? FilledButton.icon(
+                                    onPressed: _goToNextStep,
+                                    style: FilledButton.styleFrom(
+                                      minimumSize: const Size(0, 50),
+                                      backgroundColor: const Color(0xFF0D8A7C),
+                                      foregroundColor: Colors.white,
+                                      disabledBackgroundColor: const Color(
+                                        0xFF7FB8B0,
+                                      ),
+                                      disabledForegroundColor: Colors.white,
+                                    ),
+                                    icon: const Icon(
+                                      Icons.arrow_forward_rounded,
+                                    ),
+                                    label: const UpperText('SIGUIENTE'),
+                                  )
+                                : FilledButton.icon(
+                                    onPressed: state.isGenerating
+                                        ? null
+                                        : _generateResource,
+                                    style: FilledButton.styleFrom(
+                                      minimumSize: const Size(0, 50),
+                                    ),
+                                    icon: state.isGenerating
+                                        ? const SizedBox(
+                                            width: 18,
+                                            height: 18,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                            ),
+                                          )
+                                        : const Icon(
+                                            Icons.auto_awesome_rounded,
+                                          ),
+                                    label: UpperText(
+                                      state.isGenerating
+                                          ? 'GENERANDO...'
+                                          : 'CREAR RECURSO',
+                                    ),
+                                  ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                if (state.errorMessage != null) ...[
+                  const SizedBox(height: 10),
+                  Card(
+                    color: Colors.red.shade50,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Text(
+                        state.errorMessage!,
+                        style: TextStyle(color: Colors.red.shade800),
+                      ),
                     ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                  ),
+                ],
+                const SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _showWizard = false;
+                        _wizardStep = 0;
+                      });
+                    },
+                    icon: const Icon(Icons.folder_open_rounded),
+                    label: const UpperText('VER RECURSOS GUARDADOS'),
+                  ),
+                ),
+              ] else ...[
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: FilledButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _showWizard = true;
+                        _wizardStep = 0;
+                      });
+                    },
+                    icon: const Icon(Icons.auto_awesome_rounded),
+                    label: const UpperText('CREAR RECURSO POR PASOS'),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                if (activeResource != null) ...[
+                  const SizedBox(height: 12),
+                  _GeneratedResourceCard(
+                    resource: activeResource,
+                    optionImageByWord: imageMap,
+                    onToggleFavorite: () async {
+                      await ref
+                          .read(aiResourceStudioViewModelProvider.notifier)
+                          .toggleFavorite(activeResource!.id);
+                      if (!mounted) {
+                        return;
+                      }
+                      setState(() {
+                        _selectedResource = activeResource;
+                      });
+                    },
+                  ),
+                ],
+                const SizedBox(height: 12),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ...[
-                          'AUTO',
-                          'INFANTIL (3-6)',
-                          'INFANTIL (7-12)',
-                          'ADOLESCENTES',
-                          'ADULTOS',
-                          'MAYORES',
-                        ].map((option) {
-                          return ChoiceChip(
-                            selected: _ageRange == option,
-                            label: UpperText(option),
-                            onSelected: (_) =>
-                                setState(() => _ageRange = option),
-                          );
-                        }),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        ...[
-                          'AUTO',
-                          '1-3 MIN',
-                          '5-10 MIN',
-                          '10-15 MIN',
-                          '15-20 MIN',
-                        ].map((option) {
-                          return ChoiceChip(
-                            selected: _duration == option,
-                            label: UpperText(option),
-                            onSelected: (_) =>
-                                setState(() => _duration = option),
-                          );
-                        }),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    ExpansionTile(
-                      initiallyExpanded: true,
-                      tilePadding: EdgeInsets.zero,
-                      title: const UpperText('CONFIGURACIÓN AVANZADA'),
-                      childrenPadding: const EdgeInsets.only(bottom: 8),
-                      children: [
+                        UpperText(
+                          'MIS RECURSOS GUARDADOS (${resources.length})',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 8),
                         Wrap(
                           spacing: 8,
-                          runSpacing: 8,
                           children: [
-                            ...[
-                              'SITUACIÓN DE APRENDIZAJE',
-                              'ACTIVIDAD DE PREGUNTAS',
-                              'MINI-JUEGO GUIADO',
-                            ].map((option) {
-                              return ChoiceChip(
-                                selected: _mode == option,
-                                label: UpperText(option),
-                                onSelected: (_) =>
-                                    setState(() => _mode = option),
-                              );
-                            }),
+                            ChoiceChip(
+                              selected: !_onlyFavorites,
+                              label: const UpperText('TODOS'),
+                              onSelected: (_) {
+                                setState(() => _onlyFavorites = false);
+                              },
+                            ),
+                            ChoiceChip(
+                              selected: _onlyFavorites,
+                              label: const UpperText('SOLO FAVORITOS'),
+                              onSelected: (_) {
+                                setState(() => _onlyFavorites = true);
+                              },
+                            ),
                           ],
                         ),
                         const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: AppCategory.values.map((category) {
-                            return ChoiceChip(
-                              selected: _category == category,
-                              label: UpperText(category.label),
-                              onSelected: (_) =>
-                                  setState(() => _category = category),
-                            );
-                          }).toList(),
-                        ),
-                        const SizedBox(height: 8),
-                        if (!kIsWeb) ...[
-                          TextField(
-                            controller: _apiKeyController,
-                            obscureText: true,
-                            onChanged: (value) {
-                              ref
-                                  .read(settingsViewModelProvider.notifier)
-                                  .setOpenAiApiKey(value);
-                            },
-                            decoration: InputDecoration(
-                              labelText:
-                                  'OPENAI API KEY (SE GUARDA SOLO EN ESTE DISPOSITIVO)',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                        ],
                         TextField(
-                          controller: _modelController,
-                          onChanged: (value) {
-                            ref
-                                .read(settingsViewModelProvider.notifier)
-                                .setOpenAiModel(value);
-                          },
+                          controller: _searchController,
+                          onChanged: (_) => setState(() {}),
                           decoration: InputDecoration(
-                            labelText: 'MODELO OPENAI',
+                            hintText: 'BUSCAR RECURSOS...',
+                            prefixIcon: const Icon(Icons.search),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 6),
-                        Text(
-                          kIsWeb
-                              ? 'En web la API key se usa solo en servidor.'
-                              : settings.openAiApiKey.isNotEmpty
-                              ? 'Usando API key guardada en ajustes locales.'
-                              : 'Introduce tu API key para usar funciones IA en este dispositivo.',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    FilledButton.icon(
-                      onPressed: state.isGenerating ? null : _generateResource,
-                      icon: state.isGenerating
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.auto_awesome_rounded),
-                      label: UpperText(
-                        state.isGenerating ? 'GENERANDO...' : 'CREAR RECURSO',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (state.errorMessage != null) ...[
-                const SizedBox(height: 10),
-                Card(
-                  color: Colors.red.shade50,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Text(
-                      state.errorMessage!,
-                      style: TextStyle(color: Colors.red.shade800),
-                    ),
-                  ),
-                ),
-              ],
-              if (activeResource != null) ...[
-                const SizedBox(height: 12),
-                _GeneratedResourceCard(
-                  resource: activeResource,
-                  optionImageByWord: imageMap,
-                  onToggleFavorite: () async {
-                    await ref
-                        .read(aiResourceStudioViewModelProvider.notifier)
-                        .toggleFavorite(activeResource!.id);
-                    if (!mounted) {
-                      return;
-                    }
-                    setState(() {
-                      _selectedResource = activeResource;
-                    });
-                  },
-                ),
-              ],
-              const SizedBox(height: 12),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      UpperText(
-                        'MIS RECURSOS GUARDADOS (${resources.length})',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        children: [
-                          ChoiceChip(
-                            selected: !_onlyFavorites,
-                            label: const UpperText('TODOS'),
-                            onSelected: (_) {
-                              setState(() => _onlyFavorites = false);
-                            },
-                          ),
-                          ChoiceChip(
-                            selected: _onlyFavorites,
-                            label: const UpperText('SOLO FAVORITOS'),
-                            onSelected: (_) {
-                              setState(() => _onlyFavorites = true);
-                            },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      TextField(
-                        controller: _searchController,
-                        onChanged: (_) => setState(() {}),
-                        decoration: InputDecoration(
-                          hintText: 'BUSCAR RECURSOS...',
-                          prefixIcon: const Icon(Icons.search),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      if (resources.isEmpty)
-                        const Text('No hay recursos guardados todavía.')
-                      else
-                        ...resources.map((resource) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(
-                                  color: Theme.of(context).colorScheme.outline,
+                        const SizedBox(height: 10),
+                        if (resources.isEmpty)
+                          const Text('No hay recursos guardados todavía.')
+                        else
+                          ...resources.map((resource) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.outline,
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      resource.title,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w900,
+                                          ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(resource.objective),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      '${resource.ageRange} · ${resource.duration} · ${resource.mode}',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodySmall,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      _resourceRequestedGameLabel(resource),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                          tooltip: 'FAVORITO',
+                                          onPressed: () async {
+                                            await ref
+                                                .read(
+                                                  aiResourceStudioViewModelProvider
+                                                      .notifier,
+                                                )
+                                                .toggleFavorite(resource.id);
+                                          },
+                                          icon: Icon(
+                                            resource.isFavorite
+                                                ? Icons.star_rounded
+                                                : Icons.star_outline_rounded,
+                                            color: resource.isFavorite
+                                                ? Colors.amber.shade700
+                                                : null,
+                                          ),
+                                        ),
+                                        OutlinedButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              _selectedResource = resource;
+                                            });
+                                          },
+                                          child: const UpperText('ABRIR'),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        OutlinedButton(
+                                          onPressed: () async {
+                                            await ref
+                                                .read(
+                                                  aiResourceStudioViewModelProvider
+                                                      .notifier,
+                                                )
+                                                .delete(resource.id);
+                                            if (!mounted) {
+                                              return;
+                                            }
+                                            if (_selectedResource?.id ==
+                                                resource.id) {
+                                              setState(() {
+                                                _selectedResource = null;
+                                              });
+                                            }
+                                          },
+                                          child: const UpperText('ELIMINAR'),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    resource.title,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge
-                                        ?.copyWith(fontWeight: FontWeight.w900),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Text(resource.objective),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    '${resource.ageRange} · ${resource.duration} · ${resource.mode}',
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      IconButton(
-                                        tooltip: 'FAVORITO',
-                                        onPressed: () async {
-                                          await ref
-                                              .read(
-                                                aiResourceStudioViewModelProvider
-                                                    .notifier,
-                                              )
-                                              .toggleFavorite(resource.id);
-                                        },
-                                        icon: Icon(
-                                          resource.isFavorite
-                                              ? Icons.star_rounded
-                                              : Icons.star_outline_rounded,
-                                          color: resource.isFavorite
-                                              ? Colors.amber.shade700
-                                              : null,
-                                        ),
-                                      ),
-                                      OutlinedButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            _selectedResource = resource;
-                                          });
-                                        },
-                                        child: const UpperText('ABRIR'),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      OutlinedButton(
-                                        onPressed: () async {
-                                          await ref
-                                              .read(
-                                                aiResourceStudioViewModelProvider
-                                                    .notifier,
-                                              )
-                                              .delete(resource.id);
-                                          if (!mounted) {
-                                            return;
-                                          }
-                                          if (_selectedResource?.id ==
-                                              resource.id) {
-                                            setState(() {
-                                              _selectedResource = null;
-                                            });
-                                          }
-                                        },
-                                        child: const UpperText('ELIMINAR'),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }),
-                    ],
+                            );
+                          }),
+                      ],
+                    ),
                   ),
                 ),
-              ),
+              ],
             ],
           ),
         ),
@@ -607,6 +1812,13 @@ class _GeneratedResourceCard extends StatelessWidget {
             Text(
               '${resource.ageRange} · ${resource.duration} · ${resource.mode}',
               style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              _resourceRequestedGameLabel(resource),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 10),
             _PlayableResourcePanel(

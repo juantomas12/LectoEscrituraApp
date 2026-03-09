@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../application/providers/app_providers.dart';
+import '../../core/utils/text_utils.dart';
 import '../../domain/models/ai_resource.dart';
+import '../../domain/models/activity_type.dart';
 
 class AiResourceStudioState {
   const AiResourceStudioState({
@@ -28,6 +30,36 @@ class AiResourceStudioState {
 }
 
 class AiResourceStudioViewModel extends Notifier<AiResourceStudioState> {
+  AiResource? _findExistingByInstruction({
+    required String instruction,
+    required ActivityType? requestedGameType,
+    required List<AiResource> resources,
+  }) {
+    final normalizedInstruction = normalizeForComparison(
+      instruction,
+      ignoreAccents: true,
+    );
+    if (normalizedInstruction.isEmpty) {
+      return null;
+    }
+
+    for (final resource in resources) {
+      final normalizedExisting = normalizeForComparison(
+        resource.instruction,
+        ignoreAccents: true,
+      );
+      if (normalizedExisting != normalizedInstruction) {
+        continue;
+      }
+      if (requestedGameType != null &&
+          resource.requestedActivityTypeKey != requestedGameType.key) {
+        continue;
+      }
+      return resource;
+    }
+    return null;
+  }
+
   @override
   AiResourceStudioState build() {
     final all = ref.read(aiResourceRepositoryProvider).getAll();
@@ -58,10 +90,12 @@ class AiResourceStudioViewModel extends Notifier<AiResourceStudioState> {
     required String mode,
     required String categoryLabel,
     required String difficultyLabel,
+    ActivityType? requestedGameType,
     String? apiKey,
     required List<String> allowedWords,
     String? model,
   }) async {
+    final repository = ref.read(aiResourceRepositoryProvider);
     state = AiResourceStudioState(
       resources: state.resources,
       isGenerating: true,
@@ -69,6 +103,17 @@ class AiResourceStudioViewModel extends Notifier<AiResourceStudioState> {
     );
 
     try {
+      final existing = _findExistingByInstruction(
+        instruction: instruction,
+        requestedGameType: requestedGameType,
+        resources: repository.getAll(),
+      );
+      if (existing != null) {
+        final all = repository.getAll();
+        state = AiResourceStudioState(resources: all, isGenerating: false);
+        return existing;
+      }
+
       final generated = await ref
           .read(openAiResourceGeneratorServiceProvider)
           .generateResource(
@@ -78,13 +123,14 @@ class AiResourceStudioViewModel extends Notifier<AiResourceStudioState> {
             mode: mode,
             categoryLabel: categoryLabel,
             difficultyLabel: difficultyLabel,
+            requestedGameType: requestedGameType,
             apiKey: apiKey,
             allowedWords: allowedWords,
             model: model,
           );
 
-      await ref.read(aiResourceRepositoryProvider).save(generated);
-      final all = ref.read(aiResourceRepositoryProvider).getAll();
+      await repository.save(generated);
+      final all = repository.getAll();
       state = AiResourceStudioState(resources: all, isGenerating: false);
       return generated;
     } catch (error) {

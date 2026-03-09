@@ -76,13 +76,14 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
     bool reinforcement = false,
   }) async {
     final selectedPairs = customPairs ?? await _loadPairsFromDataset();
+    final visiblePairs = selectedPairs.take(4).toList();
 
     if (!mounted) {
       return;
     }
 
     setState(() {
-      _pairs = selectedPairs;
+      _pairs = visiblePairs;
       _failedItemIds.clear();
       _attemptsByItemId.clear();
       _isReinforcementRound = reinforcement;
@@ -152,6 +153,11 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
   Future<void> _tryMatch(String rightWord) async {
     final leftWord = _selectedLeft;
     if (leftWord == null || _matchedLeft.contains(leftWord)) {
+      if (mounted && leftWord == null) {
+        setState(() {
+          _feedback = 'PRIMERO ELIGE UNA PALABRA EN COLUMNA A';
+        });
+      }
       return;
     }
 
@@ -272,13 +278,24 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
+    final media = MediaQuery.sizeOf(context);
+    final width = media.width;
+    final isTabletLandscapePrimary = isPrimaryTabletLandscape(context);
     final isDesktop = width >= 1000;
+    final isWideLayout = width >= 860;
     final solvedCount = _matchedLeft.length;
+    final contentWidth = isDesktop
+        ? 1180.0
+        : isTabletLandscapePrimary
+        ? 1024.0
+        : 920.0;
+
     return GameScaffold(
       title: 'RELACIONAR PALABRAS CON PALABRAS',
+      desktopHeadline: '¡UNE LAS PAREJAS!',
+      desktopLessonTitle: 'RELACIONAR PALABRAS',
       instructionText:
-          'SELECCIONA UNA PALABRA EN COLUMNA A Y LUEGO SU PAREJA EN COLUMNA B',
+          'SELECCIONA UNA PALABRA DE CADA COLUMNA PARA FORMAR UN PAR',
       progressCurrent: solvedCount,
       progressTotal: _pairs.length,
       body: _isLoading
@@ -287,139 +304,206 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
           ? const Center(child: UpperText('NO HAY CONTENIDO DISPONIBLE'))
           : Center(
               child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: isDesktop ? 1050 : 900),
+                constraints: BoxConstraints(maxWidth: contentWidth),
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      GameProgressHeader(
-                        label: 'TU PROGRESO',
-                        current: solvedCount,
-                        total: _pairs.length,
-                        trailingLabel: '⭐ $_correct',
-                      ),
-                      const SizedBox(height: 10),
-                      if (_isReinforcementRound) ...[
-                        GamePanel(
-                          backgroundColor: Colors.orange.shade50,
-                          borderColor: Colors.orange.shade200,
-                          child: const Row(
-                            children: [
-                              Icon(Icons.fitness_center_rounded),
-                              SizedBox(width: 8),
-                              Expanded(
-                                child: UpperText(
-                                  'MINI-RONDA DE REFUERZO EN MARCHA',
+                  padding: EdgeInsets.fromLTRB(
+                    isTabletLandscapePrimary ? 10 : 16,
+                    isTabletLandscapePrimary ? 8 : 14,
+                    isTabletLandscapePrimary ? 10 : 16,
+                    isTabletLandscapePrimary ? 10 : 14,
+                  ),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final compact =
+                          isTabletLandscapePrimary ||
+                          constraints.maxHeight < 620;
+                      final spacing = compact ? 8.0 : 12.0;
+
+                      return Column(
+                        children: [
+                          if (_isReinforcementRound) ...[
+                            GamePanel(
+                              backgroundColor: Colors.orange.shade50,
+                              borderColor: Colors.orange.shade200,
+                              child: const Row(
+                                children: [
+                                  Icon(Icons.fitness_center_rounded),
+                                  SizedBox(width: 8),
+                                  Expanded(
+                                    child: UpperText(
+                                      'MINI-RONDA DE REFUERZO EN MARCHA',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: spacing),
+                          ],
+                          Align(
+                            child: SegmentedButton<PairMode>(
+                              segments: const [
+                                ButtonSegment(
+                                  value: PairMode.iguales,
+                                  label: UpperText('IGUALES'),
+                                ),
+                                ButtonSegment(
+                                  value: PairMode.relacionadas,
+                                  label: UpperText('RELACIONADAS'),
+                                ),
+                              ],
+                              style: SegmentedButton.styleFrom(
+                                foregroundColor: const Color(0xFF1B2949),
+                                selectedForegroundColor: Colors.white,
+                                selectedBackgroundColor: const Color(
+                                  0xFF0F8A75,
+                                ),
+                                backgroundColor: Colors.white,
+                                side: const BorderSide(
+                                  color: Color(0xFF1B2949),
+                                  width: 1.3,
+                                ),
+                                textStyle: TextStyle(
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: compact ? 13 : 15,
                                 ),
                               ),
-                            ],
+                              selected: {_mode},
+                              onSelectionChanged: (value) {
+                                setState(() {
+                                  _mode = value.first;
+                                  _correct = 0;
+                                  _incorrect = 0;
+                                  _streak = 0;
+                                  _bestStreak = 0;
+                                  _startedAt = DateTime.now();
+                                });
+                                _rebuildColumns();
+                              },
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                      ],
-                      SegmentedButton<PairMode>(
-                        segments: const [
-                          ButtonSegment(
-                            value: PairMode.iguales,
-                            label: UpperText('IGUALES'),
+                          SizedBox(height: spacing),
+                          GamePanel(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: compact ? 12 : 14,
+                              vertical: compact ? 10 : 12,
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.sync_alt_rounded),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: UpperText(
+                                    _feedback,
+                                    maxLines: compact ? 1 : 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          ButtonSegment(
-                            value: PairMode.relacionadas,
-                            label: UpperText('RELACIONADAS'),
+                          SizedBox(height: spacing),
+                          Expanded(
+                            child: isWideLayout
+                                ? Row(
+                                    children: [
+                                      Expanded(
+                                        child: _WordColumn(
+                                          title: 'COLUMNA A',
+                                          words: _leftWords,
+                                          selected: _selectedLeft,
+                                          matched: _matchedLeft,
+                                          allowScroll:
+                                              !isTabletLandscapePrimary,
+                                          compact: compact,
+                                          accentColor: const Color(0xFF2B8CEE),
+                                          labelBackground: const Color(
+                                            0xFFDCE8F7,
+                                          ),
+                                          isLeftColumn: true,
+                                          onTap: (word) {
+                                            if (_matchedLeft.contains(word)) {
+                                              return;
+                                            }
+                                            setState(() {
+                                              _selectedLeft = word;
+                                              _feedback =
+                                                  'AHORA ELIGE SU PAREJA EN COLUMNA B';
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                      SizedBox(width: spacing),
+                                      Expanded(
+                                        child: _WordColumn(
+                                          title: 'COLUMNA B',
+                                          words: _rightWords,
+                                          selected: null,
+                                          matched: _matchedRight,
+                                          allowScroll:
+                                              !isTabletLandscapePrimary,
+                                          compact: compact,
+                                          accentColor: const Color(0xFF0F8A75),
+                                          labelBackground: const Color(
+                                            0xFFDFF3EE,
+                                          ),
+                                          isLeftColumn: false,
+                                          onTap: (word) => _tryMatch(word),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Column(
+                                    children: [
+                                      Expanded(
+                                        child: _WordColumn(
+                                          title: 'COLUMNA A',
+                                          words: _leftWords,
+                                          selected: _selectedLeft,
+                                          matched: _matchedLeft,
+                                          allowScroll:
+                                              !isTabletLandscapePrimary,
+                                          compact: compact,
+                                          accentColor: const Color(0xFF2B8CEE),
+                                          labelBackground: const Color(
+                                            0xFFDCE8F7,
+                                          ),
+                                          isLeftColumn: true,
+                                          onTap: (word) {
+                                            if (_matchedLeft.contains(word)) {
+                                              return;
+                                            }
+                                            setState(() {
+                                              _selectedLeft = word;
+                                              _feedback =
+                                                  'AHORA ELIGE SU PAREJA EN COLUMNA B';
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                      SizedBox(height: spacing),
+                                      Expanded(
+                                        child: _WordColumn(
+                                          title: 'COLUMNA B',
+                                          words: _rightWords,
+                                          selected: null,
+                                          matched: _matchedRight,
+                                          allowScroll:
+                                              !isTabletLandscapePrimary,
+                                          compact: compact,
+                                          accentColor: const Color(0xFF0F8A75),
+                                          labelBackground: const Color(
+                                            0xFFDFF3EE,
+                                          ),
+                                          isLeftColumn: false,
+                                          onTap: (word) => _tryMatch(word),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                           ),
                         ],
-                        selected: {_mode},
-                        onSelectionChanged: (value) {
-                          setState(() {
-                            _mode = value.first;
-                            _correct = 0;
-                            _incorrect = 0;
-                            _streak = 0;
-                            _bestStreak = 0;
-                            _startedAt = DateTime.now();
-                          });
-                          _rebuildColumns();
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      GamePanel(
-                        child: Row(
-                          children: [
-                            const Icon(Icons.sync_alt),
-                            const SizedBox(width: 10),
-                            Expanded(child: UpperText(_feedback)),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Expanded(
-                        child: isDesktop
-                            ? Row(
-                                children: [
-                                  Expanded(
-                                    child: _WordColumn(
-                                      title: 'COLUMNA A',
-                                      words: _leftWords,
-                                      selected: _selectedLeft,
-                                      matched: _matchedLeft,
-                                      onTap: (word) {
-                                        if (_matchedLeft.contains(word)) {
-                                          return;
-                                        }
-                                        setState(() {
-                                          _selectedLeft = word;
-                                          _feedback =
-                                              'AHORA ELIGE EN COLUMNA B';
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: _WordColumn(
-                                      title: 'COLUMNA B',
-                                      words: _rightWords,
-                                      selected: null,
-                                      matched: _matchedRight,
-                                      onTap: (word) => _tryMatch(word),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : Column(
-                                children: [
-                                  Expanded(
-                                    child: _WordColumn(
-                                      title: 'COLUMNA A',
-                                      words: _leftWords,
-                                      selected: _selectedLeft,
-                                      matched: _matchedLeft,
-                                      onTap: (word) {
-                                        if (_matchedLeft.contains(word)) {
-                                          return;
-                                        }
-                                        setState(() {
-                                          _selectedLeft = word;
-                                          _feedback =
-                                              'AHORA ELIGE EN COLUMNA B';
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Expanded(
-                                    child: _WordColumn(
-                                      title: 'COLUMNA B',
-                                      words: _rightWords,
-                                      selected: null,
-                                      matched: _matchedRight,
-                                      onTap: (word) => _tryMatch(word),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                      ),
-                    ],
+                      );
+                    },
                   ),
                 ),
               ),
@@ -434,6 +518,11 @@ class _WordColumn extends StatelessWidget {
     required this.words,
     required this.selected,
     required this.matched,
+    required this.allowScroll,
+    required this.compact,
+    required this.accentColor,
+    required this.labelBackground,
+    required this.isLeftColumn,
     required this.onTap,
   });
 
@@ -441,52 +530,217 @@ class _WordColumn extends StatelessWidget {
   final List<String> words;
   final String? selected;
   final Set<String> matched;
+  final bool allowScroll;
+  final bool compact;
+  final Color accentColor;
+  final Color labelBackground;
+  final bool isLeftColumn;
   final ValueChanged<String> onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            UpperText(title, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 8),
-            Expanded(
-              child: ListView.separated(
+    final itemSpacing = compact ? 8.0 : 12.0;
+
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: compact ? 22 : 26,
+            vertical: compact ? 7 : 9,
+          ),
+          decoration: BoxDecoration(
+            color: labelBackground,
+            borderRadius: BorderRadius.circular(999),
+          ),
+          child: UpperText(
+            title,
+            style: TextStyle(
+              fontSize: compact ? 14 : 16,
+              fontWeight: FontWeight.w900,
+              color: accentColor.withValues(alpha: 0.95),
+              letterSpacing: 1.0,
+            ),
+          ),
+        ),
+        SizedBox(height: itemSpacing),
+        Expanded(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final count = words.length;
+              final rawHeight = count <= 0
+                  ? 0.0
+                  : (constraints.maxHeight - ((count - 1) * itemSpacing)) /
+                        count;
+              final cardHeight = allowScroll
+                  ? (compact ? 72.0 : 84.0)
+                  : rawHeight.clamp(
+                      compact ? 56.0 : 64.0,
+                      compact ? 86.0 : 98.0,
+                    );
+
+              return ListView.separated(
+                physics: allowScroll
+                    ? const BouncingScrollPhysics()
+                    : const NeverScrollableScrollPhysics(),
                 itemCount: words.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                padding: EdgeInsets.zero,
+                separatorBuilder: (_, __) => SizedBox(height: itemSpacing),
                 itemBuilder: (context, index) {
                   final word = words[index];
                   final isMatched = matched.contains(word);
                   final isSelected = selected == word;
 
-                  return FilledButton.tonal(
-                    onPressed: isMatched ? null : () => onTap(word),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: isMatched
-                          ? Colors.green.shade100
-                          : (isSelected ? Colors.blue.shade100 : null),
-                      side: BorderSide(
-                        color: isSelected
-                            ? Colors.blue.shade700
-                            : Colors.transparent,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        if (isMatched) const Icon(Icons.check, size: 18),
-                        if (isMatched) const SizedBox(width: 6),
-                        Expanded(
-                          child: UpperText(word, textAlign: TextAlign.center),
-                        ),
-                      ],
+                  return SizedBox(
+                    height: cardHeight,
+                    child: _WordChoiceCard(
+                      word: word,
+                      accentColor: accentColor,
+                      compact: compact,
+                      isLeftColumn: isLeftColumn,
+                      isMatched: isMatched,
+                      isSelected: isSelected,
+                      enabled: !isMatched,
+                      onTap: isMatched ? null : () => onTap(word),
                     ),
                   );
                 },
-              ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _WordChoiceCard extends StatelessWidget {
+  const _WordChoiceCard({
+    required this.word,
+    required this.accentColor,
+    required this.compact,
+    required this.isLeftColumn,
+    required this.isMatched,
+    required this.isSelected,
+    required this.enabled,
+    this.onTap,
+  });
+
+  final String word;
+  final Color accentColor;
+  final bool compact;
+  final bool isLeftColumn;
+  final bool isMatched;
+  final bool isSelected;
+  final bool enabled;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final active = isSelected || isMatched;
+    final radius = compact ? 32.0 : 36.0;
+
+    final background = isMatched
+        ? const Color(0xFFE7F7EF)
+        : isSelected
+        ? const Color(0xFFDCEBFF)
+        : Colors.white;
+    final borderColor = isMatched
+        ? const Color(0xFF169865)
+        : isSelected
+        ? accentColor
+        : Colors.transparent;
+
+    final textStyle = TextStyle(
+      fontSize: compact ? 16 : 18,
+      fontWeight: FontWeight.w900,
+      letterSpacing: 2.0,
+      color: isMatched ? const Color(0xFF123A2E) : const Color(0xFF101938),
+    );
+
+    final circleSize = compact ? 32.0 : 40.0;
+    final indicator = Container(
+      width: circleSize,
+      height: circleSize,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: active
+            ? (isMatched ? const Color(0xFF169865) : accentColor)
+            : accentColor.withValues(alpha: 0.13),
+      ),
+      child: Icon(
+        active ? Icons.check_rounded : Icons.radio_button_unchecked_rounded,
+        size: compact ? 19 : 24,
+        color: active ? Colors.white : accentColor,
+      ),
+    );
+
+    final cardChild = Row(
+      children: [
+        if (!isLeftColumn) indicator,
+        if (!isLeftColumn) SizedBox(width: compact ? 10 : 14),
+        Expanded(
+          child: UpperText(
+            word,
+            textAlign: isLeftColumn ? TextAlign.left : TextAlign.right,
+            style: textStyle,
+          ),
+        ),
+        if (isLeftColumn) SizedBox(width: compact ? 10 : 14),
+        if (isLeftColumn) indicator,
+      ],
+    );
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 140),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(radius),
+        border: Border.all(color: borderColor, width: active ? 2.8 : 1.5),
+        boxShadow: [
+          if (!active)
+            const BoxShadow(
+              color: Color(0x12000000),
+              blurRadius: 0,
+              offset: Offset(0, 8),
             ),
-          ],
+          if (isSelected && !isMatched)
+            BoxShadow(
+              color: accentColor.withValues(alpha: 0.22),
+              blurRadius: 18,
+              offset: const Offset(0, 8),
+            ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: enabled ? onTap : null,
+          borderRadius: BorderRadius.circular(radius),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: compact ? 16 : 22),
+                child: cardChild,
+              ),
+              if (isLeftColumn && isSelected && !isMatched)
+                Positioned(
+                  right: -16,
+                  top: 0,
+                  bottom: 0,
+                  child: Center(
+                    child: Container(
+                      width: 18,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: accentColor,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

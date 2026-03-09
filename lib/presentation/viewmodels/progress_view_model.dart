@@ -62,7 +62,61 @@ class LetterPerformance {
       totalAttempts == 0 ? 0 : correctAttempts / totalAttempts;
 }
 
+enum BadgeTier { none, bronze, silver, gold }
+
+extension BadgeTierX on BadgeTier {
+  String get label => switch (this) {
+    BadgeTier.none => 'SIN INSIGNIA',
+    BadgeTier.bronze => 'BRONCE',
+    BadgeTier.silver => 'PLATA',
+    BadgeTier.gold => 'ORO',
+  };
+}
+
+class RewardsSummary {
+  const RewardsSummary({
+    required this.currentStreak,
+    required this.longestStreak,
+    required this.unlockedBadges,
+    required this.activeToday,
+    required this.badgesByCategory,
+  });
+
+  final int currentStreak;
+  final int longestStreak;
+  final int unlockedBadges;
+  final bool activeToday;
+  final Map<AppCategory, BadgeTier> badgesByCategory;
+}
+
+class AdaptivePlanRecommendation {
+  const AdaptivePlanRecommendation({
+    required this.activityType,
+    required this.category,
+    required this.level,
+    required this.targetLetters,
+    required this.reason,
+  });
+
+  final ActivityType activityType;
+  final AppCategory category;
+  final int level;
+  final List<String> targetLetters;
+  final String reason;
+}
+
 class ProgressViewModel extends Notifier<int> {
+  static const _adaptableGames = [
+    ActivityType.imagenPalabra,
+    ActivityType.escribirPalabra,
+    ActivityType.palabraPalabra,
+    ActivityType.imagenFrase,
+    ActivityType.letraObjetivo,
+    ActivityType.cambioExacto,
+    ActivityType.discriminacion,
+    ActivityType.discriminacionInversa,
+  ];
+
   @override
   int build() {
     return 0;
@@ -214,6 +268,310 @@ class ProgressViewModel extends Notifier<int> {
       );
     }
     return stats;
+  }
+
+  AdaptivePlanRecommendation adaptivePlanRecommendation({int windowSize = 18}) {
+    final recent = getAllResults()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    if (recent.isEmpty) {
+      return const AdaptivePlanRecommendation(
+        activityType: ActivityType.imagenPalabra,
+        category: AppCategory.cosasDeCasa,
+        level: 1,
+        targetLetters: ['A', 'E', 'O'],
+        reason: 'COMIENZA CON EL JUEGO BASE PARA OBTENER DATOS.',
+      );
+    }
+
+    final scoped = recent.take(windowSize).toList();
+    var selectedGame = ActivityType.imagenPalabra;
+    var bestNeedScore = -1.0;
+
+    for (final game in _adaptableGames) {
+      final gameResults = scoped
+          .where((result) => result.activityType == game)
+          .toList();
+      if (gameResults.isEmpty) {
+        continue;
+      }
+      final attempts = gameResults.fold<int>(
+        0,
+        (sum, result) => sum + result.correct + result.incorrect,
+      );
+      if (attempts <= 0) {
+        continue;
+      }
+      final incorrect = gameResults.fold<int>(
+        0,
+        (sum, result) => sum + result.incorrect,
+      );
+      final accuracy =
+          gameResults.fold<double>(0, (sum, result) => sum + result.accuracy) /
+          gameResults.length;
+      final needScore =
+          (incorrect / attempts) * 0.60 +
+          (1 - accuracy) * 0.35 +
+          (gameResults.length / windowSize) * 0.05;
+
+      if (needScore > bestNeedScore) {
+        bestNeedScore = needScore;
+        selectedGame = game;
+      }
+    }
+
+    if (bestNeedScore < 0) {
+      selectedGame = recent.first.activityType;
+      if (!_adaptableGames.contains(selectedGame)) {
+        selectedGame = ActivityType.imagenPalabra;
+      }
+    }
+
+    final category = _recommendedCategoryForGame(selectedGame, scoped);
+    final maxLevel = _maxLevelForGame(selectedGame);
+    final level = recommendedLevelForGame(selectedGame, maxLevel: maxLevel);
+    final letters = _focusLettersForGame(selectedGame, top: 3);
+
+    final reason = letters.isEmpty
+        ? 'SE RECOMIENDA REFORZAR ${selectedGame.label} EN ${category.label}.'
+        : 'REFUERZA ${letters.join(', ')} EN ${category.label}.';
+
+    return AdaptivePlanRecommendation(
+      activityType: selectedGame,
+      category: category,
+      level: level,
+      targetLetters: letters,
+      reason: reason,
+    );
+  }
+
+  RewardsSummary rewardsSummary() {
+    final results = getAllResults()
+      ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
+
+    final badges = <AppCategory, BadgeTier>{};
+    for (final category in AppCategoryLists.reales) {
+      badges[category] = _badgeTierForCategory(results, category);
+    }
+
+    final unlocked = badges.values
+        .where((badge) => badge != BadgeTier.none)
+        .length;
+
+    final activeDays =
+        results.map((result) => _onlyDate(result.createdAt)).toSet().toList()
+          ..sort((a, b) => a.compareTo(b));
+
+    final currentStreak = _currentStreak(activeDays);
+    final longestStreak = _longestStreak(activeDays);
+    final latestDay = activeDays.isEmpty ? null : activeDays.last;
+    final activeToday =
+        latestDay != null && latestDay == _onlyDate(DateTime.now());
+
+    return RewardsSummary(
+      currentStreak: currentStreak,
+      longestStreak: longestStreak,
+      unlockedBadges: unlocked,
+      activeToday: activeToday,
+      badgesByCategory: badges,
+    );
+  }
+
+  int _maxLevelForGame(ActivityType activityType) {
+    return switch (activityType) {
+      ActivityType.letraObjetivo => 3,
+      ActivityType.cambioExacto => 3,
+      ActivityType.discriminacion => 3,
+      ActivityType.discriminacionInversa => 3,
+      _ => 1,
+    };
+  }
+
+  AppCategory _recommendedCategoryForGame(
+    ActivityType activityType,
+    List<ActivityResult> source,
+  ) {
+    final grouped = <AppCategory, List<ActivityResult>>{};
+    for (final result in source) {
+      if (result.activityType != activityType) {
+        continue;
+      }
+      if (result.category == AppCategory.mixta) {
+        continue;
+      }
+      grouped
+          .putIfAbsent(result.category, () => <ActivityResult>[])
+          .add(result);
+    }
+
+    if (grouped.isNotEmpty) {
+      var selected = grouped.keys.first;
+      var bestNeed = -1.0;
+
+      for (final entry in grouped.entries) {
+        final attempts = entry.value.fold<int>(
+          0,
+          (sum, result) => sum + result.correct + result.incorrect,
+        );
+        if (attempts <= 0) {
+          continue;
+        }
+        final incorrect = entry.value.fold<int>(
+          0,
+          (sum, result) => sum + result.incorrect,
+        );
+        final need = incorrect / attempts;
+        if (need > bestNeed) {
+          bestNeed = need;
+          selected = entry.key;
+        }
+      }
+      return selected;
+    }
+
+    final byCategory = categoryAccuracyMap();
+    var fallback = AppCategory.cosasDeCasa;
+    var lowestAccuracy = double.infinity;
+    for (final category in AppCategoryLists.reales) {
+      final accuracy = byCategory[category] ?? 0;
+      if (accuracy < lowestAccuracy) {
+        lowestAccuracy = accuracy;
+        fallback = category;
+      }
+    }
+    return fallback;
+  }
+
+  List<String> _focusLettersForGame(ActivityType activityType, {int top = 3}) {
+    final gameProgressMap = getGameItemProgressMap();
+    final items = ref.read(datasetRepositoryProvider).getAllItems();
+    final itemById = {for (final item in items) item.id: item};
+    final scoreByLetter = <String, int>{};
+
+    for (final entry in gameProgressMap.entries) {
+      final separator = entry.key.indexOf('|');
+      if (separator <= 0) {
+        continue;
+      }
+
+      final gameKey = entry.key.substring(0, separator);
+      if (gameKey != activityType.key) {
+        continue;
+      }
+
+      final itemId = entry.key.substring(separator + 1);
+      final item = itemById[itemId];
+      if (item == null) {
+        continue;
+      }
+
+      final progress = entry.value;
+      if (progress.incorrectAttempts <= 0) {
+        continue;
+      }
+
+      final word = item.word ?? (item.words.isNotEmpty ? item.words.first : '');
+      final letters = normalizeWordForLetters(
+        word,
+      ).split('').where((char) => RegExp(r'[A-ZÑ]').hasMatch(char)).toSet();
+
+      if (letters.isEmpty) {
+        continue;
+      }
+
+      final weightedScore =
+          progress.incorrectAttempts * 2 - progress.correctAttempts;
+      final score = weightedScore > 0
+          ? weightedScore
+          : progress.incorrectAttempts;
+      for (final letter in letters) {
+        scoreByLetter[letter] = (scoreByLetter[letter] ?? 0) + score;
+      }
+    }
+
+    if (scoreByLetter.isEmpty) {
+      final fallback = hardestLetters(top: top);
+      return fallback.keys.take(top).toList();
+    }
+
+    final sorted = scoreByLetter.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    return sorted.take(top).map((entry) => entry.key).toList();
+  }
+
+  BadgeTier _badgeTierForCategory(
+    List<ActivityResult> source,
+    AppCategory category,
+  ) {
+    final bucket = source
+        .where((result) => result.category == category)
+        .toList();
+    if (bucket.isEmpty) {
+      return BadgeTier.none;
+    }
+
+    final sessions = bucket.length;
+    final attempts = bucket.fold<int>(
+      0,
+      (sum, result) => sum + result.correct + result.incorrect,
+    );
+    final accuracy = attempts == 0
+        ? 0
+        : bucket.fold<double>(0, (sum, result) => sum + result.accuracy) /
+              bucket.length;
+
+    if (sessions >= 10 && accuracy >= 0.85) {
+      return BadgeTier.gold;
+    }
+    if (sessions >= 6 && accuracy >= 0.75) {
+      return BadgeTier.silver;
+    }
+    if (sessions >= 3 && accuracy >= 0.60) {
+      return BadgeTier.bronze;
+    }
+    return BadgeTier.none;
+  }
+
+  DateTime _onlyDate(DateTime value) {
+    return DateTime(value.year, value.month, value.day);
+  }
+
+  int _currentStreak(List<DateTime> sortedDays) {
+    if (sortedDays.isEmpty) {
+      return 0;
+    }
+    var streak = 1;
+    var cursor = sortedDays.last;
+    for (var i = sortedDays.length - 2; i >= 0; i--) {
+      final expectedPrevious = cursor.subtract(const Duration(days: 1));
+      if (sortedDays[i] == expectedPrevious) {
+        streak++;
+        cursor = sortedDays[i];
+        continue;
+      }
+      break;
+    }
+    return streak;
+  }
+
+  int _longestStreak(List<DateTime> sortedDays) {
+    if (sortedDays.isEmpty) {
+      return 0;
+    }
+    var best = 1;
+    var current = 1;
+    for (var i = 1; i < sortedDays.length; i++) {
+      final previous = sortedDays[i - 1];
+      final expected = previous.add(const Duration(days: 1));
+      if (sortedDays[i] == expected) {
+        current++;
+        if (current > best) {
+          best = current;
+        }
+      } else {
+        current = 1;
+      }
+    }
+    return best;
   }
 
   int recommendedLevelForGame(
