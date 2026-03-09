@@ -459,6 +459,9 @@ class _HomeTab extends StatelessWidget {
     final horizontalPadding = isTablet ? 26.0 : 16.0;
     final contentWidth = isTablet ? 1300.0 : 840.0;
     final playerName = profileName.split(' ').first;
+    final playerLabel = playerName.trim().isEmpty
+        ? 'Aventurero'
+        : _titleCase(playerName);
     final results = progressVm.getAllResults();
     final totalCorrect = results.fold<int>(
       0,
@@ -528,14 +531,14 @@ class _HomeTab extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 14),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'EduMundo',
                               style: TextStyle(
-                                fontSize: 50,
+                                fontSize: isTablet ? 24 : 22,
                                 fontWeight: FontWeight.w900,
                                 color: Color(0xFF101A35),
                                 height: 0.95,
@@ -545,8 +548,8 @@ class _HomeTab extends StatelessWidget {
                             Text(
                               'ISLAS DE APRENDIZAJE',
                               style: TextStyle(
-                                fontSize: 14,
-                                letterSpacing: 3.2,
+                                fontSize: isTablet ? 10 : 9,
+                                letterSpacing: 2.2,
                                 fontWeight: FontWeight.w800,
                                 color: Color(0xFFEF5B10),
                               ),
@@ -625,10 +628,10 @@ class _HomeTab extends StatelessWidget {
                   child: Column(
                     children: [
                       Text(
-                        '¡Hola, $playerName!',
+                        '¡Hola, $playerLabel!',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: isTablet ? 58 : 38,
+                          fontSize: isTablet ? 24 : 28,
                           fontWeight: FontWeight.w900,
                           color: const Color(0xFF101A35),
                           height: 1.0,
@@ -639,7 +642,7 @@ class _HomeTab extends StatelessWidget {
                         'Elige una isla para empezar a jugar hoy',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: isTablet ? 26 : 20,
+                          fontSize: isTablet ? 12 : 16,
                           color: const Color(0xFF344B70),
                           fontWeight: FontWeight.w500,
                         ),
@@ -736,7 +739,7 @@ class _HomeTab extends StatelessWidget {
                               'TU PROGRESO DE HOY',
                               style: TextStyle(
                                 color: Color(0xFFEF5B10),
-                                fontSize: 31,
+                                fontSize: 18,
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: 0.4,
                               ),
@@ -746,7 +749,7 @@ class _HomeTab extends StatelessWidget {
                             '$progressPercent% Completado',
                             style: const TextStyle(
                               color: Color(0xFF131B34),
-                              fontSize: 19,
+                              fontSize: 14,
                               fontWeight: FontWeight.w900,
                             ),
                           ),
@@ -867,7 +870,7 @@ class _HomeIslandTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isTablet = MediaQuery.sizeOf(context).width >= 900;
-    final circleSize = isTablet ? 196.0 : 154.0;
+    final circleSize = isTablet ? 116.0 : 140.0;
 
     return Material(
       color: Colors.transparent,
@@ -900,19 +903,19 @@ class _HomeIslandTile extends StatelessWidget {
                     ? Text(
                         symbol!,
                         style: TextStyle(
-                          fontSize: isTablet ? 74 : 54,
+                          fontSize: isTablet ? 48 : 50,
                           fontWeight: FontWeight.w900,
                           color: accentColor,
                         ),
                       )
-                    : Icon(icon, color: accentColor, size: isTablet ? 66 : 50),
+                    : Icon(icon, color: accentColor, size: isTablet ? 44 : 46),
               ),
             ),
             const SizedBox(height: 12),
             Container(
               padding: EdgeInsets.symmetric(
-                horizontal: isTablet ? 28 : 18,
-                vertical: isTablet ? 12 : 10,
+                horizontal: isTablet ? 18 : 16,
+                vertical: isTablet ? 8 : 8,
               ),
               decoration: BoxDecoration(
                 color: highlighted ? accentColor : Colors.white,
@@ -932,7 +935,7 @@ class _HomeIslandTile extends StatelessWidget {
               child: Text(
                 title,
                 style: TextStyle(
-                  fontSize: isTablet ? 39 : 26,
+                  fontSize: isTablet ? 18 : 22,
                   fontWeight: FontWeight.w900,
                   color: highlighted ? Colors.white : const Color(0xFF141C34),
                 ),
