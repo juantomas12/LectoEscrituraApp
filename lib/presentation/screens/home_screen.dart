@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -37,35 +35,6 @@ String _categoryPickerLabel(AppCategory category) {
     return 'Mix de cosas';
   }
   return _titleCase(category.label);
-}
-
-int _dayOfYear(DateTime date) {
-  final start = DateTime(date.year, 1, 1);
-  return date.difference(start).inDays + 1;
-}
-
-_QuickTrack _dailyChallengeTrack({
-  required List<_QuickTrack> tracks,
-  required DateTime now,
-}) {
-  if (tracks.isEmpty) {
-    throw StateError('No hay juegos disponibles para reto diario.');
-  }
-  if (tracks.length == 1) {
-    return tracks.first;
-  }
-
-  final todaySeed = now.year * 1000 + _dayOfYear(now);
-  final yesterday = now.subtract(const Duration(days: 1));
-  final yesterdaySeed = yesterday.year * 1000 + _dayOfYear(yesterday);
-
-  final todayIndex = Random(todaySeed).nextInt(tracks.length);
-  final yesterdayIndex = Random(yesterdaySeed).nextInt(tracks.length);
-  final adjustedToday = todayIndex == yesterdayIndex
-      ? (todayIndex + 1) % tracks.length
-      : todayIndex;
-
-  return tracks[adjustedToday];
 }
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -481,81 +450,56 @@ class _HomeTab extends StatelessWidget {
   final ValueChanged<AiResource> onOpenSavedResource;
   final ValueChanged<AiResource> onToggleSavedResource;
 
+  _QuickTrack _trackFor(ActivityType type) {
+    for (final track in _HomeScreenState._quickTracks) {
+      if (track.gameType == type) {
+        return track;
+      }
+    }
+    return _HomeScreenState._quickTracks.first;
+  }
+
   @override
   Widget build(BuildContext context) {
     final rewards = progressVm.rewardsSummary();
     final width = MediaQuery.sizeOf(context).width;
     final isTablet = width >= 900;
-    final horizontalPadding = isTablet ? 28.0 : 20.0;
-    final contentWidth = isTablet ? 1080.0 : 760.0;
-    final nextMilestone = rewards.currentStreak >= 5
-        ? '¡Racha excelente!'
-        : 'Estás a ${(5 - rewards.currentStreak).clamp(1, 5)} juegos de una racha de 5';
+    final horizontalPadding = isTablet ? 26.0 : 16.0;
+    final contentWidth = isTablet ? 1300.0 : 840.0;
     final playerName = profileName.split(' ').first;
-    final dailyTrack = _dailyChallengeTrack(
-      tracks: _HomeScreenState._quickTracks,
-      now: DateTime.now(),
+    final results = progressVm.getAllResults();
+    final totalCorrect = results.fold<int>(
+      0,
+      (sum, item) => sum + item.correct,
     );
+    final totalIncorrect = results.fold<int>(
+      0,
+      (sum, item) => sum + item.incorrect,
+    );
+    final totalAttempts = totalCorrect + totalIncorrect;
+    final progressRatio = totalAttempts == 0
+        ? 0.0
+        : (totalCorrect / totalAttempts).clamp(0.0, 1.0);
+    final progressPercent = (progressRatio * 100).round();
+    final progressFilledFlex = ((progressRatio * 1000).round())
+        .clamp(1, 1000)
+        .toInt();
+    final progressEmptyFlex = (1000 - progressFilledFlex)
+        .clamp(1, 1000)
+        .toInt();
 
-    final learningTracks = Column(
-      children: _HomeScreenState._quickTracks.map((track) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 14),
-          child: _LearningCard(track: track, onTap: () => onTrackTap(track)),
-        );
-      }).toList(),
-    );
-
-    final savedResourcesPanel = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Guardados IA',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-            color: Color(0xFF203257),
-          ),
-        ),
-        const SizedBox(height: 8),
-        if (savedResources.isEmpty)
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFD8E0EE)),
-            ),
-            child: const Text(
-              'Todavía no tienes recursos guardados. En la pantalla IA pulsa "Guardar en inicio" para añadirlos aquí.',
-              style: TextStyle(
-                color: Color(0xFF5E7094),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          )
-        else
-          ...savedResources.take(isTablet ? 6 : 5).map((resource) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: _SavedResourceCard(
-                resource: resource,
-                onPlay: resource.playableQuestions.isEmpty
-                    ? null
-                    : () => onOpenSavedResource(resource),
-                onToggleSaved: () => onToggleSavedResource(resource),
-              ),
-            );
-          }),
-      ],
-    );
+    final letterTrack = _trackFor(ActivityType.letraObjetivo);
+    final syllableTrack = _trackFor(ActivityType.palabraPalabra);
+    final wordTrack = _trackFor(ActivityType.imagenPalabra);
+    final writingTrack = _trackFor(ActivityType.escribirPalabra);
+    final phraseTrack = _trackFor(ActivityType.imagenFrase);
 
     return ListView(
       padding: EdgeInsets.fromLTRB(
         horizontalPadding,
-        14,
+        isTablet ? 18 : 12,
         horizontalPadding,
-        24,
+        isTablet ? 18 : 12,
       ),
       children: [
         Center(
@@ -566,176 +510,336 @@ class _HomeTab extends StatelessWidget {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF4C98F5), Color(0xFF4387EE)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(isTablet ? 36 : 30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF2B72D8).withValues(alpha: 0.34),
-                        blurRadius: 28,
-                        offset: const Offset(0, 14),
-                      ),
-                    ],
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFFE9E4DE)),
                   ),
                   padding: EdgeInsets.fromLTRB(
-                    isTablet ? 28 : 20,
-                    isTablet ? 24 : 18,
-                    isTablet ? 24 : 18,
-                    isTablet ? 28 : 20,
+                    isTablet ? 28 : 16,
+                    16,
+                    isTablet ? 20 : 16,
+                    16,
                   ),
                   child: Row(
                     children: [
-                      InkWell(
-                        borderRadius: BorderRadius.circular(999),
-                        onTap: onMenuTap,
-                        child: Container(
-                          width: isTablet ? 92 : 74,
-                          height: isTablet ? 92 : 74,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: const Color(0xFFCFE0FB),
-                              width: 3,
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.pets_rounded,
-                            color: const Color(0xFF4C98F5),
-                            size: isTablet ? 48 : 40,
-                          ),
+                      Container(
+                        width: isTablet ? 70 : 58,
+                        height: isTablet ? 70 : 58,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEF5B10),
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        child: Icon(
+                          Icons.school_rounded,
+                          color: Colors.white,
+                          size: isTablet ? 36 : 30,
                         ),
                       ),
                       const SizedBox(width: 14),
-                      Expanded(
+                      const Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'EduMundo',
                               style: TextStyle(
-                                fontSize: isTablet ? 54 : 36,
+                                fontSize: 50,
                                 fontWeight: FontWeight.w900,
-                                color: Colors.white,
+                                color: Color(0xFF101A35),
                                 height: 0.95,
                               ),
                             ),
-                            const SizedBox(height: 6),
+                            SizedBox(height: 2),
                             Text(
-                              '¡Hola, $playerName! Explora colores, letras y retos.',
+                              'ISLAS DE APRENDIZAJE',
                               style: TextStyle(
-                                fontSize: isTablet ? 25 : 20,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white.withValues(alpha: 0.96),
-                                height: 1.12,
+                                fontSize: 14,
+                                letterSpacing: 3.2,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFFEF5B10),
                               ),
                             ),
                           ],
                         ),
                       ),
+                      Container(
+                        width: isTablet ? 56 : 48,
+                        height: isTablet ? 56 : 48,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFF5E7DF),
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          onPressed: onMenuTap,
+                          icon: Icon(
+                            Icons.settings_rounded,
+                            color: const Color(0xFFEF5B10),
+                            size: isTablet ? 30 : 26,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
                       InkWell(
                         borderRadius: BorderRadius.circular(999),
                         onTap: onProfileTap,
                         child: Container(
-                          width: isTablet ? 92 : 72,
-                          height: isTablet ? 92 : 72,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFFFD830),
+                          width: isTablet ? 56 : 48,
+                          height: isTablet ? 56 : 48,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEF5B10),
                             shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(
+                                  0xFFEF5B10,
+                                ).withValues(alpha: 0.28),
+                                blurRadius: 16,
+                                offset: const Offset(0, 7),
+                              ),
+                            ],
                           ),
                           child: Icon(
-                            Icons.star_rounded,
-                            color: const Color(0xFF1E2334),
-                            size: isTablet ? 50 : 40,
+                            Icons.person_rounded,
+                            color: Colors.white,
+                            size: isTablet ? 30 : 26,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Container(
+                        width: isTablet ? 56 : 48,
+                        height: isTablet ? 56 : 48,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF8CCCB3),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 3),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          playerName.isEmpty
+                              ? 'E'
+                              : playerName[0].toUpperCase(),
+                          style: const TextStyle(
+                            color: Color(0xFF123A2C),
+                            fontWeight: FontWeight.w900,
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
+                const SizedBox(height: 28),
+                Center(
+                  child: Column(
+                    children: [
+                      Text(
+                        '¡Hola, $playerName!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: isTablet ? 58 : 38,
+                          fontWeight: FontWeight.w900,
+                          color: const Color(0xFF101A35),
+                          height: 1.0,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Elige una isla para empezar a jugar hoy',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: isTablet ? 26 : 20,
+                          color: const Color(0xFF344B70),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 30),
+                GridView.count(
+                  crossAxisCount: isTablet ? 3 : 2,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  childAspectRatio: isTablet ? 1.0 : 0.82,
+                  mainAxisSpacing: isTablet ? 14 : 10,
+                  crossAxisSpacing: isTablet ? 22 : 12,
                   children: [
-                    _HomeQuickCircle(
-                      title: 'Reto de hoy',
-                      subtitle: dailyTrack.title,
-                      icon: Icons.bolt_rounded,
-                      ringColor: const Color(0xFF57C46E),
-                      fillColor: const Color(0xFFE2F7E7),
-                      iconColor: const Color(0xFF57C46E),
-                      onTap: () => onTrackTap(dailyTrack),
+                    _HomeIslandTile(
+                      title: letterTrack.title,
+                      symbol: 'Aa',
+                      onTap: () => onTrackTap(letterTrack),
+                      fillColor: const Color(0xFFFFE8CC),
+                      borderColor: const Color(0xFFF6F1EB),
+                      labelBorderColor: const Color(0xFFFFD4A1),
+                      accentColor: const Color(0xFFFF7A00),
                     ),
-                    _HomeQuickCircle(
-                      title: 'Meta hoy',
-                      subtitle: 'Racha ${rewards.currentStreak}',
-                      icon: Icons.emoji_events_rounded,
-                      ringColor: const Color(0xFFF1C321),
-                      fillColor: const Color(0xFFFFF6D7),
-                      iconColor: const Color(0xFFF1C321),
-                      onTap: onOpenProgress,
+                    _HomeIslandTile(
+                      title: syllableTrack.title,
+                      icon: Icons.music_note_rounded,
+                      onTap: () => onTrackTap(syllableTrack),
+                      fillColor: const Color(0xFFDDEBFF),
+                      borderColor: const Color(0xFFF3F6FA),
+                      labelBorderColor: const Color(0xFFAECFF9),
+                      accentColor: const Color(0xFF3B82F6),
                     ),
-                    _HomeQuickCircle(
-                      title: 'Mix de cosas',
-                      subtitle: _categoryPickerLabel(category),
-                      icon: Icons.category_rounded,
-                      ringColor: category.color.withValues(alpha: 0.82),
-                      fillColor: category.color.withValues(alpha: 0.16),
-                      iconColor: category.color,
-                      onTap: onPickCategory,
+                    _HomeIslandTile(
+                      title: wordTrack.title,
+                      icon: Icons.auto_stories_rounded,
+                      onTap: () => onTrackTap(wordTrack),
+                      fillColor: const Color(0xFFD7F4E3),
+                      borderColor: const Color(0xFFF2F8F5),
+                      labelBorderColor: const Color(0xFF9DE4BF),
+                      accentColor: const Color(0xFF1DBE5B),
+                    ),
+                    _HomeIslandTile(
+                      title: writingTrack.title,
+                      icon: Icons.draw_rounded,
+                      onTap: () => onTrackTap(writingTrack),
+                      fillColor: const Color(0xFFEEDFFE),
+                      borderColor: const Color(0xFFF7F3FB),
+                      labelBorderColor: const Color(0xFFD2B8F7),
+                      accentColor: const Color(0xFF9B5DE5),
+                    ),
+                    _HomeIslandTile(
+                      title: phraseTrack.title,
+                      icon: Icons.chat_bubble_rounded,
+                      onTap: () => onTrackTap(phraseTrack),
+                      fillColor: const Color(0xFFF8DCEE),
+                      borderColor: const Color(0xFFFCF4FA),
+                      labelBorderColor: const Color(0xFFF0BADB),
+                      accentColor: const Color(0xFFE64A9B),
+                    ),
+                    _HomeIslandTile(
+                      title: 'IA Automático',
+                      icon: Icons.psychology_alt_rounded,
+                      onTap: onOpenAi,
+                      fillColor: const Color(0xFFFFE2D2),
+                      borderColor: const Color(0xFFEF5B10),
+                      labelBorderColor: const Color(0xFFEF5B10),
+                      accentColor: const Color(0xFFEF5B10),
+                      highlighted: true,
                     ),
                   ],
                 ),
-                const SizedBox(height: 18),
-                const Text(
-                  '¡A aprender!',
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF0F1936),
+                const SizedBox(height: 20),
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFCFCFD),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: const Color(0xFFE9E4DE)),
                   ),
-                ),
-                const SizedBox(height: 12),
-                if (isTablet)
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  padding: const EdgeInsets.fromLTRB(18, 16, 18, 14),
+                  child: Column(
                     children: [
-                      Expanded(flex: 3, child: learningTracks),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          children: [
-                            _AiEntryCard(onTap: onOpenAi),
-                            const SizedBox(height: 14),
-                            _ProgressCard(
-                              streak: rewards.currentStreak,
-                              message: nextMilestone,
-                              onTap: onOpenProgress,
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.star_rounded,
+                            color: Color(0xFFEF5B10),
+                            size: 28,
+                          ),
+                          const SizedBox(width: 8),
+                          const Expanded(
+                            child: Text(
+                              'TU PROGRESO DE HOY',
+                              style: TextStyle(
+                                color: Color(0xFFEF5B10),
+                                fontSize: 31,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.4,
+                              ),
                             ),
-                            const SizedBox(height: 14),
-                            savedResourcesPanel,
+                          ),
+                          Text(
+                            '$progressPercent% Completado',
+                            style: const TextStyle(
+                              color: Color(0xFF131B34),
+                              fontSize: 19,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Container(
+                        height: 30,
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFCED5E2),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: progressFilledFlex,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFEF5B10),
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                ),
+                                alignment: Alignment.centerRight,
+                                child: Text(
+                                  rewards.activeToday ? '¡CASI LLEGAS!' : '',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: progressEmptyFlex,
+                              child: const SizedBox.shrink(),
+                            ),
                           ],
                         ),
                       ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          const Expanded(
+                            child: Text(
+                              'INICIO',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF5E7094),
+                                letterSpacing: 2.0,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              rewards.currentStreak >= 5
+                                  ? 'RACHA EXCELENTE'
+                                  : 'SIGUIENTE NIVEL: EXPLORADOR GALÁCTICO',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF5E7094),
+                                letterSpacing: 1.8,
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: onOpenProgress,
+                            child: const Text(
+                              'META DIARIA',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFF5E7094),
+                                letterSpacing: 2.0,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
-                  )
-                else ...[
-                  learningTracks,
-                  _AiEntryCard(onTap: onOpenAi),
-                  const SizedBox(height: 14),
-                  _ProgressCard(
-                    streak: rewards.currentStreak,
-                    message: nextMilestone,
-                    onTap: onOpenProgress,
                   ),
-                  const SizedBox(height: 14),
-                  savedResourcesPanel,
-                ],
+                ),
               ],
             ),
           ),
@@ -745,82 +849,104 @@ class _HomeTab extends StatelessWidget {
   }
 }
 
-class _HomeQuickCircle extends StatelessWidget {
-  const _HomeQuickCircle({
+class _HomeIslandTile extends StatelessWidget {
+  const _HomeIslandTile({
     required this.title,
-    this.subtitle,
-    required this.icon,
-    required this.ringColor,
-    required this.fillColor,
-    required this.iconColor,
     required this.onTap,
+    required this.fillColor,
+    required this.borderColor,
+    required this.labelBorderColor,
+    required this.accentColor,
+    this.icon,
+    this.symbol,
+    this.highlighted = false,
   });
 
   final String title;
-  final String? subtitle;
-  final IconData icon;
-  final Color ringColor;
-  final Color fillColor;
-  final Color iconColor;
   final VoidCallback onTap;
+  final Color fillColor;
+  final Color borderColor;
+  final Color labelBorderColor;
+  final Color accentColor;
+  final IconData? icon;
+  final String? symbol;
+  final bool highlighted;
 
   @override
   Widget build(BuildContext context) {
     final isTablet = MediaQuery.sizeOf(context).width >= 900;
-    final size = isTablet ? 150.0 : 130.0;
+    final circleSize = isTablet ? 196.0 : 154.0;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(30),
         onTap: onTap,
-        child: SizedBox(
-          width: size,
-          child: Column(
-            children: [
-              Container(
-                width: size,
-                height: size,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: ringColor, width: 5),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: circleSize,
+              height: circleSize,
+              decoration: BoxDecoration(
+                color: fillColor,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: highlighted ? borderColor : const Color(0xFFF0F0F0),
+                  width: highlighted ? 8 : 7,
                 ),
-                child: Center(
-                  child: Container(
-                    width: size * 0.56,
-                    height: size * 0.56,
-                    decoration: BoxDecoration(
-                      color: fillColor,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(icon, color: iconColor, size: size * 0.28),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.09),
+                    blurRadius: 16,
+                    offset: const Offset(0, 8),
                   ),
-                ),
+                ],
               ),
-              const SizedBox(height: 8),
-              Text(
-                title.toUpperCase(),
+              child: Center(
+                child: symbol != null
+                    ? Text(
+                        symbol!,
+                        style: TextStyle(
+                          fontSize: isTablet ? 74 : 54,
+                          fontWeight: FontWeight.w900,
+                          color: accentColor,
+                        ),
+                      )
+                    : Icon(icon, color: accentColor, size: isTablet ? 66 : 50),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: isTablet ? 28 : 18,
+                vertical: isTablet ? 12 : 10,
+              ),
+              decoration: BoxDecoration(
+                color: highlighted ? accentColor : Colors.white,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(
+                  color: highlighted ? accentColor : labelBorderColor,
+                  width: 3,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Text(
+                title,
                 style: TextStyle(
-                  fontSize: isTablet ? 24 : 18,
-                  color: const Color(0xFF1E2E4D),
+                  fontSize: isTablet ? 39 : 26,
                   fontWeight: FontWeight.w900,
+                  color: highlighted ? Colors.white : const Color(0xFF141C34),
                 ),
               ),
-              if (subtitle != null) ...[
-                const SizedBox(height: 2),
-                Text(
-                  subtitle!.toUpperCase(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: isTablet ? 15 : 13,
-                    color: const Color(0xFF5D6D90),
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -1279,426 +1405,6 @@ class _SettingsTab extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _LearningCard extends StatelessWidget {
-  const _LearningCard({required this.track, required this.onTap});
-
-  final _QuickTrack track;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final isTablet = MediaQuery.sizeOf(context).width >= 900;
-    final iconBox = isTablet ? 116.0 : 98.0;
-    final titleSize = isTablet ? 46.0 : 38.0;
-    final subtitleSize = isTablet ? 17.0 : 15.0;
-    final (mainColor, darkColor) = switch (track.gameType) {
-      ActivityType.letraObjetivo => (
-        const Color(0xFFFA5B0A),
-        const Color(0xFFD84B06),
-      ),
-      ActivityType.palabraPalabra => (
-        const Color(0xFF67C975),
-        const Color(0xFF44A855),
-      ),
-      ActivityType.imagenPalabra => (
-        const Color(0xFF4B92EA),
-        const Color(0xFF2B73D5),
-      ),
-      ActivityType.escribirPalabra => (
-        const Color(0xFFF1A42A),
-        const Color(0xFFCF8413),
-      ),
-      ActivityType.imagenFrase => (
-        const Color(0xFF27B5C0),
-        const Color(0xFF1896A0),
-      ),
-      ActivityType.ruletaLetras => (
-        const Color(0xFF8B6BE8),
-        const Color(0xFF6D50C8),
-      ),
-      ActivityType.discriminacion => (
-        const Color(0xFF2FB374),
-        const Color(0xFF21905B),
-      ),
-      ActivityType.discriminacionInversa => (
-        const Color(0xFFF08C33),
-        const Color(0xFFCF6D19),
-      ),
-      ActivityType.cambioExacto => (
-        const Color(0xFFD756A4),
-        const Color(0xFFB73F87),
-      ),
-    };
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(44),
-        onTap: onTap,
-        child: Ink(
-          padding: EdgeInsets.symmetric(
-            horizontal: isTablet ? 22 : 18,
-            vertical: isTablet ? 18 : 14,
-          ),
-          decoration: BoxDecoration(
-            color: mainColor,
-            borderRadius: BorderRadius.circular(44),
-            boxShadow: [
-              BoxShadow(
-                color: darkColor.withValues(alpha: 0.95),
-                blurRadius: 0,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: iconBox,
-                height: iconBox,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.20),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  track.icon,
-                  color: Colors.white,
-                  size: isTablet ? 52 : 46,
-                ),
-              ),
-              const SizedBox(width: 18),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      track.title.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: titleSize,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                        height: 1.0,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      track.subtitle,
-                      style: TextStyle(
-                        fontSize: subtitleSize,
-                        color: Colors.white.withValues(alpha: 0.88),
-                        height: 1.2,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: Colors.white.withValues(alpha: 0.88),
-                size: 38,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _AiEntryCard extends StatelessWidget {
-  const _AiEntryCard({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(24),
-        onTap: onTap,
-        child: Ink(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            gradient: const LinearGradient(
-              colors: [Color(0xFFE8EEFF), Color(0xFFE2F6FF)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            border: Border.all(color: const Color(0xFFBFD0F4)),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 58,
-                height: 58,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF2C7BEA),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.auto_awesome_rounded,
-                  color: Colors.white,
-                  size: 30,
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Pantalla IA',
-                      style: TextStyle(
-                        fontSize: 17,
-                        color: Color(0xFF2C7BEA),
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      'Crea actividades personalizadas con IA.',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Color(0xFF1A2A48),
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(
-                Icons.chevron_right_rounded,
-                size: 34,
-                color: Color(0xFF8FA3C8),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ProgressCard extends StatelessWidget {
-  const _ProgressCard({
-    required this.streak,
-    required this.message,
-    required this.onTap,
-  });
-
-  final int streak;
-  final String message;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(24),
-        onTap: onTap,
-        child: Ink(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            color: const Color(0xFFDDE9F9),
-            border: Border.all(color: const Color(0xFFB3CCF4)),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 58,
-                height: 58,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF2C7BEA),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.emoji_events_rounded,
-                  color: Colors.white,
-                  size: 28,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'TU PROGRESO · RACHA: $streak',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF2C7BEA),
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      message,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        color: Color(0xFF1A2A48),
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SavedResourceCard extends StatelessWidget {
-  const _SavedResourceCard({
-    required this.resource,
-    required this.onToggleSaved,
-    required this.onPlay,
-  });
-
-  final AiResource resource;
-  final VoidCallback onToggleSaved;
-  final VoidCallback? onPlay;
-
-  String _gameLabel(ActivityType type) {
-    return switch (type) {
-      ActivityType.imagenPalabra => 'Imagen y palabra',
-      ActivityType.escribirPalabra => 'Escribir palabra',
-      ActivityType.palabraPalabra => 'Palabra con palabra',
-      ActivityType.imagenFrase => 'Imagen y frase',
-      ActivityType.letraObjetivo => 'Letras y vocales',
-      ActivityType.cambioExacto => 'Tienda de chuches',
-      ActivityType.ruletaLetras => 'Ruleta de letras',
-      ActivityType.discriminacion => 'Discriminación',
-      ActivityType.discriminacionInversa => 'Discriminación inversa',
-    };
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final type = ActivityTypeX.fromKey(resource.requestedActivityTypeKey);
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFD8E0EE)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            resource.title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontWeight: FontWeight.w900,
-              color: Color(0xFF102041),
-              fontSize: 18,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _MiniBadge(
-                label: _gameLabel(type),
-                icon: Icons.sports_esports_rounded,
-              ),
-              _MiniBadge(
-                label: resource.categoryLabel,
-                icon: Icons.category_rounded,
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                child: FilledButton.icon(
-                  onPressed: onPlay,
-                  icon: const Icon(Icons.play_arrow_rounded),
-                  label: const Text('Jugar'),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF2C7BEA),
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size.fromHeight(40),
-                    textStyle: const TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 14,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              OutlinedButton.icon(
-                onPressed: onToggleSaved,
-                icon: const Icon(Icons.bookmark_remove_rounded, size: 18),
-                label: const Text('Quitar'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF2C7BEA),
-                  side: const BorderSide(color: Color(0xFF2C7BEA)),
-                  minimumSize: const Size(94, 40),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MiniBadge extends StatelessWidget {
-  const _MiniBadge({required this.label, required this.icon});
-
-  final String label;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF1F5FC),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: const Color(0xFF406196)),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF406196),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
