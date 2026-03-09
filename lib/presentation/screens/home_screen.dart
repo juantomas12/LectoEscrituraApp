@@ -4,17 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../application/providers/app_providers.dart';
 import '../../domain/models/app_settings.dart';
 import '../../domain/models/activity_type.dart';
-import '../../domain/models/ai_resource.dart';
 import '../../domain/models/category.dart';
-import '../utils/category_visuals.dart';
-import '../viewmodels/ai_resource_studio_view_model.dart';
 import '../viewmodels/home_selection_view_model.dart';
 import '../viewmodels/progress_view_model.dart';
 import '../viewmodels/settings_view_model.dart';
 import 'activity_selection_screen.dart';
 import 'ai_play_screen.dart';
 import 'ai_resource_studio_screen.dart';
-import 'generated_session_game_screen.dart';
 import 'progress_dashboard_screen.dart';
 import 'settings_screen.dart';
 import 'therapist_panel_screen.dart';
@@ -171,28 +167,65 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ),
   ];
 
+  static const _mainIslands = <_MainIslandDefinition>[
+    _MainIslandDefinition(
+      id: 'letras',
+      title: 'Letras',
+      subtitle: 'Isla de Sonidos',
+      symbol: 'Aa',
+      accentColor: Color(0xFFFF7A00),
+      fillColor: Color(0xFFFFA24D),
+      badgeIcon: Icons.music_note_rounded,
+      games: [ActivityType.letraObjetivo, ActivityType.ruletaLetras],
+    ),
+    _MainIslandDefinition(
+      id: 'silabas',
+      title: 'Sílabas',
+      subtitle: 'Isla de Uniones',
+      symbol: 'Ma-pa',
+      accentColor: Color(0xFF2F7DED),
+      fillColor: Color(0xFF4A8EF0),
+      badgeIcon: Icons.link_rounded,
+      games: [
+        ActivityType.palabraPalabra,
+        ActivityType.discriminacion,
+        ActivityType.discriminacionInversa,
+      ],
+    ),
+    _MainIslandDefinition(
+      id: 'palabras',
+      title: 'Palabras',
+      subtitle: 'Isla de Historias',
+      icon: Icons.auto_stories_rounded,
+      accentColor: Color(0xFF16B982),
+      fillColor: Color(0xFF1AB586),
+      badgeIcon: Icons.menu_book_rounded,
+      games: [ActivityType.imagenPalabra, ActivityType.imagenFrase],
+    ),
+    _MainIslandDefinition(
+      id: 'escritura',
+      title: 'Escritura',
+      subtitle: 'Isla de Trazos',
+      icon: Icons.edit_rounded,
+      accentColor: Color(0xFFA65AF0),
+      fillColor: Color(0xFF9B55E2),
+      badgeIcon: Icons.draw_rounded,
+      games: [ActivityType.escribirPalabra, ActivityType.cambioExacto],
+    ),
+  ];
+
   static final _categoryChoices = <AppCategory>[
     AppCategory.mixta,
     ...AppCategoryLists.reales,
   ];
 
-  Future<void> _openCategoryPicker({
-    required HomeSelectionViewModel selectionVm,
-    required AppCategory selected,
-  }) async {
-    final picked = await Navigator.of(context).push<AppCategory>(
-      MaterialPageRoute<AppCategory>(
-        builder: (_) => _CategoryPickerScreen(
-          selected: selected,
-          choices: _categoryChoices,
-        ),
-      ),
-    );
-
-    if (picked == null) {
-      return;
+  _QuickTrack _quickTrackForType(ActivityType type) {
+    for (final track in _quickTracks) {
+      if (track.gameType == type) {
+        return track;
+      }
     }
-    selectionVm.setCategory(picked, optionId: picked.id);
+    return _quickTracks.first;
   }
 
   void _openAllGamesSheet({
@@ -296,12 +329,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     required HomeSelectionState selection,
     required HomeSelectionViewModel selectionVm,
     required ActivityType type,
+    AppCategory? categoryOverride,
   }) {
+    final category = categoryOverride ?? selection.category;
+    selectionVm.setCategory(category, optionId: category.id);
     selectionVm.setGame(type);
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => ActivitySelectionScreen(
-          category: selection.category,
+          category: category,
           activityType: type,
           difficulty: selection.difficulty,
         ),
@@ -309,12 +345,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  void _openGeneratedGame(AiResource resource) {
+  void _openIslandHub({
+    required _MainIslandDefinition island,
+    required HomeSelectionState selection,
+    required HomeSelectionViewModel selectionVm,
+  }) {
+    final games = island.games.map((type) {
+      final track = _quickTrackForType(type);
+      return _IslandSubGame(
+        type: type,
+        title: track.title,
+        subtitle: track.subtitle,
+        icon: track.icon,
+        accentColor: track.iconColor,
+      );
+    }).toList();
+
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => GeneratedSessionGameScreen(
-          resourceId: resource.id,
-          sessionTitle: resource.title,
+        builder: (_) => _IslandHubScreen(
+          island: island,
+          categories: _categoryChoices,
+          initialCategory: selection.category,
+          games: games,
+          onStartGame: (pickedCategory, type) {
+            _startActivity(
+              selection: selection,
+              selectionVm: selectionVm,
+              type: type,
+              categoryOverride: pickedCategory,
+            );
+          },
         ),
       ),
     );
@@ -329,10 +390,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final settings = ref.watch(settingsViewModelProvider);
     final settingsVm = ref.read(settingsViewModelProvider.notifier);
     final profile = ref.watch(localProfileProvider);
-    final aiState = ref.watch(aiResourceStudioViewModelProvider);
-    final savedResources =
-        aiState.resources.where((resource) => resource.isFavorite).toList()
-          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
     if (!_didSyncSettings) {
       _didSyncSettings = true;
@@ -373,31 +430,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             _ => _HomeTab(
               key: const ValueKey('home-tab'),
               profileName: profile.displayName,
-              category: selection.category,
               progressVm: progressVm,
-              savedResources: savedResources,
+              islands: _mainIslands,
               onMenuTap: () => _openAllGamesSheet(
                 selection: selection,
                 selectionVm: selectionVm,
               ),
               onProfileTap: () => setState(() => _currentTab = 1),
-              onPickCategory: () => _openCategoryPicker(
-                selectionVm: selectionVm,
-                selected: selection.category,
-              ),
-              onTrackTap: (track) => _startActivity(
+              onOpenIsland: (island) => _openIslandHub(
+                island: island,
                 selection: selection,
                 selectionVm: selectionVm,
-                type: track.gameType,
               ),
               onOpenAi: () => setState(() => _currentTab = 1),
               onOpenProgress: () => setState(() => _currentTab = 2),
-              onOpenSavedResource: _openGeneratedGame,
-              onToggleSavedResource: (resource) {
-                ref
-                    .read(aiResourceStudioViewModelProvider.notifier)
-                    .toggleFavorite(resource.id);
-              },
             ),
           },
         ),
@@ -416,85 +462,56 @@ class _HomeTab extends StatelessWidget {
   const _HomeTab({
     super.key,
     required this.profileName,
-    required this.category,
     required this.progressVm,
-    required this.savedResources,
+    required this.islands,
     required this.onMenuTap,
     required this.onProfileTap,
-    required this.onPickCategory,
-    required this.onTrackTap,
+    required this.onOpenIsland,
     required this.onOpenAi,
     required this.onOpenProgress,
-    required this.onOpenSavedResource,
-    required this.onToggleSavedResource,
   });
 
   final String profileName;
-  final AppCategory category;
   final ProgressViewModel progressVm;
-  final List<AiResource> savedResources;
+  final List<_MainIslandDefinition> islands;
   final VoidCallback onMenuTap;
   final VoidCallback onProfileTap;
-  final VoidCallback onPickCategory;
+  final ValueChanged<_MainIslandDefinition> onOpenIsland;
   final VoidCallback onOpenAi;
   final VoidCallback onOpenProgress;
-  final ValueChanged<_QuickTrack> onTrackTap;
-  final ValueChanged<AiResource> onOpenSavedResource;
-  final ValueChanged<AiResource> onToggleSavedResource;
-
-  _QuickTrack _trackFor(ActivityType type) {
-    for (final track in _HomeScreenState._quickTracks) {
-      if (track.gameType == type) {
-        return track;
-      }
-    }
-    return _HomeScreenState._quickTracks.first;
-  }
 
   @override
   Widget build(BuildContext context) {
     final rewards = progressVm.rewardsSummary();
-    final width = MediaQuery.sizeOf(context).width;
-    final isTablet = width >= 900;
-    final horizontalPadding = isTablet ? 26.0 : 16.0;
-    final contentWidth = isTablet ? 1300.0 : 840.0;
-    final playerName = profileName.split(' ').first;
-    final playerLabel = playerName.trim().isEmpty
-        ? 'Aventurero'
-        : _titleCase(playerName);
     final results = progressVm.getAllResults();
     final totalCorrect = results.fold<int>(
       0,
       (sum, item) => sum + item.correct,
     );
-    final totalIncorrect = results.fold<int>(
+    final totalAttempts = results.fold<int>(
       0,
-      (sum, item) => sum + item.incorrect,
+      (sum, item) => sum + item.correct + item.incorrect,
     );
-    final totalAttempts = totalCorrect + totalIncorrect;
-    final progressRatio = totalAttempts == 0
-        ? 0.0
-        : (totalCorrect / totalAttempts).clamp(0.0, 1.0);
-    final progressPercent = (progressRatio * 100).round();
-    final progressFilledFlex = ((progressRatio * 1000).round())
-        .clamp(1, 1000)
-        .toInt();
-    final progressEmptyFlex = (1000 - progressFilledFlex)
-        .clamp(1, 1000)
-        .toInt();
+    final accuracy = totalAttempts == 0
+        ? 0
+        : ((totalCorrect / totalAttempts) * 100).round();
+    final xp = (totalCorrect * 10) + (rewards.currentStreak * 25);
 
-    final letterTrack = _trackFor(ActivityType.letraObjetivo);
-    final syllableTrack = _trackFor(ActivityType.palabraPalabra);
-    final wordTrack = _trackFor(ActivityType.imagenPalabra);
-    final writingTrack = _trackFor(ActivityType.escribirPalabra);
-    final phraseTrack = _trackFor(ActivityType.imagenFrase);
+    final width = MediaQuery.sizeOf(context).width;
+    final isTablet = width >= 900;
+    final horizontalPadding = isTablet ? 28.0 : 14.0;
+    final contentWidth = isTablet ? 1320.0 : 860.0;
+    final playerName = profileName.split(' ').first;
+    final playerLabel = playerName.trim().isEmpty
+        ? 'Explorador'
+        : _titleCase(playerName);
 
     return ListView(
       padding: EdgeInsets.fromLTRB(
         horizontalPadding,
-        isTablet ? 18 : 12,
+        isTablet ? 16 : 10,
         horizontalPadding,
-        isTablet ? 18 : 12,
+        isTablet ? 16 : 10,
       ),
       children: [
         Center(
@@ -506,50 +523,45 @@ class _HomeTab extends StatelessWidget {
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: const Color(0xFFE9E4DE)),
                   ),
-                  padding: EdgeInsets.fromLTRB(
-                    isTablet ? 28 : 16,
-                    16,
-                    isTablet ? 20 : 16,
-                    16,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
                   child: Row(
                     children: [
                       Container(
-                        width: isTablet ? 70 : 58,
-                        height: isTablet ? 70 : 58,
+                        width: isTablet ? 50 : 44,
+                        height: isTablet ? 50 : 44,
                         decoration: BoxDecoration(
                           color: const Color(0xFFEF5B10),
-                          borderRadius: BorderRadius.circular(18),
+                          borderRadius: BorderRadius.circular(14),
                         ),
                         child: Icon(
-                          Icons.school_rounded,
+                          Icons.menu_book_rounded,
                           color: Colors.white,
-                          size: isTablet ? 36 : 30,
+                          size: isTablet ? 26 : 22,
                         ),
                       ),
-                      const SizedBox(width: 14),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'EduMundo',
                               style: TextStyle(
-                                fontSize: isTablet ? 24 : 22,
+                                fontSize: 22,
                                 fontWeight: FontWeight.w900,
                                 color: Color(0xFF101A35),
-                                height: 0.95,
+                                height: 1.0,
                               ),
                             ),
-                            SizedBox(height: 2),
-                            Text(
+                            const SizedBox(height: 1),
+                            const Text(
                               'ISLAS DE APRENDIZAJE',
                               style: TextStyle(
-                                fontSize: isTablet ? 10 : 9,
-                                letterSpacing: 2.2,
+                                fontSize: 10,
+                                letterSpacing: 2.4,
                                 fontWeight: FontWeight.w800,
                                 color: Color(0xFFEF5B10),
                               ),
@@ -557,280 +569,157 @@ class _HomeTab extends StatelessWidget {
                           ],
                         ),
                       ),
-                      Container(
-                        width: isTablet ? 56 : 48,
-                        height: isTablet ? 56 : 48,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFF5E7DF),
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          onPressed: onMenuTap,
-                          icon: Icon(
-                            Icons.settings_rounded,
-                            color: const Color(0xFFEF5B10),
-                            size: isTablet ? 30 : 26,
+                      InkWell(
+                        borderRadius: BorderRadius.circular(999),
+                        onTap: onOpenProgress,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(999),
+                            color: const Color(0xFFFFF4EC),
+                            border: Border.all(color: const Color(0xFFFFC9A2)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.star_rounded,
+                                color: Color(0xFFEF5B10),
+                                size: 18,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                '$xp',
+                                style: const TextStyle(
+                                  color: Color(0xFF111B35),
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                       const SizedBox(width: 10),
+                      IconButton(
+                        onPressed: onMenuTap,
+                        icon: const Icon(Icons.notifications_rounded),
+                        color: const Color(0xFF5C6B89),
+                        tooltip: 'Menú',
+                      ),
                       InkWell(
                         borderRadius: BorderRadius.circular(999),
                         onTap: onProfileTap,
                         child: Container(
-                          width: isTablet ? 56 : 48,
-                          height: isTablet ? 56 : 48,
+                          width: 48,
+                          height: 48,
+                          alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEF5B10),
+                            color: const Color(0xFF8CCCB3),
                             shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(
-                                  0xFFEF5B10,
-                                ).withValues(alpha: 0.28),
-                                blurRadius: 16,
-                                offset: const Offset(0, 7),
-                              ),
-                            ],
+                            border: Border.all(
+                              color: const Color(0xFFEF5B10),
+                              width: 2,
+                            ),
                           ),
-                          child: Icon(
-                            Icons.person_rounded,
-                            color: Colors.white,
-                            size: isTablet ? 30 : 26,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Container(
-                        width: isTablet ? 56 : 48,
-                        height: isTablet ? 56 : 48,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF8CCCB3),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 3),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          playerName.isEmpty
-                              ? 'E'
-                              : playerName[0].toUpperCase(),
-                          style: const TextStyle(
-                            color: Color(0xFF123A2C),
-                            fontWeight: FontWeight.w900,
+                          child: Text(
+                            playerName.isEmpty
+                                ? 'E'
+                                : playerName[0].toUpperCase(),
+                            style: const TextStyle(
+                              color: Color(0xFF123A2C),
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 34),
                 Center(
                   child: Column(
                     children: [
                       Text(
-                        '¡Hola, $playerLabel!',
+                        '¡Hola $playerLabel!',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: isTablet ? 24 : 28,
+                          fontSize: isTablet ? 54 : 36,
                           fontWeight: FontWeight.w900,
                           color: const Color(0xFF101A35),
-                          height: 1.0,
+                          height: 1.02,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 6),
                       Text(
-                        'Elige una isla para empezar a jugar hoy',
+                        '¿Qué isla visitaremos hoy?',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: isTablet ? 12 : 16,
-                          color: const Color(0xFF344B70),
-                          fontWeight: FontWeight.w500,
+                          fontSize: isTablet ? 24 : 19,
+                          color: const Color(0xFFEF5B10),
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 26),
                 GridView.count(
-                  crossAxisCount: isTablet ? 3 : 2,
+                  crossAxisCount: isTablet ? 4 : 2,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  childAspectRatio: isTablet ? 1.0 : 0.82,
-                  mainAxisSpacing: isTablet ? 14 : 10,
-                  crossAxisSpacing: isTablet ? 22 : 12,
-                  children: [
-                    _HomeIslandTile(
-                      title: letterTrack.title,
-                      symbol: 'Aa',
-                      onTap: () => onTrackTap(letterTrack),
-                      fillColor: const Color(0xFFFFE8CC),
-                      borderColor: const Color(0xFFF6F1EB),
-                      labelBorderColor: const Color(0xFFFFD4A1),
-                      accentColor: const Color(0xFFFF7A00),
-                    ),
-                    _HomeIslandTile(
-                      title: syllableTrack.title,
-                      icon: Icons.music_note_rounded,
-                      onTap: () => onTrackTap(syllableTrack),
-                      fillColor: const Color(0xFFDDEBFF),
-                      borderColor: const Color(0xFFF3F6FA),
-                      labelBorderColor: const Color(0xFFAECFF9),
-                      accentColor: const Color(0xFF3B82F6),
-                    ),
-                    _HomeIslandTile(
-                      title: wordTrack.title,
-                      icon: Icons.auto_stories_rounded,
-                      onTap: () => onTrackTap(wordTrack),
-                      fillColor: const Color(0xFFD7F4E3),
-                      borderColor: const Color(0xFFF2F8F5),
-                      labelBorderColor: const Color(0xFF9DE4BF),
-                      accentColor: const Color(0xFF1DBE5B),
-                    ),
-                    _HomeIslandTile(
-                      title: writingTrack.title,
-                      icon: Icons.draw_rounded,
-                      onTap: () => onTrackTap(writingTrack),
-                      fillColor: const Color(0xFFEEDFFE),
-                      borderColor: const Color(0xFFF7F3FB),
-                      labelBorderColor: const Color(0xFFD2B8F7),
-                      accentColor: const Color(0xFF9B5DE5),
-                    ),
-                    _HomeIslandTile(
-                      title: phraseTrack.title,
-                      icon: Icons.chat_bubble_rounded,
-                      onTap: () => onTrackTap(phraseTrack),
-                      fillColor: const Color(0xFFF8DCEE),
-                      borderColor: const Color(0xFFFCF4FA),
-                      labelBorderColor: const Color(0xFFF0BADB),
-                      accentColor: const Color(0xFFE64A9B),
-                    ),
-                    _HomeIslandTile(
-                      title: 'IA Automático',
-                      icon: Icons.psychology_alt_rounded,
-                      onTap: onOpenAi,
-                      fillColor: const Color(0xFFFFE2D2),
-                      borderColor: const Color(0xFFEF5B10),
-                      labelBorderColor: const Color(0xFFEF5B10),
-                      accentColor: const Color(0xFFEF5B10),
-                      highlighted: true,
-                    ),
-                  ],
+                  childAspectRatio: isTablet ? 0.88 : 0.78,
+                  mainAxisSpacing: isTablet ? 20 : 12,
+                  crossAxisSpacing: isTablet ? 20 : 12,
+                  children: islands.map((island) {
+                    return _HomeMainIslandTile(
+                      island: island,
+                      onTap: () => onOpenIsland(island),
+                    );
+                  }).toList(),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 14),
                 Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFCFCFD),
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: const Color(0xFFE9E4DE)),
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
                   ),
-                  padding: const EdgeInsets.fromLTRB(18, 16, 18, 14),
-                  child: Column(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFFE3E8F1)),
+                  ),
+                  child: Row(
                     children: [
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.star_rounded,
-                            color: Color(0xFFEF5B10),
-                            size: 28,
+                      Expanded(
+                        child: Text(
+                          'Precisión de hoy: $accuracy% · Racha ${rewards.currentStreak} días',
+                          style: const TextStyle(
+                            color: Color(0xFF516282),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
                           ),
-                          const SizedBox(width: 8),
-                          const Expanded(
-                            child: Text(
-                              'TU PROGRESO DE HOY',
-                              style: TextStyle(
-                                color: Color(0xFFEF5B10),
-                                fontSize: 18,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 0.4,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            '$progressPercent% Completado',
-                            style: const TextStyle(
-                              color: Color(0xFF131B34),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Container(
-                        height: 30,
-                        padding: const EdgeInsets.all(3),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFCED5E2),
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: progressFilledFlex,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFEF5B10),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                ),
-                                alignment: Alignment.centerRight,
-                                child: Text(
-                                  rewards.activeToday ? '¡CASI LLEGAS!' : '',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: progressEmptyFlex,
-                              child: const SizedBox.shrink(),
-                            ),
-                          ],
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          const Expanded(
-                            child: Text(
-                              'INICIO',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xFF5E7094),
-                                letterSpacing: 2.0,
-                              ),
-                            ),
+                      const SizedBox(width: 10),
+                      FilledButton.icon(
+                        onPressed: onOpenAi,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: const Color(0xFFEF5B10),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(999),
                           ),
-                          Expanded(
-                            child: Text(
-                              rewards.currentStreak >= 5
-                                  ? 'RACHA EXCELENTE'
-                                  : 'SIGUIENTE NIVEL: EXPLORADOR GALÁCTICO',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xFF5E7094),
-                                letterSpacing: 1.8,
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: onOpenProgress,
-                            child: const Text(
-                              'META DIARIA',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                                color: Color(0xFF5E7094),
-                                letterSpacing: 2.0,
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
+                        icon: const Icon(Icons.auto_awesome_rounded, size: 18),
+                        label: const Text(
+                          'IA',
+                          style: TextStyle(fontWeight: FontWeight.w900),
+                        ),
                       ),
                     ],
                   ),
@@ -844,280 +733,297 @@ class _HomeTab extends StatelessWidget {
   }
 }
 
-class _HomeIslandTile extends StatelessWidget {
-  const _HomeIslandTile({
-    required this.title,
-    required this.onTap,
-    required this.fillColor,
-    required this.borderColor,
-    required this.labelBorderColor,
-    required this.accentColor,
-    this.icon,
-    this.symbol,
-    this.highlighted = false,
-  });
+class _HomeMainIslandTile extends StatelessWidget {
+  const _HomeMainIslandTile({required this.island, required this.onTap});
 
-  final String title;
+  final _MainIslandDefinition island;
   final VoidCallback onTap;
-  final Color fillColor;
-  final Color borderColor;
-  final Color labelBorderColor;
-  final Color accentColor;
-  final IconData? icon;
-  final String? symbol;
-  final bool highlighted;
 
   @override
   Widget build(BuildContext context) {
     final isTablet = MediaQuery.sizeOf(context).width >= 900;
-    final circleSize = isTablet ? 116.0 : 140.0;
+    final circleSize = isTablet ? 172.0 : 132.0;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(24),
         onTap: onTap,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(
-              width: circleSize,
-              height: circleSize,
-              decoration: BoxDecoration(
-                color: fillColor,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: highlighted ? borderColor : const Color(0xFFF0F0F0),
-                  width: highlighted ? 8 : 7,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.09),
-                    blurRadius: 16,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Center(
-                child: symbol != null
-                    ? Text(
-                        symbol!,
-                        style: TextStyle(
-                          fontSize: isTablet ? 48 : 50,
-                          fontWeight: FontWeight.w900,
-                          color: accentColor,
-                        ),
-                      )
-                    : Icon(icon, color: accentColor, size: isTablet ? 44 : 46),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: isTablet ? 18 : 16,
-                vertical: isTablet ? 8 : 8,
-              ),
-              decoration: BoxDecoration(
-                color: highlighted ? accentColor : Colors.white,
-                borderRadius: BorderRadius.circular(999),
-                border: Border.all(
-                  color: highlighted ? accentColor : labelBorderColor,
-                  width: 3,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Text(
-                title,
-                style: TextStyle(
-                  fontSize: isTablet ? 18 : 22,
-                  fontWeight: FontWeight.w900,
-                  color: highlighted ? Colors.white : const Color(0xFF141C34),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _CategoryPickerScreen extends StatelessWidget {
-  const _CategoryPickerScreen({required this.selected, required this.choices});
-
-  final AppCategory selected;
-  final List<AppCategory> choices;
-
-  @override
-  Widget build(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
-    final cardRatio = width >= 1000 ? 1.18 : 0.92;
-
-    return Scaffold(
-      backgroundColor: const Color(0xFFEDEFF3),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.arrow_back_rounded),
-                    tooltip: 'Volver',
-                  ),
-                  const Expanded(
-                    child: Text(
-                      'Categorías',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w900,
-                        color: Color(0xFF111D3A),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 48),
-                ],
-              ),
-            ),
-            const Divider(height: 1, color: Color(0xFFD6DFEE)),
-            Expanded(
-              child: CustomScrollView(
-                slivers: [
-                  const SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(22, 20, 22, 12),
-                      child: Text(
-                        '¿Qué quieres aprender hoy?',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF506080),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-                    sliver: SliverGrid(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        final category = choices[index];
-                        final isSelected = category == selected;
-                        return _CategoryGridCard(
-                          category: category,
-                          isSelected: isSelected,
-                          onTap: () => Navigator.of(context).pop(category),
-                        );
-                      }, childCount: choices.length),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 14,
-                        mainAxisSpacing: 14,
-                        childAspectRatio: cardRatio,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _CategoryGridCard extends StatelessWidget {
-  const _CategoryGridCard({
-    required this.category,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final AppCategory category;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = category.color;
-    final fillColor = color.withValues(alpha: isSelected ? 0.22 : 0.14);
-    final borderColor = color.withValues(alpha: isSelected ? 0.74 : 0.34);
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(36),
-        onTap: onTap,
-        child: Ink(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: fillColor,
-            borderRadius: BorderRadius.circular(36),
-            border: Border.all(color: borderColor, width: isSelected ? 3 : 2),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: color.withValues(alpha: 0.22),
-                      blurRadius: 18,
-                      offset: const Offset(0, 8),
-                    ),
-                  ]
-                : null,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 102,
-                height: 102,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(category.icon, size: 52, color: color),
-              ),
-              const SizedBox(height: 18),
-              Text(
-                _categoryPickerLabel(category),
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 23,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF111D3A),
-                  height: 1.1,
-                ),
-              ),
-              if (isSelected) ...[
-                const SizedBox(height: 10),
+            Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.center,
+              children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
+                  width: circleSize,
+                  height: circleSize,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    borderRadius: BorderRadius.circular(999),
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [
+                        island.fillColor.withValues(alpha: 0.95),
+                        island.accentColor,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    border: Border.all(
+                      color: island.accentColor.withValues(alpha: 0.55),
+                      width: 4,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: island.accentColor.withValues(alpha: 0.25),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
                   ),
-                  child: const Text(
-                    'Seleccionada',
-                    style: TextStyle(
-                      color: Color(0xFF2C7BEA),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
+                  child: Center(
+                    child: island.symbol != null
+                        ? Text(
+                            island.symbol!,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: isTablet ? 58 : 48,
+                              height: 1.0,
+                            ),
+                            textAlign: TextAlign.center,
+                          )
+                        : Icon(
+                            island.icon,
+                            color: Colors.white,
+                            size: isTablet ? 72 : 58,
+                          ),
+                  ),
+                ),
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    width: isTablet ? 44 : 36,
+                    height: isTablet ? 44 : 36,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: const Color(0xFFE2E7EF)),
+                    ),
+                    child: Icon(
+                      island.badgeIcon,
+                      color: island.accentColor,
+                      size: isTablet ? 22 : 18,
                     ),
                   ),
                 ),
               ],
-            ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              island.title,
+              style: TextStyle(
+                fontSize: isTablet ? 40 : 28,
+                fontWeight: FontWeight.w900,
+                color: const Color(0xFF161F3C),
+                height: 1.0,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              island.subtitle,
+              style: TextStyle(
+                fontSize: isTablet ? 24 : 16,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF60708F),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _IslandHubScreen extends StatefulWidget {
+  const _IslandHubScreen({
+    required this.island,
+    required this.categories,
+    required this.initialCategory,
+    required this.games,
+    required this.onStartGame,
+  });
+
+  final _MainIslandDefinition island;
+  final List<AppCategory> categories;
+  final AppCategory initialCategory;
+  final List<_IslandSubGame> games;
+  final void Function(AppCategory category, ActivityType type) onStartGame;
+
+  @override
+  State<_IslandHubScreen> createState() => _IslandHubScreenState();
+}
+
+class _IslandHubScreenState extends State<_IslandHubScreen> {
+  late AppCategory _selectedCategory = widget.initialCategory;
+
+  @override
+  Widget build(BuildContext context) {
+    final isTablet = MediaQuery.sizeOf(context).width >= 900;
+    return Scaffold(
+      backgroundColor: const Color(0xFFF1F3F8),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        title: Text(
+          widget.island.title,
+          style: const TextStyle(
+            fontWeight: FontWeight.w900,
+            color: Color(0xFF101A35),
+          ),
+        ),
+      ),
+      body: SafeArea(
+        top: false,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1240),
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
+              children: [
+                Text(
+                  'Subcategorías de ${widget.island.title}',
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF101A35),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Elige categoría y luego el subjuego.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.blueGrey.shade600,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: widget.categories.map((category) {
+                    final selected = category == _selectedCategory;
+                    return ChoiceChip(
+                      label: Text(_categoryPickerLabel(category).toUpperCase()),
+                      selected: selected,
+                      onSelected: (_) {
+                        setState(() => _selectedCategory = category);
+                      },
+                      selectedColor: widget.island.accentColor.withValues(
+                        alpha: 0.16,
+                      ),
+                      side: BorderSide(
+                        color: selected
+                            ? widget.island.accentColor
+                            : const Color(0xFFD5DEEC),
+                      ),
+                      labelStyle: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        color: selected
+                            ? widget.island.accentColor
+                            : const Color(0xFF4F6289),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 18),
+                GridView.builder(
+                  itemCount: widget.games.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: isTablet ? 2 : 1,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: isTablet ? 2.8 : 2.2,
+                  ),
+                  itemBuilder: (context, index) {
+                    final game = widget.games[index];
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(22),
+                        border: Border.all(color: const Color(0xFFDDE5F2)),
+                      ),
+                      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 24,
+                            backgroundColor: game.accentColor.withValues(
+                              alpha: 0.16,
+                            ),
+                            child: Icon(
+                              game.icon,
+                              color: game.accentColor,
+                              size: 26,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  game.title.toUpperCase(),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w900,
+                                    color: Color(0xFF111D3A),
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  game.subtitle,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Color(0xFF61739A),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          FilledButton(
+                            onPressed: () {
+                              widget.onStartGame(_selectedCategory, game.type);
+                            },
+                            style: FilledButton.styleFrom(
+                              backgroundColor: game.accentColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                            ),
+                            child: const Text(
+                              'JUGAR',
+                              style: TextStyle(fontWeight: FontWeight.w900),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -1408,6 +1314,46 @@ class _QuickActionTile extends StatelessWidget {
       ),
     );
   }
+}
+
+class _MainIslandDefinition {
+  const _MainIslandDefinition({
+    required this.id,
+    required this.title,
+    required this.subtitle,
+    required this.accentColor,
+    required this.fillColor,
+    required this.badgeIcon,
+    required this.games,
+    this.icon,
+    this.symbol,
+  });
+
+  final String id;
+  final String title;
+  final String subtitle;
+  final IconData? icon;
+  final String? symbol;
+  final Color accentColor;
+  final Color fillColor;
+  final IconData badgeIcon;
+  final List<ActivityType> games;
+}
+
+class _IslandSubGame {
+  const _IslandSubGame({
+    required this.type,
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.accentColor,
+  });
+
+  final ActivityType type;
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color accentColor;
 }
 
 class _QuickTrack {

@@ -51,6 +51,9 @@ class ProgressDashboardScreen extends ConsumerWidget {
     final results = ref
         .read(progressViewModelProvider.notifier)
         .getAllResults();
+    final rewards = ref
+        .read(progressViewModelProvider.notifier)
+        .rewardsSummary();
     final gameItemProgress = ref.watch(gameItemProgressMapProvider);
     final dataset = ref.read(datasetRepositoryProvider);
     final allItems = dataset.getAllItems();
@@ -109,12 +112,150 @@ class ProgressDashboardScreen extends ConsumerWidget {
       0,
       (sum, stat) => sum + stat.totalCorrect,
     );
+    final totalIncorrectGlobal = gameStats.fold<int>(
+      0,
+      (sum, stat) => sum + stat.totalIncorrect,
+    );
     final daysActive = filteredResults
         .map(
           (r) => DateTime(r.createdAt.year, r.createdAt.month, r.createdAt.day),
         )
         .toSet()
         .length;
+    final totalAttemptsGlobal = totalCorrectGlobal + totalIncorrectGlobal;
+    final progressRatio = totalAttemptsGlobal == 0
+        ? 0.0
+        : (totalCorrectGlobal / totalAttemptsGlobal).clamp(0.0, 1.0);
+    final progressPercent = (progressRatio * 100).round();
+    final sessionCount = filteredResults.length;
+    final xpGoal = (sessionCount + 1) * 100;
+    final currentXp = (progressRatio * xpGoal).round();
+    final badgeGoal = 20;
+    final levelLabel = rewards.currentStreak >= 7
+        ? 'Explorador Pro'
+        : rewards.currentStreak >= 3
+        ? 'Explorador Activo'
+        : 'Explorador';
+
+    int sessionsFor(List<ActivityType> types) {
+      return gameStats
+          .where((stat) => types.contains(stat.game))
+          .fold<int>(0, (sum, stat) => sum + stat.sessionsWithData);
+    }
+
+    double accuracyFor(List<ActivityType> types) {
+      final selected = gameStats.where((stat) => types.contains(stat.game));
+      var attempts = 0;
+      var correct = 0;
+      for (final stat in selected) {
+        attempts += stat.totalCorrect + stat.totalIncorrect;
+        correct += stat.totalCorrect;
+      }
+      return attempts == 0 ? 0.0 : correct / attempts;
+    }
+
+    final adventureNodes = [
+      _AdventureNode(
+        title: 'Isla Numérica',
+        subtitle: 'Completado',
+        icon: Icons.tag_rounded,
+        color: const Color(0xFF26B670),
+        state: sessionsFor([ActivityType.cambioExacto]) > 0
+            ? _NodeState.completed
+            : _NodeState.locked,
+      ),
+      _AdventureNode(
+        title: 'Río de Letras',
+        subtitle: 'En progreso',
+        icon: Icons.menu_book_rounded,
+        color: const Color(0xFFEF5B10),
+        badge: '$progressPercent%',
+        state:
+            sessionsFor([
+                  ActivityType.letraObjetivo,
+                  ActivityType.palabraPalabra,
+                ]) >
+                0
+            ? _NodeState.inProgress
+            : _NodeState.locked,
+      ),
+      _AdventureNode(
+        title: 'Valle Artístico',
+        subtitle: 'Bloqueado',
+        icon: Icons.palette_rounded,
+        color: const Color(0xFF5A6C8F),
+        state:
+            sessionsFor([
+                  ActivityType.imagenPalabra,
+                  ActivityType.imagenFrase,
+                  ActivityType.escribirPalabra,
+                ]) >
+                0
+            ? (accuracyFor([
+                        ActivityType.imagenPalabra,
+                        ActivityType.imagenFrase,
+                        ActivityType.escribirPalabra,
+                      ]) >
+                      0.85
+                  ? _NodeState.completed
+                  : _NodeState.inProgress)
+            : _NodeState.locked,
+      ),
+      _AdventureNode(
+        title: 'Bosque Científico',
+        subtitle: 'Bloqueado',
+        icon: Icons.science_rounded,
+        color: const Color(0xFF5A6C8F),
+        state:
+            sessionsFor([
+                  ActivityType.discriminacion,
+                  ActivityType.discriminacionInversa,
+                  ActivityType.ruletaLetras,
+                ]) >
+                0
+            ? _NodeState.inProgress
+            : _NodeState.locked,
+      ),
+    ];
+
+    final trophies = [
+      _TrophyData(
+        title: 'ESTRELLA FUGAZ',
+        icon: Icons.star_rounded,
+        color: const Color(0xFFF0C400),
+        unlocked: progressRatio >= 0.75,
+      ),
+      _TrophyData(
+        title: 'LECTOR VELOZ',
+        icon: Icons.speed_rounded,
+        color: const Color(0xFF59A0FF),
+        unlocked: sessionCount >= 4,
+      ),
+      _TrophyData(
+        title: 'BÚHO SABIO',
+        icon: Icons.psychology_rounded,
+        color: const Color(0xFFB077FF),
+        unlocked: rewards.unlockedBadges >= 1,
+      ),
+      _TrophyData(
+        title: '7 DÍAS ON FIRE',
+        icon: Icons.local_fire_department_rounded,
+        color: const Color(0xFFEF5B10),
+        unlocked: rewards.currentStreak >= 7,
+      ),
+      const _TrophyData(
+        title: '???',
+        icon: Icons.help_rounded,
+        color: Color(0xFFB4BECE),
+        unlocked: false,
+      ),
+      const _TrophyData(
+        title: '???',
+        icon: Icons.help_rounded,
+        color: Color(0xFFB4BECE),
+        unlocked: false,
+      ),
+    ];
 
     final bodyContent = Center(
       child: ConstrainedBox(
@@ -122,71 +263,231 @@ class ProgressDashboardScreen extends ConsumerWidget {
         child: ListView(
           padding: EdgeInsets.fromLTRB(24, embedded ? 20 : 12, 24, 24),
           children: [
-            const UpperText(
-              '¡TU GRAN PROGRESO!',
-              style: TextStyle(
-                fontSize: 50,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF111A39),
-              ),
-            ),
-            const SizedBox(height: 4),
-            const UpperText(
-              'MIRA TODO LO QUE HAS APRENDIDO Y LOGRADO HOY',
-              style: TextStyle(
-                fontSize: 18,
-                color: Color(0xFF6A7894),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 18),
             LayoutBuilder(
               builder: (context, constraints) {
-                final compact = constraints.maxWidth < 640;
-                final cards = [
-                  _SummaryCard(
-                    icon: Icons.school_rounded,
-                    title: 'SESIONES TOTALES',
-                    value: '${filteredResults.length}',
-                    bubbleColor: const Color(0xFFDCEBFF),
-                    iconColor: const Color(0xFF2B8CEE),
+                final compact = constraints.maxWidth < 980;
+
+                final missionCard = Container(
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(26),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFEF5B10), Color(0xFFF26A1B)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFEF5B10).withValues(alpha: 0.22),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
                   ),
-                  _SummaryCard(
-                    icon: Icons.star_rounded,
-                    title: 'ACIERTOS TOTALES',
-                    value: '$totalCorrectGlobal',
-                    bubbleColor: const Color(0xFFFFF2C9),
-                    iconColor: const Color(0xFFE3A904),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.20),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: const UpperText(
+                          'MISIÓN ACTUAL',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      const UpperText(
+                        '¡CASI LLEGAS AL TESORO!',
+                        style: TextStyle(
+                          fontSize: 46,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      UpperText(
+                        sessionCount == 0
+                            ? 'Completa tu primera lección para empezar tu aventura.'
+                            : 'Estás a ${((100 - progressPercent) / 10).clamp(1, 10).round()} lecciones de completar tu misión diaria. Días activos: $daysActive.',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(999),
+                        child: LinearProgressIndicator(
+                          value: progressRatio,
+                          minHeight: 14,
+                          backgroundColor: Colors.black.withValues(alpha: 0.14),
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          UpperText(
+                            '$progressPercent% COMPLETADO',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          const Spacer(),
+                          UpperText(
+                            '$currentXp / $xpGoal XP',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  _SummaryCard(
-                    icon: Icons.calendar_month_rounded,
-                    title: 'DÍAS ACTIVO',
-                    value: '$daysActive',
-                    bubbleColor: const Color(0xFFDDF7E8),
-                    iconColor: const Color(0xFF1CAA64),
-                  ),
-                ];
+                );
+
+                final sideCards = Column(
+                  children: [
+                    _ProgressSideInfoCard(
+                      icon: Icons.emoji_events_rounded,
+                      title: 'Insignias',
+                      value: '${rewards.unlockedBadges} / $badgeGoal',
+                      bubbleColor: const Color(0xFFFFF1E2),
+                      iconColor: const Color(0xFFEF5B10),
+                    ),
+                    const SizedBox(height: 12),
+                    _ProgressSideInfoCard(
+                      icon: Icons.school_rounded,
+                      title: 'Nivel',
+                      value: levelLabel,
+                      bubbleColor: const Color(0xFFE2ECFF),
+                      iconColor: const Color(0xFF2F7DED),
+                    ),
+                  ],
+                );
 
                 if (compact) {
                   return Column(
                     children: [
-                      for (final card in cards) ...[
-                        card,
-                        const SizedBox(height: 10),
-                      ],
+                      missionCard,
+                      const SizedBox(height: 12),
+                      sideCards,
                     ],
                   );
                 }
 
                 return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    for (var i = 0; i < cards.length; i++) ...[
-                      Expanded(child: cards[i]),
-                      if (i != cards.length - 1) const SizedBox(width: 12),
-                    ],
+                    Expanded(flex: 5, child: missionCard),
+                    const SizedBox(width: 14),
+                    Expanded(flex: 2, child: sideCards),
                   ],
                 );
               },
+            ),
+            const SizedBox(height: 24),
+            const Row(
+              children: [
+                Icon(Icons.map_rounded, color: Color(0xFFEF5B10), size: 24),
+                SizedBox(width: 8),
+                UpperText(
+                  'TU MAPA DE AVENTURAS',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF131C37),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 18),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(28),
+                border: Border.all(color: const Color(0xFFE1E8F3)),
+              ),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (var i = 0; i < adventureNodes.length; i++) ...[
+                      _AdventureNodeTile(node: adventureNodes[i]),
+                      if (i != adventureNodes.length - 1)
+                        Container(
+                          width: 44,
+                          height: 6,
+                          margin: const EdgeInsets.only(bottom: 38),
+                          decoration: BoxDecoration(
+                            color:
+                                adventureNodes[i].state == _NodeState.completed
+                                ? const Color(0xFF28B36D)
+                                : const Color(0xFFE0E6F0),
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                        ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                const Icon(
+                  Icons.military_tech_rounded,
+                  color: Color(0xFFEF5B10),
+                  size: 24,
+                ),
+                const SizedBox(width: 8),
+                const UpperText(
+                  'TUS TROFEOS DE COLECCIÓN',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF131C37),
+                  ),
+                ),
+                const Spacer(),
+                TextButton(
+                  onPressed: () {},
+                  child: const UpperText(
+                    'VER TODOS',
+                    style: TextStyle(
+                      color: Color(0xFFEF5B10),
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 164,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  final trophy = trophies[index];
+                  return _TrophyCard(data: trophy);
+                },
+                separatorBuilder: (_, __) => const SizedBox(width: 10),
+                itemCount: trophies.length,
+              ),
             ),
             const SizedBox(height: 24),
             const UpperText(
@@ -461,8 +762,8 @@ class _GameStats {
   final List<ActivityResult> recentResults;
 }
 
-class _SummaryCard extends StatelessWidget {
-  const _SummaryCard({
+class _ProgressSideInfoCard extends StatelessWidget {
+  const _ProgressSideInfoCard({
     required this.icon,
     required this.title,
     required this.value,
@@ -481,33 +782,217 @@ class _SummaryCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(color: ProgressDashboardScreen._border),
       ),
-      padding: const EdgeInsets.fromLTRB(18, 16, 18, 14),
-      child: Column(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+      child: Row(
         children: [
           CircleAvatar(
-            radius: 25,
+            radius: 24,
             backgroundColor: bubbleColor,
-            child: Icon(icon, color: iconColor, size: 28),
+            child: Icon(icon, color: iconColor, size: 26),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                UpperText(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Color(0xFF6B7892),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                UpperText(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    color: Color(0xFF111A39),
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+enum _NodeState { completed, inProgress, locked }
+
+class _AdventureNode {
+  const _AdventureNode({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.color,
+    required this.state,
+    this.badge,
+  });
+
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+  final _NodeState state;
+  final String? badge;
+}
+
+class _AdventureNodeTile extends StatelessWidget {
+  const _AdventureNodeTile({required this.node});
+
+  final _AdventureNode node;
+
+  @override
+  Widget build(BuildContext context) {
+    final locked = node.state == _NodeState.locked;
+    final accent = locked ? const Color(0xFFBCC6D7) : node.color;
+    final fill = locked
+        ? const Color(0xFFF1F4F8)
+        : node.state == _NodeState.completed
+        ? const Color(0xFFDDF5E8)
+        : const Color(0xFFFFEEE4);
+
+    return SizedBox(
+      width: 180,
+      child: Column(
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 110,
+                height: 110,
+                decoration: BoxDecoration(
+                  color: fill,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: accent, width: 4),
+                ),
+                child: Icon(node.icon, color: accent, size: 48),
+              ),
+              if (node.state == _NodeState.completed)
+                const Positioned(
+                  right: -2,
+                  top: -2,
+                  child: CircleAvatar(
+                    radius: 12,
+                    backgroundColor: Color(0xFF28B36D),
+                    child: Icon(Icons.check, color: Colors.white, size: 16),
+                  ),
+                ),
+              if (node.badge != null)
+                Positioned(
+                  top: -8,
+                  right: -10,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 9,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEF5B10),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: UpperText(
+                      node.badge!,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(height: 10),
           UpperText(
-            title,
-            style: const TextStyle(
+            node.title,
+            textAlign: TextAlign.center,
+            style: TextStyle(
               fontSize: 16,
-              color: Color(0xFF6B7892),
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w900,
+              color: locked ? const Color(0xFFB4BECE) : const Color(0xFF16203C),
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           UpperText(
-            value,
-            style: const TextStyle(
-              fontSize: 46,
-              color: Color(0xFF111A39),
+            node.subtitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              color: locked ? const Color(0xFFB4BECE) : accent,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TrophyData {
+  const _TrophyData({
+    required this.title,
+    required this.icon,
+    required this.color,
+    required this.unlocked,
+  });
+
+  final String title;
+  final IconData icon;
+  final Color color;
+  final bool unlocked;
+}
+
+class _TrophyCard extends StatelessWidget {
+  const _TrophyCard({required this.data});
+
+  final _TrophyData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final muted = !data.unlocked;
+    return Container(
+      width: 178,
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: muted
+              ? const Color(0xFFE1E8F3)
+              : data.color.withValues(alpha: 0.4),
+          style: muted ? BorderStyle.solid : BorderStyle.solid,
+        ),
+      ),
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 28,
+            backgroundColor: muted
+                ? const Color(0xFFE8EDF5)
+                : data.color.withValues(alpha: 0.18),
+            child: Icon(
+              data.icon,
+              size: 28,
+              color: muted ? const Color(0xFF9DA8BC) : data.color,
+            ),
+          ),
+          const Spacer(),
+          UpperText(
+            data.title,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
               fontWeight: FontWeight.w900,
+              color: muted ? const Color(0xFF9DA8BC) : const Color(0xFF141D38),
             ),
           ),
         ],

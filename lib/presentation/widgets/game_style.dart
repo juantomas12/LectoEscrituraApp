@@ -141,6 +141,14 @@ class GameScaffold extends ConsumerWidget {
         ),
       ...?actions,
     ];
+    final profile = ref.watch(localProfileProvider);
+    final playerName = profile.displayName.split(' ').first;
+    final progressNow = progressCurrent ?? 0;
+    final progressMax = progressTotal ?? 0;
+    final progressRatio = progressMax <= 0
+        ? 0.0
+        : (progressNow / progressMax).clamp(0.0, 1.0);
+    final progressPercent = (progressRatio * 100).round();
 
     if (isDesktopLandscape) {
       return Scaffold(
@@ -197,67 +205,346 @@ class GameScaffold extends ConsumerWidget {
 
     if (isTabletLandscape) {
       return Scaffold(
-        backgroundColor: kGameBackground,
+        backgroundColor: const Color(0xFFF1F3F8),
         body: SafeArea(
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.fromLTRB(6, 4, 6, 4),
+                height: 84,
+                padding: const EdgeInsets.symmetric(horizontal: 14),
                 decoration: const BoxDecoration(
-                  color: kGameHeaderBackground,
+                  color: Colors.white,
                   border: Border(
                     bottom: BorderSide(color: Color(0xFFCFD8E5), width: 1),
                   ),
                 ),
                 child: Row(
                   children: [
-                    IconButton(
-                      onPressed: () => Navigator.of(context).maybePop(),
-                      icon: const Icon(Icons.arrow_back_rounded),
-                      tooltip: 'VOLVER',
-                    ),
-                    Expanded(
-                      child: UpperText(
-                        title,
-                        maxLines: 1,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 21,
-                          fontWeight: FontWeight.w900,
-                          color: Color(0xFF182037),
+                    InkWell(
+                      borderRadius: BorderRadius.circular(14),
+                      onTap: () => Navigator.of(context).maybePop(),
+                      child: Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEF5B10),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: const Icon(
+                          Icons.landscape_rounded,
+                          color: Colors.white,
                         ),
                       ),
                     ),
-                    ...appBarActions,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const UpperText(
+                            'EDUMUNDO',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF111A39),
+                            ),
+                          ),
+                          UpperText(
+                            desktopLessonTitle ?? 'ISLA DE RETOS',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFFEF5B10),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF4EC),
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(color: const Color(0xFFFFC9A2)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.star_rounded,
+                            color: Color(0xFFEF5B10),
+                            size: 20,
+                          ),
+                          const SizedBox(width: 6),
+                          UpperText(
+                            '${(progressNow * 10).clamp(0, 99999)} XP',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 18,
+                              color: Color(0xFF1A2442),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    UpperText(
+                      playerName.toUpperCase(),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF202D4A),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    CircleAvatar(
+                      radius: 21,
+                      backgroundColor: const Color(0xFF476E77),
+                      child: UpperText(
+                        playerName.isEmpty ? 'E' : playerName[0].toUpperCase(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-              if (hasInstruction)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 6, 12, 2),
-                  child: UpperText(
-                    instructionText!,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF425A87),
-                    ),
-                  ),
-                ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 4, 10, 8),
-                  child: ScrollConfiguration(
-                    behavior: const _NoScrollBehavior(),
-                    child: MediaQuery(
-                      data: MediaQuery.of(
-                        context,
-                      ).copyWith(textScaler: const TextScaler.linear(0.94)),
-                      child: body,
-                    ),
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(
+                        width: 320,
+                        child: Column(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.fromLTRB(
+                                18,
+                                18,
+                                18,
+                                18,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(28),
+                                border: Border.all(
+                                  color: const Color(0xFFD8E1EE),
+                                  width: 1.4,
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const UpperText(
+                                    'MISIÓN ACTUAL',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w900,
+                                      color: Color(0xFF1B2441),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  UpperText(
+                                    hasInstruction
+                                        ? instructionText!
+                                        : 'COMPLETA EL RETO PARA DESBLOQUEAR EL SIGUIENTE PASO.',
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF4E6188),
+                                      height: 1.25,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  UpperText(
+                                    'PROGRESO',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.blueGrey.shade500,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(999),
+                                    child: LinearProgressIndicator(
+                                      value: progressRatio,
+                                      minHeight: 11,
+                                      backgroundColor: const Color(0xFFD8DFEA),
+                                      color: const Color(0xFFEF5B10),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: UpperText(
+                                      '$progressPercent%',
+                                      style: const TextStyle(
+                                        color: Color(0xFFEF5B10),
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Expanded(
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.fromLTRB(
+                                  18,
+                                  18,
+                                  18,
+                                  18,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(28),
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFFEF5B10),
+                                      Color(0xFFF26A1B),
+                                    ],
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Spacer(),
+                                    const UpperText(
+                                      'MAPA DE LA ISLA',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                    const UpperText(
+                                      'EXPLORA NUEVOS TERRITORIOS',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 14),
+                                    FilledButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).maybePop(),
+                                      style: FilledButton.styleFrom(
+                                        minimumSize: const Size.fromHeight(50),
+                                        backgroundColor: Colors.white,
+                                        foregroundColor: const Color(
+                                          0xFFEF5B10,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
+                                        ),
+                                      ),
+                                      child: const UpperText(
+                                        'ABRIR MAPA',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(34),
+                            border: Border.all(color: const Color(0xFFD8E1EE)),
+                          ),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  18,
+                                  16,
+                                  14,
+                                  12,
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.category_rounded,
+                                      color: Color(0xFFEF5B10),
+                                      size: 28,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: UpperText(
+                                        title,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 36,
+                                          fontWeight: FontWeight.w900,
+                                          color: Color(0xFF161F3C),
+                                        ),
+                                      ),
+                                    ),
+                                    ...appBarActions.map((action) {
+                                      return Container(
+                                        margin: const EdgeInsets.only(left: 8),
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xFFF1F4F8),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: action,
+                                      );
+                                    }),
+                                  ],
+                                ),
+                              ),
+                              const Divider(
+                                height: 1,
+                                color: Color(0xFFE2E8F2),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    10,
+                                    10,
+                                    10,
+                                    10,
+                                  ),
+                                  child: ScrollConfiguration(
+                                    behavior: const _NoScrollBehavior(),
+                                    child: MediaQuery(
+                                      data: MediaQuery.of(context).copyWith(
+                                        textScaler: const TextScaler.linear(
+                                          0.93,
+                                        ),
+                                      ),
+                                      child: body,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
