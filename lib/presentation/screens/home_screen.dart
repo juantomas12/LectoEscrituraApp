@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -42,6 +44,35 @@ String _categoryPickerLabel(AppCategory category) {
     return 'Mix de cosas';
   }
   return _titleCase(category.label);
+}
+
+int _dayOfYear(DateTime date) {
+  final start = DateTime(date.year, 1, 1);
+  return date.difference(start).inDays + 1;
+}
+
+_QuickTrack _dailyChallengeTrack({
+  required List<_QuickTrack> tracks,
+  required DateTime now,
+}) {
+  if (tracks.isEmpty) {
+    throw StateError('No hay juegos disponibles para reto diario.');
+  }
+  if (tracks.length == 1) {
+    return tracks.first;
+  }
+
+  final todaySeed = now.year * 1000 + _dayOfYear(now);
+  final yesterday = now.subtract(const Duration(days: 1));
+  final yesterdaySeed = yesterday.year * 1000 + _dayOfYear(yesterday);
+
+  final todayIndex = Random(todaySeed).nextInt(tracks.length);
+  final yesterdayIndex = Random(yesterdaySeed).nextInt(tracks.length);
+  final adjustedToday = todayIndex == yesterdayIndex
+      ? (todayIndex + 1) % tracks.length
+      : todayIndex;
+
+  return tracks[adjustedToday];
 }
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -468,6 +499,10 @@ class _HomeTab extends StatelessWidget {
         ? '¡Racha excelente!'
         : 'Estás a ${(5 - rewards.currentStreak).clamp(1, 5)} juegos de una racha de 5';
     final playerName = profileName.split(' ').first;
+    final dailyTrack = _dailyChallengeTrack(
+      tracks: _HomeScreenState._quickTracks,
+      now: DateTime.now(),
+    );
 
     final learningTracks = Column(
       children: _HomeScreenState._quickTracks.map((track) {
@@ -634,13 +669,13 @@ class _HomeTab extends StatelessWidget {
                   runSpacing: 12,
                   children: [
                     _HomeQuickCircle(
-                      title: '¡Jugar!',
-                      icon: Icons.play_arrow_rounded,
+                      title: 'Reto de hoy',
+                      subtitle: dailyTrack.title,
+                      icon: Icons.bolt_rounded,
                       ringColor: const Color(0xFF57C46E),
                       fillColor: const Color(0xFFE2F7E7),
                       iconColor: const Color(0xFF57C46E),
-                      onTap: () =>
-                          onTrackTap(_HomeScreenState._quickTracks.first),
+                      onTap: () => onTrackTap(dailyTrack),
                     ),
                     _HomeQuickCircle(
                       title: 'Meta hoy',
@@ -781,6 +816,7 @@ class _HomeTab extends StatelessWidget {
 class _HomeQuickCircle extends StatelessWidget {
   const _HomeQuickCircle({
     required this.title,
+    this.subtitle,
     required this.icon,
     required this.ringColor,
     required this.fillColor,
@@ -789,6 +825,7 @@ class _HomeQuickCircle extends StatelessWidget {
   });
 
   final String title;
+  final String? subtitle;
   final IconData icon;
   final Color ringColor;
   final Color fillColor;
@@ -837,6 +874,19 @@ class _HomeQuickCircle extends StatelessWidget {
                   fontWeight: FontWeight.w900,
                 ),
               ),
+              if (subtitle != null) ...[
+                const SizedBox(height: 2),
+                Text(
+                  subtitle!.toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: isTablet ? 15 : 13,
+                    color: const Color(0xFF5D6D90),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
             ],
           ),
         ),
