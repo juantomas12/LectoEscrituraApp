@@ -6,10 +6,8 @@ import '../../domain/models/activity_type.dart';
 import '../../domain/models/ai_resource.dart';
 import '../../domain/models/category.dart';
 import '../../domain/models/difficulty.dart';
-import '../utils/category_visuals.dart';
 import '../viewmodels/ai_resource_studio_view_model.dart';
 import '../viewmodels/settings_view_model.dart';
-import 'ai_resource_studio_screen.dart';
 import 'generated_session_game_screen.dart';
 import 'settings_screen.dart';
 
@@ -152,409 +150,450 @@ class _AiPlayScreenState extends ConsumerState<AiPlayScreen> {
     );
   }
 
-  void _openClassicStudio() {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => const AiResourceStudioScreen()),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(aiResourceStudioViewModelProvider);
+    final width = MediaQuery.sizeOf(context).width;
+    final isTablet = width >= 900;
 
     final resources = state.resources.toList()
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     final visibleResources = _onlyFavorites
         ? resources.where((resource) => resource.isFavorite).toList()
         : resources;
-
-    final progressValue = state.isGenerating
-        ? 0.75
-        : _promptController.text.trim().isEmpty
-        ? 0.20
-        : visibleResources.isNotEmpty
-        ? 1.0
-        : 0.48;
-
     final content = Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(18, 14, 18, 10),
-          child: Row(
-            children: [
-              if (widget.embedded)
-                const SizedBox(width: 48, height: 48)
-              else
-                _RoundIcon(
-                  icon: Icons.arrow_back_rounded,
-                  onTap: () => Navigator.of(context).maybePop(),
-                ),
-              const Expanded(
-                child: Text(
-                  'Pantalla IA',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF111D3A),
-                  ),
-                ),
-              ),
-              _RoundIcon(
-                icon: Icons.settings_rounded,
-                onTap: () {
-                  if (widget.onOpenSettings != null) {
-                    widget.onOpenSettings!();
-                    return;
-                  }
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const SettingsScreen(),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+            padding: EdgeInsets.fromLTRB(
+              isTablet ? 28 : 20,
+              14,
+              isTablet ? 28 : 20,
+              26,
+            ),
             children: [
-              Row(
-                children: [
-                  Text(
-                    'Generación IA personalizada',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: const Color(0xFF2C7BEA).withValues(alpha: 0.92),
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '${visibleResources.length} recursos',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF7C8AA9),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(999),
-                child: LinearProgressIndicator(
-                  value: progressValue,
-                  minHeight: 10,
-                  backgroundColor: const Color(0xFFD5DDEC),
-                  valueColor: const AlwaysStoppedAnimation(Color(0xFF2C7BEA)),
-                ),
-              ),
-              const SizedBox(height: 14),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: const Color(0xFFD6DFEE)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 54,
-                          height: 54,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFDDEBFF),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: const Icon(
+              Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: isTablet ? 1180 : 900),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          if (!widget.embedded)
+                            _RoundIcon(
+                              icon: Icons.arrow_back_rounded,
+                              onTap: () => Navigator.of(context).maybePop(),
+                            ),
+                          if (!widget.embedded) const SizedBox(width: 10),
+                          const Icon(
                             Icons.auto_awesome_rounded,
-                            size: 30,
                             color: Color(0xFF2C7BEA),
+                            size: 30,
                           ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Generador de Sesiones IA',
+                              style: TextStyle(
+                                fontSize: isTablet ? 52 : 34,
+                                fontWeight: FontWeight.w900,
+                                color: const Color(0xFF111D3A),
+                                height: 1.0,
+                              ),
+                            ),
+                          ),
+                          _RoundIcon(
+                            icon: Icons.settings_rounded,
+                            onTap: () {
+                              if (widget.onOpenSettings != null) {
+                                widget.onOpenSettings!();
+                                return;
+                              }
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => const SettingsScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'Crea actividades personalizadas en segundos. Define tus objetivos y nuestra IA se encargará del resto.',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Color(0xFF5F6F8F),
+                          fontWeight: FontWeight.w500,
+                          height: 1.35,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Diseña una sesión con IA',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w900,
-                                  color: Color(0xFF111D3A),
+                      ),
+                      const SizedBox(height: 18),
+                      Container(
+                        padding: EdgeInsets.all(isTablet ? 24 : 16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(28),
+                          border: Border.all(color: const Color(0xFFDCE4F2)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(
+                                0xFF113066,
+                              ).withValues(alpha: 0.04),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (isTablet)
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    flex: 11,
+                                    child: _PromptField(
+                                      controller: _promptController,
+                                      onChanged: () => setState(() {}),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 18),
+                                  Expanded(
+                                    flex: 10,
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: _PickerField<ActivityType>(
+                                                label: 'Categoría',
+                                                value: _selectedGame,
+                                                items: ActivityType.values,
+                                                itemLabel: _gameLabel,
+                                                onChanged: (value) {
+                                                  if (value == null) return;
+                                                  setState(
+                                                    () => _selectedGame = value,
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: _PickerField<String>(
+                                                label: 'Grupo de edad',
+                                                value: _ageRange,
+                                                items: _ageRanges,
+                                                itemLabel: (value) => value,
+                                                onChanged: (value) {
+                                                  if (value == null) return;
+                                                  setState(
+                                                    () => _ageRange = value,
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: _PickerField<String>(
+                                                label: 'Duración',
+                                                value: _duration,
+                                                items: _durations,
+                                                itemLabel: (value) => value,
+                                                onChanged: (value) {
+                                                  if (value == null) return;
+                                                  setState(
+                                                    () => _duration = value,
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: _PickerField<String>(
+                                                label: 'Modo de juego',
+                                                value: _mode,
+                                                items: _modes,
+                                                itemLabel: (value) => value,
+                                                onChanged: (value) {
+                                                  if (value == null) return;
+                                                  setState(() => _mode = value);
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 12),
+                                        _PickerField<AppCategory>(
+                                          label: 'Dominio',
+                                          value: _selectedCategory,
+                                          items: AppCategoryLists.reales,
+                                          itemLabel: (category) =>
+                                              category.label,
+                                          onChanged: (value) {
+                                            if (value == null) return;
+                                            setState(
+                                              () => _selectedCategory = value,
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              )
+                            else ...[
+                              _PromptField(
+                                controller: _promptController,
+                                onChanged: () => setState(() {}),
+                              ),
+                              const SizedBox(height: 12),
+                              _PickerField<ActivityType>(
+                                label: 'Categoría',
+                                value: _selectedGame,
+                                items: ActivityType.values,
+                                itemLabel: _gameLabel,
+                                onChanged: (value) {
+                                  if (value == null) return;
+                                  setState(() => _selectedGame = value);
+                                },
+                              ),
+                              const SizedBox(height: 10),
+                              _PickerField<AppCategory>(
+                                label: 'Dominio',
+                                value: _selectedCategory,
+                                items: AppCategoryLists.reales,
+                                itemLabel: (category) => category.label,
+                                onChanged: (value) {
+                                  if (value == null) return;
+                                  setState(() => _selectedCategory = value);
+                                },
+                              ),
+                              const SizedBox(height: 10),
+                              _PickerField<String>(
+                                label: 'Grupo de edad',
+                                value: _ageRange,
+                                items: _ageRanges,
+                                itemLabel: (value) => value,
+                                onChanged: (value) {
+                                  if (value == null) return;
+                                  setState(() => _ageRange = value);
+                                },
+                              ),
+                              const SizedBox(height: 10),
+                              _PickerField<String>(
+                                label: 'Duración',
+                                value: _duration,
+                                items: _durations,
+                                itemLabel: (value) => value,
+                                onChanged: (value) {
+                                  if (value == null) return;
+                                  setState(() => _duration = value);
+                                },
+                              ),
+                              const SizedBox(height: 10),
+                              _PickerField<String>(
+                                label: 'Modo de juego',
+                                value: _mode,
+                                items: _modes,
+                                itemLabel: (value) => value,
+                                onChanged: (value) {
+                                  if (value == null) return;
+                                  setState(() => _mode = value);
+                                },
+                              ),
+                            ],
+                            const SizedBox(height: 18),
+                            Center(
+                              child: SizedBox(
+                                width: isTablet ? 320 : double.infinity,
+                                child: FilledButton.icon(
+                                  onPressed: state.isGenerating
+                                      ? null
+                                      : _generateResource,
+                                  icon: state.isGenerating
+                                      ? const SizedBox(
+                                          width: 18,
+                                          height: 18,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      : const Icon(Icons.auto_awesome_rounded),
+                                  label: Text(
+                                    state.isGenerating
+                                        ? 'Generando...'
+                                        : 'Generar sesión IA',
+                                  ),
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: const Color(0xFF2C8CEE),
+                                    foregroundColor: Colors.white,
+                                    minimumSize: const Size.fromHeight(58),
+                                    textStyle: const TextStyle(
+                                      fontSize: 19,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(999),
+                                    ),
+                                  ),
                                 ),
                               ),
-                              Text(
-                                '${_gameLabel(_selectedGame)} · ${_selectedCategory.label}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Color(0xFF657A9D),
-                                  fontWeight: FontWeight.w600,
+                            ),
+                            if (state.errorMessage != null &&
+                                state.errorMessage!.isNotEmpty) ...[
+                              const SizedBox(height: 12),
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFFEEED),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: const Color(0xFFFFC3BF),
+                                  ),
+                                ),
+                                child: Text(
+                                  state.errorMessage!,
+                                  style: const TextStyle(
+                                    color: Color(0xFF8D2F24),
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'Escribe el caso real o el objetivo de hoy',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF53658A),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    TextField(
-                      controller: _promptController,
-                      minLines: 3,
-                      maxLines: 5,
-                      onChanged: (_) {
-                        setState(() {});
-                      },
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Color(0xFF111D3A),
-                      ),
-                      decoration: InputDecoration(
-                        hintText:
-                            'Ejemplo: quiero trabajar la /R/ con vocabulario de casa y preguntas cortas.',
-                        hintStyle: const TextStyle(
-                          color: Color(0xFF95A3BD),
-                          fontSize: 14,
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xFFF6F8FC),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFD5DDEE),
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFD5DDEE),
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF2C7BEA),
-                            width: 1.4,
-                          ),
+                          ],
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        _SelectChip<ActivityType>(
-                          label: _gameLabel(_selectedGame),
-                          icon: Icons.sports_esports_rounded,
-                          items: ActivityType.values,
-                          selected: _selectedGame,
-                          itemLabel: _gameLabel,
-                          onSelected: (value) {
-                            setState(() => _selectedGame = value);
-                          },
-                        ),
-                        _SelectChip<AppCategory>(
-                          label: _selectedCategory.label,
-                          icon: _selectedCategory.icon,
-                          items: AppCategoryLists.reales,
-                          selected: _selectedCategory,
-                          itemLabel: (category) => category.label,
-                          onSelected: (value) {
-                            setState(() => _selectedCategory = value);
-                          },
-                        ),
-                        _SelectChip<String>(
-                          label: _ageRange,
-                          icon: Icons.cake_rounded,
-                          items: _ageRanges,
-                          selected: _ageRange,
-                          itemLabel: (value) => value,
-                          onSelected: (value) {
-                            setState(() => _ageRange = value);
-                          },
-                        ),
-                        _SelectChip<String>(
-                          label: _duration,
-                          icon: Icons.timer_rounded,
-                          items: _durations,
-                          selected: _duration,
-                          itemLabel: (value) => value,
-                          onSelected: (value) {
-                            setState(() => _duration = value);
-                          },
-                        ),
-                        _SelectChip<String>(
-                          label: _mode,
-                          icon: Icons.auto_stories_rounded,
-                          items: _modes,
-                          selected: _mode,
-                          itemLabel: (value) => value,
-                          onSelected: (value) {
-                            setState(() => _mode = value);
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: FilledButton.icon(
-                            onPressed: state.isGenerating
-                                ? null
-                                : _generateResource,
-                            icon: state.isGenerating
-                                ? const SizedBox(
-                                    width: 18,
-                                    height: 18,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : const Icon(Icons.auto_awesome_rounded),
-                            label: Text(
-                              state.isGenerating
-                                  ? 'Generando...'
-                                  : 'Generar sesión IA',
+                      const SizedBox(height: 18),
+                      Row(
+                        children: [
+                          const Text(
+                            'Recursos recientes',
+                            style: TextStyle(
+                              fontSize: 42,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF111D3A),
                             ),
-                            style: FilledButton.styleFrom(
-                              backgroundColor: const Color(0xFF2C7BEA),
-                              foregroundColor: Colors.white,
-                              minimumSize: const Size.fromHeight(52),
-                              textStyle: const TextStyle(
-                                fontSize: 16,
+                          ),
+                          const Spacer(),
+                          TextButton.icon(
+                            onPressed: () {
+                              setState(() => _onlyFavorites = !_onlyFavorites);
+                            },
+                            icon: Icon(
+                              _onlyFavorites
+                                  ? Icons.bookmark_rounded
+                                  : Icons.bookmark_border_rounded,
+                              color: const Color(0xFF2C7BEA),
+                            ),
+                            label: Text(
+                              _onlyFavorites ? 'Ver todos' : 'Solo guardados',
+                              style: const TextStyle(
+                                color: Color(0xFF2C7BEA),
                                 fontWeight: FontWeight.w800,
                               ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        OutlinedButton(
-                          onPressed: _openClassicStudio,
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: const Size(54, 52),
-                            side: const BorderSide(color: Color(0xFF2C7BEA)),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          child: const Icon(
-                            Icons.view_compact_alt_rounded,
-                            color: Color(0xFF2C7BEA),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (state.errorMessage != null &&
-                        state.errorMessage!.isNotEmpty) ...[
-                      const SizedBox(height: 10),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFEEED),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFFFC3BF)),
-                        ),
-                        child: Text(
-                          state.errorMessage!,
-                          style: const TextStyle(
-                            color: Color(0xFF8D2F24),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        ],
                       ),
+                      const SizedBox(height: 10),
+                      if (visibleResources.isEmpty)
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(color: const Color(0xFFD6DFEE)),
+                          ),
+                          child: const Text(
+                            'Aún no hay recursos para este filtro. Genera uno nuevo para empezar.',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFF5D6F92),
+                            ),
+                          ),
+                        )
+                      else if (isTablet)
+                        GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: visibleResources.take(6).length,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                mainAxisSpacing: 10,
+                                crossAxisSpacing: 10,
+                                mainAxisExtent: 238,
+                              ),
+                          itemBuilder: (context, index) {
+                            final resource = visibleResources[index];
+                            return _AiResourceCard(
+                              resource: resource,
+                              gameLabel: _gameLabel,
+                              onToggleSaved: () {
+                                ref
+                                    .read(
+                                      aiResourceStudioViewModelProvider
+                                          .notifier,
+                                    )
+                                    .toggleFavorite(resource.id);
+                              },
+                              onDelete: () {
+                                ref
+                                    .read(
+                                      aiResourceStudioViewModelProvider
+                                          .notifier,
+                                    )
+                                    .delete(resource.id);
+                              },
+                              onPlay: resource.playableQuestions.isEmpty
+                                  ? null
+                                  : () => _openGeneratedGame(resource),
+                            );
+                          },
+                        )
+                      else
+                        ...visibleResources.take(8).map((resource) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: _AiResourceCard(
+                              resource: resource,
+                              gameLabel: _gameLabel,
+                              onToggleSaved: () {
+                                ref
+                                    .read(
+                                      aiResourceStudioViewModelProvider
+                                          .notifier,
+                                    )
+                                    .toggleFavorite(resource.id);
+                              },
+                              onDelete: () {
+                                ref
+                                    .read(
+                                      aiResourceStudioViewModelProvider
+                                          .notifier,
+                                    )
+                                    .delete(resource.id);
+                              },
+                              onPlay: resource.playableQuestions.isEmpty
+                                  ? null
+                                  : () => _openGeneratedGame(resource),
+                            ),
+                          );
+                        }),
                     ],
-                  ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  const Text(
-                    'Recursos recientes',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFF111D3A),
-                    ),
-                  ),
-                  const Spacer(),
-                  TextButton.icon(
-                    onPressed: () {
-                      setState(() => _onlyFavorites = !_onlyFavorites);
-                    },
-                    icon: Icon(
-                      _onlyFavorites
-                          ? Icons.star_rounded
-                          : Icons.star_border_rounded,
-                      color: const Color(0xFF2C7BEA),
-                    ),
-                    label: Text(
-                      _onlyFavorites ? 'Favoritos' : 'Todos',
-                      style: const TextStyle(color: Color(0xFF2C7BEA)),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              if (visibleResources.isEmpty)
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: const Color(0xFFD6DFEE)),
-                  ),
-                  child: const Text(
-                    'Aún no hay recursos para este filtro. Genera uno nuevo para empezar.',
-                    style: TextStyle(fontSize: 16, color: Color(0xFF5D6F92)),
-                  ),
-                )
-              else
-                ...visibleResources.take(8).map((resource) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: _AiResourceCard(
-                      resource: resource,
-                      gameLabel: _gameLabel,
-                      onToggleSaved: () {
-                        ref
-                            .read(aiResourceStudioViewModelProvider.notifier)
-                            .toggleFavorite(resource.id);
-                      },
-                      onDelete: () {
-                        ref
-                            .read(aiResourceStudioViewModelProvider.notifier)
-                            .delete(resource.id);
-                      },
-                      onPlay: resource.playableQuestions.isEmpty
-                          ? null
-                          : () => _openGeneratedGame(resource),
-                    ),
-                  );
-                }),
             ],
           ),
         ),
@@ -599,75 +638,131 @@ class _RoundIcon extends StatelessWidget {
   }
 }
 
-class _SelectChip<T> extends StatelessWidget {
-  const _SelectChip({
-    required this.label,
-    required this.icon,
-    required this.items,
-    required this.selected,
-    required this.itemLabel,
-    required this.onSelected,
-  });
+class _PromptField extends StatelessWidget {
+  const _PromptField({required this.controller, required this.onChanged});
 
-  final String label;
-  final IconData icon;
-  final List<T> items;
-  final T selected;
-  final String Function(T value) itemLabel;
-  final ValueChanged<T> onSelected;
+  final TextEditingController controller;
+  final VoidCallback onChanged;
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton<T>(
-      onSelected: onSelected,
-      itemBuilder: (context) {
-        return items.map((item) {
-          final isSelected = item == selected;
-          return PopupMenuItem<T>(
-            value: item,
-            child: Row(
-              children: [
-                Expanded(child: Text(itemLabel(item))),
-                if (isSelected)
-                  const Icon(
-                    Icons.check_circle_rounded,
-                    color: Color(0xFF2C7BEA),
-                  ),
-              ],
-            ),
-          );
-        }).toList();
-      },
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        decoration: BoxDecoration(
-          color: const Color(0xFFF4F7FD),
-          borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: const Color(0xFFD2DCF0)),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'OBJETIVO DE LA SESIÓN',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.5,
+            color: Color(0xFF53658A),
+          ),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 16, color: const Color(0xFF2C7BEA)),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 13,
-                color: Color(0xFF35507B),
-                fontWeight: FontWeight.w700,
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          minLines: 4,
+          maxLines: 6,
+          onChanged: (_) => onChanged(),
+          style: const TextStyle(fontSize: 16, color: Color(0xFF111D3A)),
+          decoration: InputDecoration(
+            hintText:
+                'Ej: trabajar la letra R con vocabulario de casa y objetos cotidianos...',
+            hintStyle: const TextStyle(color: Color(0xFF95A3BD), fontSize: 15),
+            filled: true,
+            fillColor: const Color(0xFFF6F8FC),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(22),
+              borderSide: const BorderSide(color: Color(0xFFD5DDEE)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(22),
+              borderSide: const BorderSide(color: Color(0xFFD5DDEE)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(22),
+              borderSide: const BorderSide(
+                color: Color(0xFF2C7BEA),
+                width: 1.4,
               ),
             ),
-            const SizedBox(width: 2),
-            const Icon(
-              Icons.keyboard_arrow_down_rounded,
-              size: 16,
-              color: Color(0xFF6D7FA4),
-            ),
-          ],
+          ),
         ),
-      ),
+      ],
+    );
+  }
+}
+
+class _PickerField<T> extends StatelessWidget {
+  const _PickerField({
+    required this.label,
+    required this.value,
+    required this.items,
+    required this.itemLabel,
+    required this.onChanged,
+  });
+
+  final String label;
+  final T value;
+  final List<T> items;
+  final String Function(T value) itemLabel;
+  final ValueChanged<T?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label.toUpperCase(),
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.5,
+            color: Color(0xFF53658A),
+          ),
+        ),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<T>(
+          key: ValueKey<String>('picker-$label-$value'),
+          initialValue: value,
+          onChanged: onChanged,
+          items: items.map((item) {
+            return DropdownMenuItem<T>(
+              value: item,
+              child: Text(
+                itemLabel(item),
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+            );
+          }).toList(),
+          decoration: InputDecoration(
+            isDense: true,
+            filled: true,
+            fillColor: const Color(0xFFF2F5FA),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 14,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(999),
+              borderSide: const BorderSide(color: Color(0xFFD5DDEE)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(999),
+              borderSide: const BorderSide(color: Color(0xFFD5DDEE)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(999),
+              borderSide: const BorderSide(
+                color: Color(0xFF2C7BEA),
+                width: 1.4,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
