@@ -109,6 +109,7 @@ class _ActivitySelectionScreenState
     final gameTitle = _displayGameTitle(widget.activityType);
     final gameIcon = _displayGameIcon(widget.activityType);
     final gameColor = _displayGameColor(widget.activityType);
+    final vowelModes = [..._vowels, 'RANDOM'];
 
     return Scaffold(
       backgroundColor: const Color(0xFFEDEFF3),
@@ -207,7 +208,7 @@ class _ActivitySelectionScreenState
                               indexLabel: '$level',
                               title: 'NIVEL $level',
                               selected: _selectedGameLevel == level,
-                              accentColor: _accent,
+                              accentColor: _levelAccentColor(level),
                               onTap: () => setState(() {
                                 _selectedGameLevel = level;
                               }),
@@ -219,31 +220,39 @@ class _ActivitySelectionScreenState
                             );
                           },
                         )
-                      else ...[
-                        ..._vowels.map((vowel) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: _LevelRowCard(
-                              indexLabel: vowel,
-                              title: 'VOCAL $vowel',
-                              selected: _selectedVowelMode == vowel,
-                              accentColor: _accent,
+                      else
+                        GridView.builder(
+                          itemCount: vowelModes.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 12,
+                                mainAxisSpacing: 12,
+                                childAspectRatio: 2.25,
+                              ),
+                          itemBuilder: (context, index) {
+                            final mode = vowelModes[index];
+                            final isRandom = mode == 'RANDOM';
+                            return _LevelGridCard(
+                              indexLabel: isRandom ? '*' : mode,
+                              title: isRandom
+                                  ? 'TODAS ALEATORIO'
+                                  : 'VOCAL $mode',
+                              selected: _selectedVowelMode == mode,
+                              accentColor: _vowelModeAccentColor(mode),
                               onTap: () => setState(() {
-                                _selectedVowelMode = vowel;
+                                _selectedVowelMode = mode;
                               }),
-                            ),
-                          );
-                        }),
-                        _LevelRowCard(
-                          indexLabel: '*',
-                          title: 'TODAS ALEATORIO',
-                          selected: _selectedVowelMode == 'RANDOM',
-                          accentColor: _accent,
-                          onTap: () => setState(() {
-                            _selectedVowelMode = 'RANDOM';
-                          }),
+                              onPlay: () => _openActivity(
+                                context,
+                                widget.activityType,
+                                _selectedGameLevel,
+                              ),
+                            );
+                          },
                         ),
-                      ],
                       if (!isSingleLevel) ...[
                         const SizedBox(height: 8),
                         UpperText(
@@ -273,33 +282,6 @@ class _ActivitySelectionScreenState
                               ),
                             ),
                           ),
-                        if (isLetterVowelsGame) ...[
-                          const SizedBox(height: 16),
-                          FilledButton.icon(
-                            onPressed: () => _openActivity(
-                              context,
-                              widget.activityType,
-                              _selectedGameLevel,
-                            ),
-                            icon: const Icon(
-                              Icons.play_arrow_rounded,
-                              size: 30,
-                            ),
-                            label: const UpperText('INICIAR JUEGO'),
-                            style: FilledButton.styleFrom(
-                              backgroundColor: const Color(0xFF24C45F),
-                              foregroundColor: Colors.white,
-                              minimumSize: const Size.fromHeight(66),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(40),
-                              ),
-                              textStyle: const TextStyle(
-                                fontWeight: FontWeight.w900,
-                                fontSize: 22,
-                              ),
-                            ),
-                          ),
-                        ],
                       ],
                       if (isSingleLevel)
                         const Padding(
@@ -360,6 +342,27 @@ class _ActivitySelectionScreenState
       ActivityType.discriminacion => const Color(0xFF2C86EA),
       ActivityType.discriminacionInversa => const Color(0xFFB86115),
       _ => const Color(0xFF2C86EA),
+    };
+  }
+
+  Color _levelAccentColor(int level) {
+    return switch (level) {
+      1 => const Color(0xFF2C86EA),
+      2 => const Color(0xFF24C45F),
+      3 => const Color(0xFFEF5B10),
+      _ => const Color(0xFF7A5CD6),
+    };
+  }
+
+  Color _vowelModeAccentColor(String mode) {
+    return switch (mode) {
+      'A' => const Color(0xFFEF5B10),
+      'E' => const Color(0xFF2C86EA),
+      'I' => const Color(0xFF7A5CD6),
+      'O' => const Color(0xFF24C45F),
+      'U' => const Color(0xFFC64890),
+      'RANDOM' => const Color(0xFF0F9DAA),
+      _ => _accent,
     };
   }
 
@@ -518,84 +521,6 @@ class _ActivitySelectionScreenState
   }
 }
 
-class _LevelRowCard extends StatelessWidget {
-  const _LevelRowCard({
-    required this.indexLabel,
-    required this.title,
-    required this.selected,
-    required this.accentColor,
-    required this.onTap,
-  });
-
-  final String indexLabel;
-  final String title;
-  final bool selected;
-  final Color accentColor;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final borderColor = selected ? accentColor : const Color(0xFFCDD7E6);
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(999),
-        child: Ink(
-          height: 96,
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          decoration: BoxDecoration(
-            color: selected
-                ? accentColor.withValues(alpha: 0.06)
-                : Colors.white,
-            borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: borderColor, width: selected ? 3 : 2),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 54,
-                height: 54,
-                decoration: BoxDecoration(
-                  color: selected ? accentColor : const Color(0xFFEEF2F8),
-                  shape: BoxShape.circle,
-                ),
-                alignment: Alignment.center,
-                child: UpperText(
-                  indexLabel,
-                  style: TextStyle(
-                    color: selected ? Colors.white : const Color(0xFF62728F),
-                    fontWeight: FontWeight.w900,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 18),
-              Expanded(
-                child: UpperText(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF101A39),
-                  ),
-                ),
-              ),
-              Icon(
-                selected
-                    ? Icons.check_circle_rounded
-                    : Icons.radio_button_unchecked_rounded,
-                color: selected ? accentColor : const Color(0xFFC0CCDD),
-                size: 44,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _LevelGridCard extends StatelessWidget {
   const _LevelGridCard({
     required this.indexLabel,
@@ -670,7 +595,7 @@ class _LevelGridCard extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 24,
+                  fontSize: 21,
                   fontWeight: FontWeight.w900,
                   color: Color(0xFF101A39),
                 ),
@@ -690,7 +615,7 @@ class _LevelGridCard extends StatelessWidget {
                             style: TextStyle(fontSize: 13),
                           ),
                           style: FilledButton.styleFrom(
-                            backgroundColor: const Color(0xFF24C45F),
+                            backgroundColor: accentColor,
                             foregroundColor: Colors.white,
                             minimumSize: const Size(112, 36),
                             shape: RoundedRectangleBorder(
