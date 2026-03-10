@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../application/providers/app_providers.dart';
-import '../../../core/utils/pedagogical_feedback.dart';
 import '../../../core/utils/text_utils.dart';
 import '../../../domain/models/activity_result.dart';
 import '../../../domain/models/activity_type.dart';
@@ -49,7 +48,6 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
   List<Item> _items = [];
   final Map<String, bool> _classifiedByItem = {};
   String _targetLetter = 'A';
-  String _feedback = 'ARRASTRA A LA CAJA CORRECTA';
   bool _isLoading = true;
   String? _lastFailedItemId;
   String? _lastFailedMessage;
@@ -67,15 +65,6 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
       LetterMatchMode.inicia => startsWithLetter(word, letter),
       LetterMatchMode.medio => containsLetterInMiddle(word, letter),
       LetterMatchMode.termina => endsWithLetter(word, letter),
-    };
-  }
-
-  String _hintForMode() {
-    return switch (widget.matchMode) {
-      LetterMatchMode.contiene => 'PIENSA SI SUENA LA LETRA $_targetLetter',
-      LetterMatchMode.inicia => 'PIENSA SI EMPIEZA CON $_targetLetter',
-      LetterMatchMode.medio => 'PIENSA SI $_targetLetter SUENA EN MEDIO',
-      LetterMatchMode.termina => 'PIENSA SI TERMINA EN $_targetLetter',
     };
   }
 
@@ -197,7 +186,6 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
       _items = selectedItems;
       _targetLetter = selectedLetter;
       _classifiedByItem.clear();
-      _feedback = 'ARRASTRA A LA CAJA CORRECTA';
       _lastFailedItemId = null;
       _lastFailedMessage = null;
       _correct = 0;
@@ -249,10 +237,6 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
         _streak++;
         _consecutiveErrors = 0;
         _bestStreak = max(_bestStreak, _streak);
-        _feedback = PedagogicalFeedback.positive(
-          streak: _streak,
-          totalCorrect: _correct,
-        );
         if (_lastFailedItemId == item.id) {
           _lastFailedItemId = null;
           _lastFailedMessage = null;
@@ -266,10 +250,6 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
             : 'NO ${widget.matchMode.label} $_targetLetter';
         _lastFailedMessage =
             '${item.word ?? 'ESTE OBJETO'} VA EN $expectedZone';
-        _feedback = PedagogicalFeedback.retry(
-          attemptsOnCurrent: _incorrect,
-          hint: _hintForMode(),
-        );
         _consecutiveErrors++;
       }
     });
@@ -626,21 +606,65 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                       const SizedBox(height: 10),
                     ],
                     GamePanel(
+                      padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+                      backgroundColor: const Color(0xFFFFF8F2),
+                      borderColor: const Color(0xFFFFD8BF),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          UpperText(
-                            'SEPARA LAS TARJETAS',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          const SizedBox(height: 8),
-                          UpperText(
-                            'LETRA: $_targetLetter',
-                            style: Theme.of(context).textTheme.titleLarge
-                                ?.copyWith(fontWeight: FontWeight.w800),
+                          const UpperText(
+                            'MISIÓN ACTUAL',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFFB65117),
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
                           const SizedBox(height: 6),
-                          UpperText(_feedback),
+                          UpperText(
+                            'CLASIFICA LAS TARJETAS CON LA LETRA $_targetLetter',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              color: Color(0xFF4E6188),
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(999),
+                            child: LinearProgressIndicator(
+                              value: _items.isEmpty
+                                  ? 0
+                                  : (solvedCount / _items.length).clamp(
+                                      0.0,
+                                      1.0,
+                                    ),
+                              minHeight: 10,
+                              backgroundColor: const Color(0xFFFFE8D7),
+                              color: const Color(0xFFEF5B10),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              UpperText(
+                                'COMPLETADAS: $solvedCount/${_items.length}',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: Color(0xFF4E6188),
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              const Spacer(),
+                              UpperText(
+                                '${_items.isEmpty ? 0 : ((solvedCount / _items.length) * 100).round()}%',
+                                style: const TextStyle(
+                                  color: Color(0xFFEF5B10),
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),

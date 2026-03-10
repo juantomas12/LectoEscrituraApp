@@ -144,11 +144,6 @@ class GameScaffold extends ConsumerWidget {
     final profile = ref.watch(localProfileProvider);
     final playerName = profile.displayName.split(' ').first;
     final progressNow = progressCurrent ?? 0;
-    final progressMax = progressTotal ?? 0;
-    final progressRatio = progressMax <= 0
-        ? 0.0
-        : (progressNow / progressMax).clamp(0.0, 1.0);
-    final progressPercent = (progressRatio * 100).round();
 
     if (isDesktopLandscape) {
       return Scaffold(
@@ -319,86 +314,6 @@ class GameScaffold extends ConsumerWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      SizedBox(
-                        width: 320,
-                        child: Column(
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.fromLTRB(
-                                18,
-                                18,
-                                18,
-                                18,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(28),
-                                border: Border.all(
-                                  color: const Color(0xFFD8E1EE),
-                                  width: 1.4,
-                                ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const UpperText(
-                                    'MISIÓN ACTUAL',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w900,
-                                      color: Color(0xFF1B2441),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  UpperText(
-                                    hasInstruction
-                                        ? instructionText!
-                                        : 'COMPLETA EL RETO PARA DESBLOQUEAR EL SIGUIENTE PASO.',
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF4E6188),
-                                      height: 1.25,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  UpperText(
-                                    'PROGRESO',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.blueGrey.shade500,
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(999),
-                                    child: LinearProgressIndicator(
-                                      value: progressRatio,
-                                      minHeight: 11,
-                                      backgroundColor: const Color(0xFFD8DFEA),
-                                      color: const Color(0xFFEF5B10),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: UpperText(
-                                      '$progressPercent%',
-                                      style: const TextStyle(
-                                        color: Color(0xFFEF5B10),
-                                        fontWeight: FontWeight.w900,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
