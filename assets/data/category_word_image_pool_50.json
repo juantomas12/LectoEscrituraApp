@@ -1,0 +1,2511 @@
+{
+  "metadata": {
+    "generator": "tools/export_category_word_image_pool.py",
+    "dataset": "assets/data/lectoescritura_dataset.json",
+    "activityType": "IMAGEN_PALABRA",
+    "poolPerCategory": 50,
+    "categoryCount": 7,
+    "totalPoolItems": 350
+  },
+  "categories": [
+    {
+      "category": "BAÑO",
+      "baseCount": 12,
+      "poolCount": 50,
+      "items": [
+        {
+          "poolIndex": 1,
+          "poolId": "BAN_N1_01__POOL_1",
+          "sourceItemId": "BAN_N1_01",
+          "word": "JABÓN",
+          "imageAsset": "assets/images/bano/ban_n1_01.png"
+        },
+        {
+          "poolIndex": 2,
+          "poolId": "BAN_N1_02__POOL_2",
+          "sourceItemId": "BAN_N1_02",
+          "word": "TOALLA",
+          "imageAsset": "assets/images/bano/ban_n1_02.png"
+        },
+        {
+          "poolIndex": 3,
+          "poolId": "BAN_N1_03__POOL_3",
+          "sourceItemId": "BAN_N1_03",
+          "word": "CEPILLO",
+          "imageAsset": "assets/images/bano/ban_n1_03.png"
+        },
+        {
+          "poolIndex": 4,
+          "poolId": "BAN_N1_04__POOL_4",
+          "sourceItemId": "BAN_N1_04",
+          "word": "PASTA",
+          "imageAsset": "assets/images/bano/ban_n1_04.png"
+        },
+        {
+          "poolIndex": 5,
+          "poolId": "BAN_N1_05__POOL_5",
+          "sourceItemId": "BAN_N1_05",
+          "word": "DUCHA",
+          "imageAsset": "assets/images/bano/ban_n1_05.png"
+        },
+        {
+          "poolIndex": 6,
+          "poolId": "BAN_N1_06__POOL_6",
+          "sourceItemId": "BAN_N1_06",
+          "word": "GRIFO",
+          "imageAsset": "assets/images/bano/ban_n1_06.png"
+        },
+        {
+          "poolIndex": 7,
+          "poolId": "BAN_N1_07__POOL_7",
+          "sourceItemId": "BAN_N1_07",
+          "word": "ESPEJO",
+          "imageAsset": "assets/images/bano/ban_n1_07.png"
+        },
+        {
+          "poolIndex": 8,
+          "poolId": "BAN_N1_08__POOL_8",
+          "sourceItemId": "BAN_N1_08",
+          "word": "PEINE",
+          "imageAsset": "assets/images/bano/ban_n1_08.png"
+        },
+        {
+          "poolIndex": 9,
+          "poolId": "BAN_N1_09__POOL_9",
+          "sourceItemId": "BAN_N1_09",
+          "word": "CHAMPÚ",
+          "imageAsset": "assets/images/bano/ban_n1_09.png"
+        },
+        {
+          "poolIndex": 10,
+          "poolId": "BAN_N1_10__POOL_10",
+          "sourceItemId": "BAN_N1_10",
+          "word": "SECADOR",
+          "imageAsset": "assets/images/bano/ban_n1_10.png"
+        },
+        {
+          "poolIndex": 11,
+          "poolId": "BAN_N1_11__POOL_11",
+          "sourceItemId": "BAN_N1_11",
+          "word": "PAPEL",
+          "imageAsset": "assets/images/bano/ban_n1_11.png"
+        },
+        {
+          "poolIndex": 12,
+          "poolId": "BAN_N1_12__POOL_12",
+          "sourceItemId": "BAN_N1_12",
+          "word": "INODORO",
+          "imageAsset": "assets/images/bano/ban_n1_12.png"
+        },
+        {
+          "poolIndex": 13,
+          "poolId": "BAN_N1_01__POOL_13",
+          "sourceItemId": "BAN_N1_01",
+          "word": "JABÓN",
+          "imageAsset": "assets/images/bano/ban_n1_01.png"
+        },
+        {
+          "poolIndex": 14,
+          "poolId": "BAN_N1_02__POOL_14",
+          "sourceItemId": "BAN_N1_02",
+          "word": "TOALLA",
+          "imageAsset": "assets/images/bano/ban_n1_02.png"
+        },
+        {
+          "poolIndex": 15,
+          "poolId": "BAN_N1_03__POOL_15",
+          "sourceItemId": "BAN_N1_03",
+          "word": "CEPILLO",
+          "imageAsset": "assets/images/bano/ban_n1_03.png"
+        },
+        {
+          "poolIndex": 16,
+          "poolId": "BAN_N1_04__POOL_16",
+          "sourceItemId": "BAN_N1_04",
+          "word": "PASTA",
+          "imageAsset": "assets/images/bano/ban_n1_04.png"
+        },
+        {
+          "poolIndex": 17,
+          "poolId": "BAN_N1_05__POOL_17",
+          "sourceItemId": "BAN_N1_05",
+          "word": "DUCHA",
+          "imageAsset": "assets/images/bano/ban_n1_05.png"
+        },
+        {
+          "poolIndex": 18,
+          "poolId": "BAN_N1_06__POOL_18",
+          "sourceItemId": "BAN_N1_06",
+          "word": "GRIFO",
+          "imageAsset": "assets/images/bano/ban_n1_06.png"
+        },
+        {
+          "poolIndex": 19,
+          "poolId": "BAN_N1_07__POOL_19",
+          "sourceItemId": "BAN_N1_07",
+          "word": "ESPEJO",
+          "imageAsset": "assets/images/bano/ban_n1_07.png"
+        },
+        {
+          "poolIndex": 20,
+          "poolId": "BAN_N1_08__POOL_20",
+          "sourceItemId": "BAN_N1_08",
+          "word": "PEINE",
+          "imageAsset": "assets/images/bano/ban_n1_08.png"
+        },
+        {
+          "poolIndex": 21,
+          "poolId": "BAN_N1_09__POOL_21",
+          "sourceItemId": "BAN_N1_09",
+          "word": "CHAMPÚ",
+          "imageAsset": "assets/images/bano/ban_n1_09.png"
+        },
+        {
+          "poolIndex": 22,
+          "poolId": "BAN_N1_10__POOL_22",
+          "sourceItemId": "BAN_N1_10",
+          "word": "SECADOR",
+          "imageAsset": "assets/images/bano/ban_n1_10.png"
+        },
+        {
+          "poolIndex": 23,
+          "poolId": "BAN_N1_11__POOL_23",
+          "sourceItemId": "BAN_N1_11",
+          "word": "PAPEL",
+          "imageAsset": "assets/images/bano/ban_n1_11.png"
+        },
+        {
+          "poolIndex": 24,
+          "poolId": "BAN_N1_12__POOL_24",
+          "sourceItemId": "BAN_N1_12",
+          "word": "INODORO",
+          "imageAsset": "assets/images/bano/ban_n1_12.png"
+        },
+        {
+          "poolIndex": 25,
+          "poolId": "BAN_N1_01__POOL_25",
+          "sourceItemId": "BAN_N1_01",
+          "word": "JABÓN",
+          "imageAsset": "assets/images/bano/ban_n1_01.png"
+        },
+        {
+          "poolIndex": 26,
+          "poolId": "BAN_N1_02__POOL_26",
+          "sourceItemId": "BAN_N1_02",
+          "word": "TOALLA",
+          "imageAsset": "assets/images/bano/ban_n1_02.png"
+        },
+        {
+          "poolIndex": 27,
+          "poolId": "BAN_N1_03__POOL_27",
+          "sourceItemId": "BAN_N1_03",
+          "word": "CEPILLO",
+          "imageAsset": "assets/images/bano/ban_n1_03.png"
+        },
+        {
+          "poolIndex": 28,
+          "poolId": "BAN_N1_04__POOL_28",
+          "sourceItemId": "BAN_N1_04",
+          "word": "PASTA",
+          "imageAsset": "assets/images/bano/ban_n1_04.png"
+        },
+        {
+          "poolIndex": 29,
+          "poolId": "BAN_N1_05__POOL_29",
+          "sourceItemId": "BAN_N1_05",
+          "word": "DUCHA",
+          "imageAsset": "assets/images/bano/ban_n1_05.png"
+        },
+        {
+          "poolIndex": 30,
+          "poolId": "BAN_N1_06__POOL_30",
+          "sourceItemId": "BAN_N1_06",
+          "word": "GRIFO",
+          "imageAsset": "assets/images/bano/ban_n1_06.png"
+        },
+        {
+          "poolIndex": 31,
+          "poolId": "BAN_N1_07__POOL_31",
+          "sourceItemId": "BAN_N1_07",
+          "word": "ESPEJO",
+          "imageAsset": "assets/images/bano/ban_n1_07.png"
+        },
+        {
+          "poolIndex": 32,
+          "poolId": "BAN_N1_08__POOL_32",
+          "sourceItemId": "BAN_N1_08",
+          "word": "PEINE",
+          "imageAsset": "assets/images/bano/ban_n1_08.png"
+        },
+        {
+          "poolIndex": 33,
+          "poolId": "BAN_N1_09__POOL_33",
+          "sourceItemId": "BAN_N1_09",
+          "word": "CHAMPÚ",
+          "imageAsset": "assets/images/bano/ban_n1_09.png"
+        },
+        {
+          "poolIndex": 34,
+          "poolId": "BAN_N1_10__POOL_34",
+          "sourceItemId": "BAN_N1_10",
+          "word": "SECADOR",
+          "imageAsset": "assets/images/bano/ban_n1_10.png"
+        },
+        {
+          "poolIndex": 35,
+          "poolId": "BAN_N1_11__POOL_35",
+          "sourceItemId": "BAN_N1_11",
+          "word": "PAPEL",
+          "imageAsset": "assets/images/bano/ban_n1_11.png"
+        },
+        {
+          "poolIndex": 36,
+          "poolId": "BAN_N1_12__POOL_36",
+          "sourceItemId": "BAN_N1_12",
+          "word": "INODORO",
+          "imageAsset": "assets/images/bano/ban_n1_12.png"
+        },
+        {
+          "poolIndex": 37,
+          "poolId": "BAN_N1_01__POOL_37",
+          "sourceItemId": "BAN_N1_01",
+          "word": "JABÓN",
+          "imageAsset": "assets/images/bano/ban_n1_01.png"
+        },
+        {
+          "poolIndex": 38,
+          "poolId": "BAN_N1_02__POOL_38",
+          "sourceItemId": "BAN_N1_02",
+          "word": "TOALLA",
+          "imageAsset": "assets/images/bano/ban_n1_02.png"
+        },
+        {
+          "poolIndex": 39,
+          "poolId": "BAN_N1_03__POOL_39",
+          "sourceItemId": "BAN_N1_03",
+          "word": "CEPILLO",
+          "imageAsset": "assets/images/bano/ban_n1_03.png"
+        },
+        {
+          "poolIndex": 40,
+          "poolId": "BAN_N1_04__POOL_40",
+          "sourceItemId": "BAN_N1_04",
+          "word": "PASTA",
+          "imageAsset": "assets/images/bano/ban_n1_04.png"
+        },
+        {
+          "poolIndex": 41,
+          "poolId": "BAN_N1_05__POOL_41",
+          "sourceItemId": "BAN_N1_05",
+          "word": "DUCHA",
+          "imageAsset": "assets/images/bano/ban_n1_05.png"
+        },
+        {
+          "poolIndex": 42,
+          "poolId": "BAN_N1_06__POOL_42",
+          "sourceItemId": "BAN_N1_06",
+          "word": "GRIFO",
+          "imageAsset": "assets/images/bano/ban_n1_06.png"
+        },
+        {
+          "poolIndex": 43,
+          "poolId": "BAN_N1_07__POOL_43",
+          "sourceItemId": "BAN_N1_07",
+          "word": "ESPEJO",
+          "imageAsset": "assets/images/bano/ban_n1_07.png"
+        },
+        {
+          "poolIndex": 44,
+          "poolId": "BAN_N1_08__POOL_44",
+          "sourceItemId": "BAN_N1_08",
+          "word": "PEINE",
+          "imageAsset": "assets/images/bano/ban_n1_08.png"
+        },
+        {
+          "poolIndex": 45,
+          "poolId": "BAN_N1_09__POOL_45",
+          "sourceItemId": "BAN_N1_09",
+          "word": "CHAMPÚ",
+          "imageAsset": "assets/images/bano/ban_n1_09.png"
+        },
+        {
+          "poolIndex": 46,
+          "poolId": "BAN_N1_10__POOL_46",
+          "sourceItemId": "BAN_N1_10",
+          "word": "SECADOR",
+          "imageAsset": "assets/images/bano/ban_n1_10.png"
+        },
+        {
+          "poolIndex": 47,
+          "poolId": "BAN_N1_11__POOL_47",
+          "sourceItemId": "BAN_N1_11",
+          "word": "PAPEL",
+          "imageAsset": "assets/images/bano/ban_n1_11.png"
+        },
+        {
+          "poolIndex": 48,
+          "poolId": "BAN_N1_12__POOL_48",
+          "sourceItemId": "BAN_N1_12",
+          "word": "INODORO",
+          "imageAsset": "assets/images/bano/ban_n1_12.png"
+        },
+        {
+          "poolIndex": 49,
+          "poolId": "BAN_N1_01__POOL_49",
+          "sourceItemId": "BAN_N1_01",
+          "word": "JABÓN",
+          "imageAsset": "assets/images/bano/ban_n1_01.png"
+        },
+        {
+          "poolIndex": 50,
+          "poolId": "BAN_N1_02__POOL_50",
+          "sourceItemId": "BAN_N1_02",
+          "word": "TOALLA",
+          "imageAsset": "assets/images/bano/ban_n1_02.png"
+        }
+      ]
+    },
+    {
+      "category": "COMIDA",
+      "baseCount": 12,
+      "poolCount": 50,
+      "items": [
+        {
+          "poolIndex": 1,
+          "poolId": "COM_N1_01__POOL_1",
+          "sourceItemId": "COM_N1_01",
+          "word": "PAN",
+          "imageAsset": "assets/images/comida/com_n1_01.png"
+        },
+        {
+          "poolIndex": 2,
+          "poolId": "COM_N1_02__POOL_2",
+          "sourceItemId": "COM_N1_02",
+          "word": "LECHE",
+          "imageAsset": "assets/images/comida/com_n1_02.png"
+        },
+        {
+          "poolIndex": 3,
+          "poolId": "COM_N1_03__POOL_3",
+          "sourceItemId": "COM_N1_03",
+          "word": "AGUA",
+          "imageAsset": "assets/images/comida/com_n1_03.png"
+        },
+        {
+          "poolIndex": 4,
+          "poolId": "COM_N1_04__POOL_4",
+          "sourceItemId": "COM_N1_04",
+          "word": "ARROZ",
+          "imageAsset": "assets/images/comida/com_n1_04.png"
+        },
+        {
+          "poolIndex": 5,
+          "poolId": "COM_N1_05__POOL_5",
+          "sourceItemId": "COM_N1_05",
+          "word": "SOPA",
+          "imageAsset": "assets/images/comida/com_n1_05.png"
+        },
+        {
+          "poolIndex": 6,
+          "poolId": "COM_N1_06__POOL_6",
+          "sourceItemId": "COM_N1_06",
+          "word": "MANZANA",
+          "imageAsset": "assets/images/comida/com_n1_06.png"
+        },
+        {
+          "poolIndex": 7,
+          "poolId": "COM_N1_07__POOL_7",
+          "sourceItemId": "COM_N1_07",
+          "word": "PERA",
+          "imageAsset": "assets/images/comida/com_n1_07.png"
+        },
+        {
+          "poolIndex": 8,
+          "poolId": "COM_N1_08__POOL_8",
+          "sourceItemId": "COM_N1_08",
+          "word": "HUEVO",
+          "imageAsset": "assets/images/comida/com_n1_08.png"
+        },
+        {
+          "poolIndex": 9,
+          "poolId": "COM_N1_09__POOL_9",
+          "sourceItemId": "COM_N1_09",
+          "word": "QUESO",
+          "imageAsset": "assets/images/comida/com_n1_09.png"
+        },
+        {
+          "poolIndex": 10,
+          "poolId": "COM_N1_10__POOL_10",
+          "sourceItemId": "COM_N1_10",
+          "word": "YOGUR",
+          "imageAsset": "assets/images/comida/com_n1_10.png"
+        },
+        {
+          "poolIndex": 11,
+          "poolId": "COM_N1_11__POOL_11",
+          "sourceItemId": "COM_N1_11",
+          "word": "POLLO",
+          "imageAsset": "assets/images/comida/com_n1_11.png"
+        },
+        {
+          "poolIndex": 12,
+          "poolId": "COM_N1_12__POOL_12",
+          "sourceItemId": "COM_N1_12",
+          "word": "PESCADO",
+          "imageAsset": "assets/images/comida/com_n1_12.png"
+        },
+        {
+          "poolIndex": 13,
+          "poolId": "COM_N1_01__POOL_13",
+          "sourceItemId": "COM_N1_01",
+          "word": "PAN",
+          "imageAsset": "assets/images/comida/com_n1_01.png"
+        },
+        {
+          "poolIndex": 14,
+          "poolId": "COM_N1_02__POOL_14",
+          "sourceItemId": "COM_N1_02",
+          "word": "LECHE",
+          "imageAsset": "assets/images/comida/com_n1_02.png"
+        },
+        {
+          "poolIndex": 15,
+          "poolId": "COM_N1_03__POOL_15",
+          "sourceItemId": "COM_N1_03",
+          "word": "AGUA",
+          "imageAsset": "assets/images/comida/com_n1_03.png"
+        },
+        {
+          "poolIndex": 16,
+          "poolId": "COM_N1_04__POOL_16",
+          "sourceItemId": "COM_N1_04",
+          "word": "ARROZ",
+          "imageAsset": "assets/images/comida/com_n1_04.png"
+        },
+        {
+          "poolIndex": 17,
+          "poolId": "COM_N1_05__POOL_17",
+          "sourceItemId": "COM_N1_05",
+          "word": "SOPA",
+          "imageAsset": "assets/images/comida/com_n1_05.png"
+        },
+        {
+          "poolIndex": 18,
+          "poolId": "COM_N1_06__POOL_18",
+          "sourceItemId": "COM_N1_06",
+          "word": "MANZANA",
+          "imageAsset": "assets/images/comida/com_n1_06.png"
+        },
+        {
+          "poolIndex": 19,
+          "poolId": "COM_N1_07__POOL_19",
+          "sourceItemId": "COM_N1_07",
+          "word": "PERA",
+          "imageAsset": "assets/images/comida/com_n1_07.png"
+        },
+        {
+          "poolIndex": 20,
+          "poolId": "COM_N1_08__POOL_20",
+          "sourceItemId": "COM_N1_08",
+          "word": "HUEVO",
+          "imageAsset": "assets/images/comida/com_n1_08.png"
+        },
+        {
+          "poolIndex": 21,
+          "poolId": "COM_N1_09__POOL_21",
+          "sourceItemId": "COM_N1_09",
+          "word": "QUESO",
+          "imageAsset": "assets/images/comida/com_n1_09.png"
+        },
+        {
+          "poolIndex": 22,
+          "poolId": "COM_N1_10__POOL_22",
+          "sourceItemId": "COM_N1_10",
+          "word": "YOGUR",
+          "imageAsset": "assets/images/comida/com_n1_10.png"
+        },
+        {
+          "poolIndex": 23,
+          "poolId": "COM_N1_11__POOL_23",
+          "sourceItemId": "COM_N1_11",
+          "word": "POLLO",
+          "imageAsset": "assets/images/comida/com_n1_11.png"
+        },
+        {
+          "poolIndex": 24,
+          "poolId": "COM_N1_12__POOL_24",
+          "sourceItemId": "COM_N1_12",
+          "word": "PESCADO",
+          "imageAsset": "assets/images/comida/com_n1_12.png"
+        },
+        {
+          "poolIndex": 25,
+          "poolId": "COM_N1_01__POOL_25",
+          "sourceItemId": "COM_N1_01",
+          "word": "PAN",
+          "imageAsset": "assets/images/comida/com_n1_01.png"
+        },
+        {
+          "poolIndex": 26,
+          "poolId": "COM_N1_02__POOL_26",
+          "sourceItemId": "COM_N1_02",
+          "word": "LECHE",
+          "imageAsset": "assets/images/comida/com_n1_02.png"
+        },
+        {
+          "poolIndex": 27,
+          "poolId": "COM_N1_03__POOL_27",
+          "sourceItemId": "COM_N1_03",
+          "word": "AGUA",
+          "imageAsset": "assets/images/comida/com_n1_03.png"
+        },
+        {
+          "poolIndex": 28,
+          "poolId": "COM_N1_04__POOL_28",
+          "sourceItemId": "COM_N1_04",
+          "word": "ARROZ",
+          "imageAsset": "assets/images/comida/com_n1_04.png"
+        },
+        {
+          "poolIndex": 29,
+          "poolId": "COM_N1_05__POOL_29",
+          "sourceItemId": "COM_N1_05",
+          "word": "SOPA",
+          "imageAsset": "assets/images/comida/com_n1_05.png"
+        },
+        {
+          "poolIndex": 30,
+          "poolId": "COM_N1_06__POOL_30",
+          "sourceItemId": "COM_N1_06",
+          "word": "MANZANA",
+          "imageAsset": "assets/images/comida/com_n1_06.png"
+        },
+        {
+          "poolIndex": 31,
+          "poolId": "COM_N1_07__POOL_31",
+          "sourceItemId": "COM_N1_07",
+          "word": "PERA",
+          "imageAsset": "assets/images/comida/com_n1_07.png"
+        },
+        {
+          "poolIndex": 32,
+          "poolId": "COM_N1_08__POOL_32",
+          "sourceItemId": "COM_N1_08",
+          "word": "HUEVO",
+          "imageAsset": "assets/images/comida/com_n1_08.png"
+        },
+        {
+          "poolIndex": 33,
+          "poolId": "COM_N1_09__POOL_33",
+          "sourceItemId": "COM_N1_09",
+          "word": "QUESO",
+          "imageAsset": "assets/images/comida/com_n1_09.png"
+        },
+        {
+          "poolIndex": 34,
+          "poolId": "COM_N1_10__POOL_34",
+          "sourceItemId": "COM_N1_10",
+          "word": "YOGUR",
+          "imageAsset": "assets/images/comida/com_n1_10.png"
+        },
+        {
+          "poolIndex": 35,
+          "poolId": "COM_N1_11__POOL_35",
+          "sourceItemId": "COM_N1_11",
+          "word": "POLLO",
+          "imageAsset": "assets/images/comida/com_n1_11.png"
+        },
+        {
+          "poolIndex": 36,
+          "poolId": "COM_N1_12__POOL_36",
+          "sourceItemId": "COM_N1_12",
+          "word": "PESCADO",
+          "imageAsset": "assets/images/comida/com_n1_12.png"
+        },
+        {
+          "poolIndex": 37,
+          "poolId": "COM_N1_01__POOL_37",
+          "sourceItemId": "COM_N1_01",
+          "word": "PAN",
+          "imageAsset": "assets/images/comida/com_n1_01.png"
+        },
+        {
+          "poolIndex": 38,
+          "poolId": "COM_N1_02__POOL_38",
+          "sourceItemId": "COM_N1_02",
+          "word": "LECHE",
+          "imageAsset": "assets/images/comida/com_n1_02.png"
+        },
+        {
+          "poolIndex": 39,
+          "poolId": "COM_N1_03__POOL_39",
+          "sourceItemId": "COM_N1_03",
+          "word": "AGUA",
+          "imageAsset": "assets/images/comida/com_n1_03.png"
+        },
+        {
+          "poolIndex": 40,
+          "poolId": "COM_N1_04__POOL_40",
+          "sourceItemId": "COM_N1_04",
+          "word": "ARROZ",
+          "imageAsset": "assets/images/comida/com_n1_04.png"
+        },
+        {
+          "poolIndex": 41,
+          "poolId": "COM_N1_05__POOL_41",
+          "sourceItemId": "COM_N1_05",
+          "word": "SOPA",
+          "imageAsset": "assets/images/comida/com_n1_05.png"
+        },
+        {
+          "poolIndex": 42,
+          "poolId": "COM_N1_06__POOL_42",
+          "sourceItemId": "COM_N1_06",
+          "word": "MANZANA",
+          "imageAsset": "assets/images/comida/com_n1_06.png"
+        },
+        {
+          "poolIndex": 43,
+          "poolId": "COM_N1_07__POOL_43",
+          "sourceItemId": "COM_N1_07",
+          "word": "PERA",
+          "imageAsset": "assets/images/comida/com_n1_07.png"
+        },
+        {
+          "poolIndex": 44,
+          "poolId": "COM_N1_08__POOL_44",
+          "sourceItemId": "COM_N1_08",
+          "word": "HUEVO",
+          "imageAsset": "assets/images/comida/com_n1_08.png"
+        },
+        {
+          "poolIndex": 45,
+          "poolId": "COM_N1_09__POOL_45",
+          "sourceItemId": "COM_N1_09",
+          "word": "QUESO",
+          "imageAsset": "assets/images/comida/com_n1_09.png"
+        },
+        {
+          "poolIndex": 46,
+          "poolId": "COM_N1_10__POOL_46",
+          "sourceItemId": "COM_N1_10",
+          "word": "YOGUR",
+          "imageAsset": "assets/images/comida/com_n1_10.png"
+        },
+        {
+          "poolIndex": 47,
+          "poolId": "COM_N1_11__POOL_47",
+          "sourceItemId": "COM_N1_11",
+          "word": "POLLO",
+          "imageAsset": "assets/images/comida/com_n1_11.png"
+        },
+        {
+          "poolIndex": 48,
+          "poolId": "COM_N1_12__POOL_48",
+          "sourceItemId": "COM_N1_12",
+          "word": "PESCADO",
+          "imageAsset": "assets/images/comida/com_n1_12.png"
+        },
+        {
+          "poolIndex": 49,
+          "poolId": "COM_N1_01__POOL_49",
+          "sourceItemId": "COM_N1_01",
+          "word": "PAN",
+          "imageAsset": "assets/images/comida/com_n1_01.png"
+        },
+        {
+          "poolIndex": 50,
+          "poolId": "COM_N1_02__POOL_50",
+          "sourceItemId": "COM_N1_02",
+          "word": "LECHE",
+          "imageAsset": "assets/images/comida/com_n1_02.png"
+        }
+      ]
+    },
+    {
+      "category": "COSAS DE CASA",
+      "baseCount": 12,
+      "poolCount": 50,
+      "items": [
+        {
+          "poolIndex": 1,
+          "poolId": "CDC_N1_01__POOL_1",
+          "sourceItemId": "CDC_N1_01",
+          "word": "MESA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_01.png"
+        },
+        {
+          "poolIndex": 2,
+          "poolId": "CDC_N1_02__POOL_2",
+          "sourceItemId": "CDC_N1_02",
+          "word": "SILLA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_02.png"
+        },
+        {
+          "poolIndex": 3,
+          "poolId": "CDC_N1_03__POOL_3",
+          "sourceItemId": "CDC_N1_03",
+          "word": "CAMA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_03.png"
+        },
+        {
+          "poolIndex": 4,
+          "poolId": "CDC_N1_04__POOL_4",
+          "sourceItemId": "CDC_N1_04",
+          "word": "SOFÁ",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_04.png"
+        },
+        {
+          "poolIndex": 5,
+          "poolId": "CDC_N1_05__POOL_5",
+          "sourceItemId": "CDC_N1_05",
+          "word": "LÁMPARA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_05.png"
+        },
+        {
+          "poolIndex": 6,
+          "poolId": "CDC_N1_06__POOL_6",
+          "sourceItemId": "CDC_N1_06",
+          "word": "PUERTA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_06.png"
+        },
+        {
+          "poolIndex": 7,
+          "poolId": "CDC_N1_07__POOL_7",
+          "sourceItemId": "CDC_N1_07",
+          "word": "VENTANA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_07.png"
+        },
+        {
+          "poolIndex": 8,
+          "poolId": "CDC_N1_08__POOL_8",
+          "sourceItemId": "CDC_N1_08",
+          "word": "ARMARIO",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_08.png"
+        },
+        {
+          "poolIndex": 9,
+          "poolId": "CDC_N1_09__POOL_9",
+          "sourceItemId": "CDC_N1_09",
+          "word": "ESPEJO",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_09.png"
+        },
+        {
+          "poolIndex": 10,
+          "poolId": "CDC_N1_10__POOL_10",
+          "sourceItemId": "CDC_N1_10",
+          "word": "RELOJ",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_10.png"
+        },
+        {
+          "poolIndex": 11,
+          "poolId": "CDC_N1_11__POOL_11",
+          "sourceItemId": "CDC_N1_11",
+          "word": "CORTINA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_11.png"
+        },
+        {
+          "poolIndex": 12,
+          "poolId": "CDC_N1_12__POOL_12",
+          "sourceItemId": "CDC_N1_12",
+          "word": "ALFOMBRA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_12.png"
+        },
+        {
+          "poolIndex": 13,
+          "poolId": "CDC_N1_01__POOL_13",
+          "sourceItemId": "CDC_N1_01",
+          "word": "MESA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_01.png"
+        },
+        {
+          "poolIndex": 14,
+          "poolId": "CDC_N1_02__POOL_14",
+          "sourceItemId": "CDC_N1_02",
+          "word": "SILLA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_02.png"
+        },
+        {
+          "poolIndex": 15,
+          "poolId": "CDC_N1_03__POOL_15",
+          "sourceItemId": "CDC_N1_03",
+          "word": "CAMA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_03.png"
+        },
+        {
+          "poolIndex": 16,
+          "poolId": "CDC_N1_04__POOL_16",
+          "sourceItemId": "CDC_N1_04",
+          "word": "SOFÁ",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_04.png"
+        },
+        {
+          "poolIndex": 17,
+          "poolId": "CDC_N1_05__POOL_17",
+          "sourceItemId": "CDC_N1_05",
+          "word": "LÁMPARA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_05.png"
+        },
+        {
+          "poolIndex": 18,
+          "poolId": "CDC_N1_06__POOL_18",
+          "sourceItemId": "CDC_N1_06",
+          "word": "PUERTA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_06.png"
+        },
+        {
+          "poolIndex": 19,
+          "poolId": "CDC_N1_07__POOL_19",
+          "sourceItemId": "CDC_N1_07",
+          "word": "VENTANA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_07.png"
+        },
+        {
+          "poolIndex": 20,
+          "poolId": "CDC_N1_08__POOL_20",
+          "sourceItemId": "CDC_N1_08",
+          "word": "ARMARIO",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_08.png"
+        },
+        {
+          "poolIndex": 21,
+          "poolId": "CDC_N1_09__POOL_21",
+          "sourceItemId": "CDC_N1_09",
+          "word": "ESPEJO",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_09.png"
+        },
+        {
+          "poolIndex": 22,
+          "poolId": "CDC_N1_10__POOL_22",
+          "sourceItemId": "CDC_N1_10",
+          "word": "RELOJ",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_10.png"
+        },
+        {
+          "poolIndex": 23,
+          "poolId": "CDC_N1_11__POOL_23",
+          "sourceItemId": "CDC_N1_11",
+          "word": "CORTINA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_11.png"
+        },
+        {
+          "poolIndex": 24,
+          "poolId": "CDC_N1_12__POOL_24",
+          "sourceItemId": "CDC_N1_12",
+          "word": "ALFOMBRA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_12.png"
+        },
+        {
+          "poolIndex": 25,
+          "poolId": "CDC_N1_01__POOL_25",
+          "sourceItemId": "CDC_N1_01",
+          "word": "MESA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_01.png"
+        },
+        {
+          "poolIndex": 26,
+          "poolId": "CDC_N1_02__POOL_26",
+          "sourceItemId": "CDC_N1_02",
+          "word": "SILLA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_02.png"
+        },
+        {
+          "poolIndex": 27,
+          "poolId": "CDC_N1_03__POOL_27",
+          "sourceItemId": "CDC_N1_03",
+          "word": "CAMA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_03.png"
+        },
+        {
+          "poolIndex": 28,
+          "poolId": "CDC_N1_04__POOL_28",
+          "sourceItemId": "CDC_N1_04",
+          "word": "SOFÁ",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_04.png"
+        },
+        {
+          "poolIndex": 29,
+          "poolId": "CDC_N1_05__POOL_29",
+          "sourceItemId": "CDC_N1_05",
+          "word": "LÁMPARA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_05.png"
+        },
+        {
+          "poolIndex": 30,
+          "poolId": "CDC_N1_06__POOL_30",
+          "sourceItemId": "CDC_N1_06",
+          "word": "PUERTA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_06.png"
+        },
+        {
+          "poolIndex": 31,
+          "poolId": "CDC_N1_07__POOL_31",
+          "sourceItemId": "CDC_N1_07",
+          "word": "VENTANA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_07.png"
+        },
+        {
+          "poolIndex": 32,
+          "poolId": "CDC_N1_08__POOL_32",
+          "sourceItemId": "CDC_N1_08",
+          "word": "ARMARIO",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_08.png"
+        },
+        {
+          "poolIndex": 33,
+          "poolId": "CDC_N1_09__POOL_33",
+          "sourceItemId": "CDC_N1_09",
+          "word": "ESPEJO",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_09.png"
+        },
+        {
+          "poolIndex": 34,
+          "poolId": "CDC_N1_10__POOL_34",
+          "sourceItemId": "CDC_N1_10",
+          "word": "RELOJ",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_10.png"
+        },
+        {
+          "poolIndex": 35,
+          "poolId": "CDC_N1_11__POOL_35",
+          "sourceItemId": "CDC_N1_11",
+          "word": "CORTINA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_11.png"
+        },
+        {
+          "poolIndex": 36,
+          "poolId": "CDC_N1_12__POOL_36",
+          "sourceItemId": "CDC_N1_12",
+          "word": "ALFOMBRA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_12.png"
+        },
+        {
+          "poolIndex": 37,
+          "poolId": "CDC_N1_01__POOL_37",
+          "sourceItemId": "CDC_N1_01",
+          "word": "MESA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_01.png"
+        },
+        {
+          "poolIndex": 38,
+          "poolId": "CDC_N1_02__POOL_38",
+          "sourceItemId": "CDC_N1_02",
+          "word": "SILLA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_02.png"
+        },
+        {
+          "poolIndex": 39,
+          "poolId": "CDC_N1_03__POOL_39",
+          "sourceItemId": "CDC_N1_03",
+          "word": "CAMA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_03.png"
+        },
+        {
+          "poolIndex": 40,
+          "poolId": "CDC_N1_04__POOL_40",
+          "sourceItemId": "CDC_N1_04",
+          "word": "SOFÁ",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_04.png"
+        },
+        {
+          "poolIndex": 41,
+          "poolId": "CDC_N1_05__POOL_41",
+          "sourceItemId": "CDC_N1_05",
+          "word": "LÁMPARA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_05.png"
+        },
+        {
+          "poolIndex": 42,
+          "poolId": "CDC_N1_06__POOL_42",
+          "sourceItemId": "CDC_N1_06",
+          "word": "PUERTA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_06.png"
+        },
+        {
+          "poolIndex": 43,
+          "poolId": "CDC_N1_07__POOL_43",
+          "sourceItemId": "CDC_N1_07",
+          "word": "VENTANA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_07.png"
+        },
+        {
+          "poolIndex": 44,
+          "poolId": "CDC_N1_08__POOL_44",
+          "sourceItemId": "CDC_N1_08",
+          "word": "ARMARIO",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_08.png"
+        },
+        {
+          "poolIndex": 45,
+          "poolId": "CDC_N1_09__POOL_45",
+          "sourceItemId": "CDC_N1_09",
+          "word": "ESPEJO",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_09.png"
+        },
+        {
+          "poolIndex": 46,
+          "poolId": "CDC_N1_10__POOL_46",
+          "sourceItemId": "CDC_N1_10",
+          "word": "RELOJ",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_10.png"
+        },
+        {
+          "poolIndex": 47,
+          "poolId": "CDC_N1_11__POOL_47",
+          "sourceItemId": "CDC_N1_11",
+          "word": "CORTINA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_11.png"
+        },
+        {
+          "poolIndex": 48,
+          "poolId": "CDC_N1_12__POOL_48",
+          "sourceItemId": "CDC_N1_12",
+          "word": "ALFOMBRA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_12.png"
+        },
+        {
+          "poolIndex": 49,
+          "poolId": "CDC_N1_01__POOL_49",
+          "sourceItemId": "CDC_N1_01",
+          "word": "MESA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_01.png"
+        },
+        {
+          "poolIndex": 50,
+          "poolId": "CDC_N1_02__POOL_50",
+          "sourceItemId": "CDC_N1_02",
+          "word": "SILLA",
+          "imageAsset": "assets/images/cosas_de_casa/cdc_n1_02.png"
+        }
+      ]
+    },
+    {
+      "category": "DINERO",
+      "baseCount": 12,
+      "poolCount": 50,
+      "items": [
+        {
+          "poolIndex": 1,
+          "poolId": "DIN_N1_01__POOL_1",
+          "sourceItemId": "DIN_N1_01",
+          "word": "MONEDA",
+          "imageAsset": "assets/images/dinero/din_n1_01.png"
+        },
+        {
+          "poolIndex": 2,
+          "poolId": "DIN_N1_02__POOL_2",
+          "sourceItemId": "DIN_N1_02",
+          "word": "BILLETE",
+          "imageAsset": "assets/images/dinero/din_n1_02.png"
+        },
+        {
+          "poolIndex": 3,
+          "poolId": "DIN_N1_03__POOL_3",
+          "sourceItemId": "DIN_N1_03",
+          "word": "CARTERA",
+          "imageAsset": "assets/images/dinero/din_n1_03.png"
+        },
+        {
+          "poolIndex": 4,
+          "poolId": "DIN_N1_04__POOL_4",
+          "sourceItemId": "DIN_N1_04",
+          "word": "BANCO",
+          "imageAsset": "assets/images/dinero/din_n1_04.png"
+        },
+        {
+          "poolIndex": 5,
+          "poolId": "DIN_N1_05__POOL_5",
+          "sourceItemId": "DIN_N1_05",
+          "word": "PRECIO",
+          "imageAsset": "assets/images/dinero/din_n1_05.png"
+        },
+        {
+          "poolIndex": 6,
+          "poolId": "DIN_N1_06__POOL_6",
+          "sourceItemId": "DIN_N1_06",
+          "word": "COMPRA",
+          "imageAsset": "assets/images/dinero/din_n1_06.png"
+        },
+        {
+          "poolIndex": 7,
+          "poolId": "DIN_N1_07__POOL_7",
+          "sourceItemId": "DIN_N1_07",
+          "word": "VENTA",
+          "imageAsset": "assets/images/dinero/din_n1_07.png"
+        },
+        {
+          "poolIndex": 8,
+          "poolId": "DIN_N1_08__POOL_8",
+          "sourceItemId": "DIN_N1_08",
+          "word": "CAJA",
+          "imageAsset": "assets/images/dinero/din_n1_08.png"
+        },
+        {
+          "poolIndex": 9,
+          "poolId": "DIN_N1_09__POOL_9",
+          "sourceItemId": "DIN_N1_09",
+          "word": "CAMBIO",
+          "imageAsset": "assets/images/dinero/din_n1_09.png"
+        },
+        {
+          "poolIndex": 10,
+          "poolId": "DIN_N1_10__POOL_10",
+          "sourceItemId": "DIN_N1_10",
+          "word": "CUENTA",
+          "imageAsset": "assets/images/dinero/din_n1_10.png"
+        },
+        {
+          "poolIndex": 11,
+          "poolId": "DIN_N1_11__POOL_11",
+          "sourceItemId": "DIN_N1_11",
+          "word": "AHORRO",
+          "imageAsset": "assets/images/dinero/din_n1_11.png"
+        },
+        {
+          "poolIndex": 12,
+          "poolId": "DIN_N1_12__POOL_12",
+          "sourceItemId": "DIN_N1_12",
+          "word": "PAGO",
+          "imageAsset": "assets/images/dinero/din_n1_12.png"
+        },
+        {
+          "poolIndex": 13,
+          "poolId": "DIN_N1_01__POOL_13",
+          "sourceItemId": "DIN_N1_01",
+          "word": "MONEDA",
+          "imageAsset": "assets/images/dinero/din_n1_01.png"
+        },
+        {
+          "poolIndex": 14,
+          "poolId": "DIN_N1_02__POOL_14",
+          "sourceItemId": "DIN_N1_02",
+          "word": "BILLETE",
+          "imageAsset": "assets/images/dinero/din_n1_02.png"
+        },
+        {
+          "poolIndex": 15,
+          "poolId": "DIN_N1_03__POOL_15",
+          "sourceItemId": "DIN_N1_03",
+          "word": "CARTERA",
+          "imageAsset": "assets/images/dinero/din_n1_03.png"
+        },
+        {
+          "poolIndex": 16,
+          "poolId": "DIN_N1_04__POOL_16",
+          "sourceItemId": "DIN_N1_04",
+          "word": "BANCO",
+          "imageAsset": "assets/images/dinero/din_n1_04.png"
+        },
+        {
+          "poolIndex": 17,
+          "poolId": "DIN_N1_05__POOL_17",
+          "sourceItemId": "DIN_N1_05",
+          "word": "PRECIO",
+          "imageAsset": "assets/images/dinero/din_n1_05.png"
+        },
+        {
+          "poolIndex": 18,
+          "poolId": "DIN_N1_06__POOL_18",
+          "sourceItemId": "DIN_N1_06",
+          "word": "COMPRA",
+          "imageAsset": "assets/images/dinero/din_n1_06.png"
+        },
+        {
+          "poolIndex": 19,
+          "poolId": "DIN_N1_07__POOL_19",
+          "sourceItemId": "DIN_N1_07",
+          "word": "VENTA",
+          "imageAsset": "assets/images/dinero/din_n1_07.png"
+        },
+        {
+          "poolIndex": 20,
+          "poolId": "DIN_N1_08__POOL_20",
+          "sourceItemId": "DIN_N1_08",
+          "word": "CAJA",
+          "imageAsset": "assets/images/dinero/din_n1_08.png"
+        },
+        {
+          "poolIndex": 21,
+          "poolId": "DIN_N1_09__POOL_21",
+          "sourceItemId": "DIN_N1_09",
+          "word": "CAMBIO",
+          "imageAsset": "assets/images/dinero/din_n1_09.png"
+        },
+        {
+          "poolIndex": 22,
+          "poolId": "DIN_N1_10__POOL_22",
+          "sourceItemId": "DIN_N1_10",
+          "word": "CUENTA",
+          "imageAsset": "assets/images/dinero/din_n1_10.png"
+        },
+        {
+          "poolIndex": 23,
+          "poolId": "DIN_N1_11__POOL_23",
+          "sourceItemId": "DIN_N1_11",
+          "word": "AHORRO",
+          "imageAsset": "assets/images/dinero/din_n1_11.png"
+        },
+        {
+          "poolIndex": 24,
+          "poolId": "DIN_N1_12__POOL_24",
+          "sourceItemId": "DIN_N1_12",
+          "word": "PAGO",
+          "imageAsset": "assets/images/dinero/din_n1_12.png"
+        },
+        {
+          "poolIndex": 25,
+          "poolId": "DIN_N1_01__POOL_25",
+          "sourceItemId": "DIN_N1_01",
+          "word": "MONEDA",
+          "imageAsset": "assets/images/dinero/din_n1_01.png"
+        },
+        {
+          "poolIndex": 26,
+          "poolId": "DIN_N1_02__POOL_26",
+          "sourceItemId": "DIN_N1_02",
+          "word": "BILLETE",
+          "imageAsset": "assets/images/dinero/din_n1_02.png"
+        },
+        {
+          "poolIndex": 27,
+          "poolId": "DIN_N1_03__POOL_27",
+          "sourceItemId": "DIN_N1_03",
+          "word": "CARTERA",
+          "imageAsset": "assets/images/dinero/din_n1_03.png"
+        },
+        {
+          "poolIndex": 28,
+          "poolId": "DIN_N1_04__POOL_28",
+          "sourceItemId": "DIN_N1_04",
+          "word": "BANCO",
+          "imageAsset": "assets/images/dinero/din_n1_04.png"
+        },
+        {
+          "poolIndex": 29,
+          "poolId": "DIN_N1_05__POOL_29",
+          "sourceItemId": "DIN_N1_05",
+          "word": "PRECIO",
+          "imageAsset": "assets/images/dinero/din_n1_05.png"
+        },
+        {
+          "poolIndex": 30,
+          "poolId": "DIN_N1_06__POOL_30",
+          "sourceItemId": "DIN_N1_06",
+          "word": "COMPRA",
+          "imageAsset": "assets/images/dinero/din_n1_06.png"
+        },
+        {
+          "poolIndex": 31,
+          "poolId": "DIN_N1_07__POOL_31",
+          "sourceItemId": "DIN_N1_07",
+          "word": "VENTA",
+          "imageAsset": "assets/images/dinero/din_n1_07.png"
+        },
+        {
+          "poolIndex": 32,
+          "poolId": "DIN_N1_08__POOL_32",
+          "sourceItemId": "DIN_N1_08",
+          "word": "CAJA",
+          "imageAsset": "assets/images/dinero/din_n1_08.png"
+        },
+        {
+          "poolIndex": 33,
+          "poolId": "DIN_N1_09__POOL_33",
+          "sourceItemId": "DIN_N1_09",
+          "word": "CAMBIO",
+          "imageAsset": "assets/images/dinero/din_n1_09.png"
+        },
+        {
+          "poolIndex": 34,
+          "poolId": "DIN_N1_10__POOL_34",
+          "sourceItemId": "DIN_N1_10",
+          "word": "CUENTA",
+          "imageAsset": "assets/images/dinero/din_n1_10.png"
+        },
+        {
+          "poolIndex": 35,
+          "poolId": "DIN_N1_11__POOL_35",
+          "sourceItemId": "DIN_N1_11",
+          "word": "AHORRO",
+          "imageAsset": "assets/images/dinero/din_n1_11.png"
+        },
+        {
+          "poolIndex": 36,
+          "poolId": "DIN_N1_12__POOL_36",
+          "sourceItemId": "DIN_N1_12",
+          "word": "PAGO",
+          "imageAsset": "assets/images/dinero/din_n1_12.png"
+        },
+        {
+          "poolIndex": 37,
+          "poolId": "DIN_N1_01__POOL_37",
+          "sourceItemId": "DIN_N1_01",
+          "word": "MONEDA",
+          "imageAsset": "assets/images/dinero/din_n1_01.png"
+        },
+        {
+          "poolIndex": 38,
+          "poolId": "DIN_N1_02__POOL_38",
+          "sourceItemId": "DIN_N1_02",
+          "word": "BILLETE",
+          "imageAsset": "assets/images/dinero/din_n1_02.png"
+        },
+        {
+          "poolIndex": 39,
+          "poolId": "DIN_N1_03__POOL_39",
+          "sourceItemId": "DIN_N1_03",
+          "word": "CARTERA",
+          "imageAsset": "assets/images/dinero/din_n1_03.png"
+        },
+        {
+          "poolIndex": 40,
+          "poolId": "DIN_N1_04__POOL_40",
+          "sourceItemId": "DIN_N1_04",
+          "word": "BANCO",
+          "imageAsset": "assets/images/dinero/din_n1_04.png"
+        },
+        {
+          "poolIndex": 41,
+          "poolId": "DIN_N1_05__POOL_41",
+          "sourceItemId": "DIN_N1_05",
+          "word": "PRECIO",
+          "imageAsset": "assets/images/dinero/din_n1_05.png"
+        },
+        {
+          "poolIndex": 42,
+          "poolId": "DIN_N1_06__POOL_42",
+          "sourceItemId": "DIN_N1_06",
+          "word": "COMPRA",
+          "imageAsset": "assets/images/dinero/din_n1_06.png"
+        },
+        {
+          "poolIndex": 43,
+          "poolId": "DIN_N1_07__POOL_43",
+          "sourceItemId": "DIN_N1_07",
+          "word": "VENTA",
+          "imageAsset": "assets/images/dinero/din_n1_07.png"
+        },
+        {
+          "poolIndex": 44,
+          "poolId": "DIN_N1_08__POOL_44",
+          "sourceItemId": "DIN_N1_08",
+          "word": "CAJA",
+          "imageAsset": "assets/images/dinero/din_n1_08.png"
+        },
+        {
+          "poolIndex": 45,
+          "poolId": "DIN_N1_09__POOL_45",
+          "sourceItemId": "DIN_N1_09",
+          "word": "CAMBIO",
+          "imageAsset": "assets/images/dinero/din_n1_09.png"
+        },
+        {
+          "poolIndex": 46,
+          "poolId": "DIN_N1_10__POOL_46",
+          "sourceItemId": "DIN_N1_10",
+          "word": "CUENTA",
+          "imageAsset": "assets/images/dinero/din_n1_10.png"
+        },
+        {
+          "poolIndex": 47,
+          "poolId": "DIN_N1_11__POOL_47",
+          "sourceItemId": "DIN_N1_11",
+          "word": "AHORRO",
+          "imageAsset": "assets/images/dinero/din_n1_11.png"
+        },
+        {
+          "poolIndex": 48,
+          "poolId": "DIN_N1_12__POOL_48",
+          "sourceItemId": "DIN_N1_12",
+          "word": "PAGO",
+          "imageAsset": "assets/images/dinero/din_n1_12.png"
+        },
+        {
+          "poolIndex": 49,
+          "poolId": "DIN_N1_01__POOL_49",
+          "sourceItemId": "DIN_N1_01",
+          "word": "MONEDA",
+          "imageAsset": "assets/images/dinero/din_n1_01.png"
+        },
+        {
+          "poolIndex": 50,
+          "poolId": "DIN_N1_02__POOL_50",
+          "sourceItemId": "DIN_N1_02",
+          "word": "BILLETE",
+          "imageAsset": "assets/images/dinero/din_n1_02.png"
+        }
+      ]
+    },
+    {
+      "category": "EMOCIONES",
+      "baseCount": 12,
+      "poolCount": 50,
+      "items": [
+        {
+          "poolIndex": 1,
+          "poolId": "EMO_N1_01__POOL_1",
+          "sourceItemId": "EMO_N1_01",
+          "word": "ALEGRÍA",
+          "imageAsset": "assets/images/emociones/emo_n1_01.png"
+        },
+        {
+          "poolIndex": 2,
+          "poolId": "EMO_N1_02__POOL_2",
+          "sourceItemId": "EMO_N1_02",
+          "word": "TRISTEZA",
+          "imageAsset": "assets/images/emociones/emo_n1_02.png"
+        },
+        {
+          "poolIndex": 3,
+          "poolId": "EMO_N1_03__POOL_3",
+          "sourceItemId": "EMO_N1_03",
+          "word": "ENOJO",
+          "imageAsset": "assets/images/emociones/emo_n1_03.png"
+        },
+        {
+          "poolIndex": 4,
+          "poolId": "EMO_N1_04__POOL_4",
+          "sourceItemId": "EMO_N1_04",
+          "word": "MIEDO",
+          "imageAsset": "assets/images/emociones/emo_n1_04.png"
+        },
+        {
+          "poolIndex": 5,
+          "poolId": "EMO_N1_05__POOL_5",
+          "sourceItemId": "EMO_N1_05",
+          "word": "CALMA",
+          "imageAsset": "assets/images/emociones/emo_n1_05.png"
+        },
+        {
+          "poolIndex": 6,
+          "poolId": "EMO_N1_06__POOL_6",
+          "sourceItemId": "EMO_N1_06",
+          "word": "SORPRESA",
+          "imageAsset": "assets/images/emociones/emo_n1_06.png"
+        },
+        {
+          "poolIndex": 7,
+          "poolId": "EMO_N1_07__POOL_7",
+          "sourceItemId": "EMO_N1_07",
+          "word": "AMOR",
+          "imageAsset": "assets/images/emociones/emo_n1_07.png"
+        },
+        {
+          "poolIndex": 8,
+          "poolId": "EMO_N1_08__POOL_8",
+          "sourceItemId": "EMO_N1_08",
+          "word": "NERVIOS",
+          "imageAsset": "assets/images/emociones/emo_n1_08.png"
+        },
+        {
+          "poolIndex": 9,
+          "poolId": "EMO_N1_09__POOL_9",
+          "sourceItemId": "EMO_N1_09",
+          "word": "ORGULLO",
+          "imageAsset": "assets/images/emociones/emo_n1_09.png"
+        },
+        {
+          "poolIndex": 10,
+          "poolId": "EMO_N1_10__POOL_10",
+          "sourceItemId": "EMO_N1_10",
+          "word": "VERGÜENZA",
+          "imageAsset": "assets/images/emociones/emo_n1_10.png"
+        },
+        {
+          "poolIndex": 11,
+          "poolId": "EMO_N1_11__POOL_11",
+          "sourceItemId": "EMO_N1_11",
+          "word": "PACIENCIA",
+          "imageAsset": "assets/images/emociones/emo_n1_11.png"
+        },
+        {
+          "poolIndex": 12,
+          "poolId": "EMO_N1_12__POOL_12",
+          "sourceItemId": "EMO_N1_12",
+          "word": "EMPATÍA",
+          "imageAsset": "assets/images/emociones/emo_n1_12.png"
+        },
+        {
+          "poolIndex": 13,
+          "poolId": "EMO_N1_01__POOL_13",
+          "sourceItemId": "EMO_N1_01",
+          "word": "ALEGRÍA",
+          "imageAsset": "assets/images/emociones/emo_n1_01.png"
+        },
+        {
+          "poolIndex": 14,
+          "poolId": "EMO_N1_02__POOL_14",
+          "sourceItemId": "EMO_N1_02",
+          "word": "TRISTEZA",
+          "imageAsset": "assets/images/emociones/emo_n1_02.png"
+        },
+        {
+          "poolIndex": 15,
+          "poolId": "EMO_N1_03__POOL_15",
+          "sourceItemId": "EMO_N1_03",
+          "word": "ENOJO",
+          "imageAsset": "assets/images/emociones/emo_n1_03.png"
+        },
+        {
+          "poolIndex": 16,
+          "poolId": "EMO_N1_04__POOL_16",
+          "sourceItemId": "EMO_N1_04",
+          "word": "MIEDO",
+          "imageAsset": "assets/images/emociones/emo_n1_04.png"
+        },
+        {
+          "poolIndex": 17,
+          "poolId": "EMO_N1_05__POOL_17",
+          "sourceItemId": "EMO_N1_05",
+          "word": "CALMA",
+          "imageAsset": "assets/images/emociones/emo_n1_05.png"
+        },
+        {
+          "poolIndex": 18,
+          "poolId": "EMO_N1_06__POOL_18",
+          "sourceItemId": "EMO_N1_06",
+          "word": "SORPRESA",
+          "imageAsset": "assets/images/emociones/emo_n1_06.png"
+        },
+        {
+          "poolIndex": 19,
+          "poolId": "EMO_N1_07__POOL_19",
+          "sourceItemId": "EMO_N1_07",
+          "word": "AMOR",
+          "imageAsset": "assets/images/emociones/emo_n1_07.png"
+        },
+        {
+          "poolIndex": 20,
+          "poolId": "EMO_N1_08__POOL_20",
+          "sourceItemId": "EMO_N1_08",
+          "word": "NERVIOS",
+          "imageAsset": "assets/images/emociones/emo_n1_08.png"
+        },
+        {
+          "poolIndex": 21,
+          "poolId": "EMO_N1_09__POOL_21",
+          "sourceItemId": "EMO_N1_09",
+          "word": "ORGULLO",
+          "imageAsset": "assets/images/emociones/emo_n1_09.png"
+        },
+        {
+          "poolIndex": 22,
+          "poolId": "EMO_N1_10__POOL_22",
+          "sourceItemId": "EMO_N1_10",
+          "word": "VERGÜENZA",
+          "imageAsset": "assets/images/emociones/emo_n1_10.png"
+        },
+        {
+          "poolIndex": 23,
+          "poolId": "EMO_N1_11__POOL_23",
+          "sourceItemId": "EMO_N1_11",
+          "word": "PACIENCIA",
+          "imageAsset": "assets/images/emociones/emo_n1_11.png"
+        },
+        {
+          "poolIndex": 24,
+          "poolId": "EMO_N1_12__POOL_24",
+          "sourceItemId": "EMO_N1_12",
+          "word": "EMPATÍA",
+          "imageAsset": "assets/images/emociones/emo_n1_12.png"
+        },
+        {
+          "poolIndex": 25,
+          "poolId": "EMO_N1_01__POOL_25",
+          "sourceItemId": "EMO_N1_01",
+          "word": "ALEGRÍA",
+          "imageAsset": "assets/images/emociones/emo_n1_01.png"
+        },
+        {
+          "poolIndex": 26,
+          "poolId": "EMO_N1_02__POOL_26",
+          "sourceItemId": "EMO_N1_02",
+          "word": "TRISTEZA",
+          "imageAsset": "assets/images/emociones/emo_n1_02.png"
+        },
+        {
+          "poolIndex": 27,
+          "poolId": "EMO_N1_03__POOL_27",
+          "sourceItemId": "EMO_N1_03",
+          "word": "ENOJO",
+          "imageAsset": "assets/images/emociones/emo_n1_03.png"
+        },
+        {
+          "poolIndex": 28,
+          "poolId": "EMO_N1_04__POOL_28",
+          "sourceItemId": "EMO_N1_04",
+          "word": "MIEDO",
+          "imageAsset": "assets/images/emociones/emo_n1_04.png"
+        },
+        {
+          "poolIndex": 29,
+          "poolId": "EMO_N1_05__POOL_29",
+          "sourceItemId": "EMO_N1_05",
+          "word": "CALMA",
+          "imageAsset": "assets/images/emociones/emo_n1_05.png"
+        },
+        {
+          "poolIndex": 30,
+          "poolId": "EMO_N1_06__POOL_30",
+          "sourceItemId": "EMO_N1_06",
+          "word": "SORPRESA",
+          "imageAsset": "assets/images/emociones/emo_n1_06.png"
+        },
+        {
+          "poolIndex": 31,
+          "poolId": "EMO_N1_07__POOL_31",
+          "sourceItemId": "EMO_N1_07",
+          "word": "AMOR",
+          "imageAsset": "assets/images/emociones/emo_n1_07.png"
+        },
+        {
+          "poolIndex": 32,
+          "poolId": "EMO_N1_08__POOL_32",
+          "sourceItemId": "EMO_N1_08",
+          "word": "NERVIOS",
+          "imageAsset": "assets/images/emociones/emo_n1_08.png"
+        },
+        {
+          "poolIndex": 33,
+          "poolId": "EMO_N1_09__POOL_33",
+          "sourceItemId": "EMO_N1_09",
+          "word": "ORGULLO",
+          "imageAsset": "assets/images/emociones/emo_n1_09.png"
+        },
+        {
+          "poolIndex": 34,
+          "poolId": "EMO_N1_10__POOL_34",
+          "sourceItemId": "EMO_N1_10",
+          "word": "VERGÜENZA",
+          "imageAsset": "assets/images/emociones/emo_n1_10.png"
+        },
+        {
+          "poolIndex": 35,
+          "poolId": "EMO_N1_11__POOL_35",
+          "sourceItemId": "EMO_N1_11",
+          "word": "PACIENCIA",
+          "imageAsset": "assets/images/emociones/emo_n1_11.png"
+        },
+        {
+          "poolIndex": 36,
+          "poolId": "EMO_N1_12__POOL_36",
+          "sourceItemId": "EMO_N1_12",
+          "word": "EMPATÍA",
+          "imageAsset": "assets/images/emociones/emo_n1_12.png"
+        },
+        {
+          "poolIndex": 37,
+          "poolId": "EMO_N1_01__POOL_37",
+          "sourceItemId": "EMO_N1_01",
+          "word": "ALEGRÍA",
+          "imageAsset": "assets/images/emociones/emo_n1_01.png"
+        },
+        {
+          "poolIndex": 38,
+          "poolId": "EMO_N1_02__POOL_38",
+          "sourceItemId": "EMO_N1_02",
+          "word": "TRISTEZA",
+          "imageAsset": "assets/images/emociones/emo_n1_02.png"
+        },
+        {
+          "poolIndex": 39,
+          "poolId": "EMO_N1_03__POOL_39",
+          "sourceItemId": "EMO_N1_03",
+          "word": "ENOJO",
+          "imageAsset": "assets/images/emociones/emo_n1_03.png"
+        },
+        {
+          "poolIndex": 40,
+          "poolId": "EMO_N1_04__POOL_40",
+          "sourceItemId": "EMO_N1_04",
+          "word": "MIEDO",
+          "imageAsset": "assets/images/emociones/emo_n1_04.png"
+        },
+        {
+          "poolIndex": 41,
+          "poolId": "EMO_N1_05__POOL_41",
+          "sourceItemId": "EMO_N1_05",
+          "word": "CALMA",
+          "imageAsset": "assets/images/emociones/emo_n1_05.png"
+        },
+        {
+          "poolIndex": 42,
+          "poolId": "EMO_N1_06__POOL_42",
+          "sourceItemId": "EMO_N1_06",
+          "word": "SORPRESA",
+          "imageAsset": "assets/images/emociones/emo_n1_06.png"
+        },
+        {
+          "poolIndex": 43,
+          "poolId": "EMO_N1_07__POOL_43",
+          "sourceItemId": "EMO_N1_07",
+          "word": "AMOR",
+          "imageAsset": "assets/images/emociones/emo_n1_07.png"
+        },
+        {
+          "poolIndex": 44,
+          "poolId": "EMO_N1_08__POOL_44",
+          "sourceItemId": "EMO_N1_08",
+          "word": "NERVIOS",
+          "imageAsset": "assets/images/emociones/emo_n1_08.png"
+        },
+        {
+          "poolIndex": 45,
+          "poolId": "EMO_N1_09__POOL_45",
+          "sourceItemId": "EMO_N1_09",
+          "word": "ORGULLO",
+          "imageAsset": "assets/images/emociones/emo_n1_09.png"
+        },
+        {
+          "poolIndex": 46,
+          "poolId": "EMO_N1_10__POOL_46",
+          "sourceItemId": "EMO_N1_10",
+          "word": "VERGÜENZA",
+          "imageAsset": "assets/images/emociones/emo_n1_10.png"
+        },
+        {
+          "poolIndex": 47,
+          "poolId": "EMO_N1_11__POOL_47",
+          "sourceItemId": "EMO_N1_11",
+          "word": "PACIENCIA",
+          "imageAsset": "assets/images/emociones/emo_n1_11.png"
+        },
+        {
+          "poolIndex": 48,
+          "poolId": "EMO_N1_12__POOL_48",
+          "sourceItemId": "EMO_N1_12",
+          "word": "EMPATÍA",
+          "imageAsset": "assets/images/emociones/emo_n1_12.png"
+        },
+        {
+          "poolIndex": 49,
+          "poolId": "EMO_N1_01__POOL_49",
+          "sourceItemId": "EMO_N1_01",
+          "word": "ALEGRÍA",
+          "imageAsset": "assets/images/emociones/emo_n1_01.png"
+        },
+        {
+          "poolIndex": 50,
+          "poolId": "EMO_N1_02__POOL_50",
+          "sourceItemId": "EMO_N1_02",
+          "word": "TRISTEZA",
+          "imageAsset": "assets/images/emociones/emo_n1_02.png"
+        }
+      ]
+    },
+    {
+      "category": "PROFESIONES",
+      "baseCount": 12,
+      "poolCount": 50,
+      "items": [
+        {
+          "poolIndex": 1,
+          "poolId": "PRO_N1_01__POOL_1",
+          "sourceItemId": "PRO_N1_01",
+          "word": "DOCENTE",
+          "imageAsset": "assets/images/profesiones/pro_n1_01.png"
+        },
+        {
+          "poolIndex": 2,
+          "poolId": "PRO_N1_02__POOL_2",
+          "sourceItemId": "PRO_N1_02",
+          "word": "MÉDICO",
+          "imageAsset": "assets/images/profesiones/pro_n1_02.png"
+        },
+        {
+          "poolIndex": 3,
+          "poolId": "PRO_N1_03__POOL_3",
+          "sourceItemId": "PRO_N1_03",
+          "word": "ENFERMERA",
+          "imageAsset": "assets/images/profesiones/pro_n1_03.png"
+        },
+        {
+          "poolIndex": 4,
+          "poolId": "PRO_N1_04__POOL_4",
+          "sourceItemId": "PRO_N1_04",
+          "word": "BOMBERO",
+          "imageAsset": "assets/images/profesiones/pro_n1_04.png"
+        },
+        {
+          "poolIndex": 5,
+          "poolId": "PRO_N1_05__POOL_5",
+          "sourceItemId": "PRO_N1_05",
+          "word": "POLICÍA",
+          "imageAsset": "assets/images/profesiones/pro_n1_05.png"
+        },
+        {
+          "poolIndex": 6,
+          "poolId": "PRO_N1_06__POOL_6",
+          "sourceItemId": "PRO_N1_06",
+          "word": "PANADERO",
+          "imageAsset": "assets/images/profesiones/pro_n1_06.png"
+        },
+        {
+          "poolIndex": 7,
+          "poolId": "PRO_N1_07__POOL_7",
+          "sourceItemId": "PRO_N1_07",
+          "word": "COCINERO",
+          "imageAsset": "assets/images/profesiones/pro_n1_07.png"
+        },
+        {
+          "poolIndex": 8,
+          "poolId": "PRO_N1_08__POOL_8",
+          "sourceItemId": "PRO_N1_08",
+          "word": "CARPINTERO",
+          "imageAsset": "assets/images/profesiones/pro_n1_08.png"
+        },
+        {
+          "poolIndex": 9,
+          "poolId": "PRO_N1_09__POOL_9",
+          "sourceItemId": "PRO_N1_09",
+          "word": "MECÁNICO",
+          "imageAsset": "assets/images/profesiones/pro_n1_09.png"
+        },
+        {
+          "poolIndex": 10,
+          "poolId": "PRO_N1_10__POOL_10",
+          "sourceItemId": "PRO_N1_10",
+          "word": "VETERINARIO",
+          "imageAsset": "assets/images/profesiones/pro_n1_10.png"
+        },
+        {
+          "poolIndex": 11,
+          "poolId": "PRO_N1_11__POOL_11",
+          "sourceItemId": "PRO_N1_11",
+          "word": "PILOTO",
+          "imageAsset": "assets/images/profesiones/pro_n1_11.png"
+        },
+        {
+          "poolIndex": 12,
+          "poolId": "PRO_N1_12__POOL_12",
+          "sourceItemId": "PRO_N1_12",
+          "word": "AGRICULTOR",
+          "imageAsset": "assets/images/profesiones/pro_n1_12.png"
+        },
+        {
+          "poolIndex": 13,
+          "poolId": "PRO_N1_01__POOL_13",
+          "sourceItemId": "PRO_N1_01",
+          "word": "DOCENTE",
+          "imageAsset": "assets/images/profesiones/pro_n1_01.png"
+        },
+        {
+          "poolIndex": 14,
+          "poolId": "PRO_N1_02__POOL_14",
+          "sourceItemId": "PRO_N1_02",
+          "word": "MÉDICO",
+          "imageAsset": "assets/images/profesiones/pro_n1_02.png"
+        },
+        {
+          "poolIndex": 15,
+          "poolId": "PRO_N1_03__POOL_15",
+          "sourceItemId": "PRO_N1_03",
+          "word": "ENFERMERA",
+          "imageAsset": "assets/images/profesiones/pro_n1_03.png"
+        },
+        {
+          "poolIndex": 16,
+          "poolId": "PRO_N1_04__POOL_16",
+          "sourceItemId": "PRO_N1_04",
+          "word": "BOMBERO",
+          "imageAsset": "assets/images/profesiones/pro_n1_04.png"
+        },
+        {
+          "poolIndex": 17,
+          "poolId": "PRO_N1_05__POOL_17",
+          "sourceItemId": "PRO_N1_05",
+          "word": "POLICÍA",
+          "imageAsset": "assets/images/profesiones/pro_n1_05.png"
+        },
+        {
+          "poolIndex": 18,
+          "poolId": "PRO_N1_06__POOL_18",
+          "sourceItemId": "PRO_N1_06",
+          "word": "PANADERO",
+          "imageAsset": "assets/images/profesiones/pro_n1_06.png"
+        },
+        {
+          "poolIndex": 19,
+          "poolId": "PRO_N1_07__POOL_19",
+          "sourceItemId": "PRO_N1_07",
+          "word": "COCINERO",
+          "imageAsset": "assets/images/profesiones/pro_n1_07.png"
+        },
+        {
+          "poolIndex": 20,
+          "poolId": "PRO_N1_08__POOL_20",
+          "sourceItemId": "PRO_N1_08",
+          "word": "CARPINTERO",
+          "imageAsset": "assets/images/profesiones/pro_n1_08.png"
+        },
+        {
+          "poolIndex": 21,
+          "poolId": "PRO_N1_09__POOL_21",
+          "sourceItemId": "PRO_N1_09",
+          "word": "MECÁNICO",
+          "imageAsset": "assets/images/profesiones/pro_n1_09.png"
+        },
+        {
+          "poolIndex": 22,
+          "poolId": "PRO_N1_10__POOL_22",
+          "sourceItemId": "PRO_N1_10",
+          "word": "VETERINARIO",
+          "imageAsset": "assets/images/profesiones/pro_n1_10.png"
+        },
+        {
+          "poolIndex": 23,
+          "poolId": "PRO_N1_11__POOL_23",
+          "sourceItemId": "PRO_N1_11",
+          "word": "PILOTO",
+          "imageAsset": "assets/images/profesiones/pro_n1_11.png"
+        },
+        {
+          "poolIndex": 24,
+          "poolId": "PRO_N1_12__POOL_24",
+          "sourceItemId": "PRO_N1_12",
+          "word": "AGRICULTOR",
+          "imageAsset": "assets/images/profesiones/pro_n1_12.png"
+        },
+        {
+          "poolIndex": 25,
+          "poolId": "PRO_N1_01__POOL_25",
+          "sourceItemId": "PRO_N1_01",
+          "word": "DOCENTE",
+          "imageAsset": "assets/images/profesiones/pro_n1_01.png"
+        },
+        {
+          "poolIndex": 26,
+          "poolId": "PRO_N1_02__POOL_26",
+          "sourceItemId": "PRO_N1_02",
+          "word": "MÉDICO",
+          "imageAsset": "assets/images/profesiones/pro_n1_02.png"
+        },
+        {
+          "poolIndex": 27,
+          "poolId": "PRO_N1_03__POOL_27",
+          "sourceItemId": "PRO_N1_03",
+          "word": "ENFERMERA",
+          "imageAsset": "assets/images/profesiones/pro_n1_03.png"
+        },
+        {
+          "poolIndex": 28,
+          "poolId": "PRO_N1_04__POOL_28",
+          "sourceItemId": "PRO_N1_04",
+          "word": "BOMBERO",
+          "imageAsset": "assets/images/profesiones/pro_n1_04.png"
+        },
+        {
+          "poolIndex": 29,
+          "poolId": "PRO_N1_05__POOL_29",
+          "sourceItemId": "PRO_N1_05",
+          "word": "POLICÍA",
+          "imageAsset": "assets/images/profesiones/pro_n1_05.png"
+        },
+        {
+          "poolIndex": 30,
+          "poolId": "PRO_N1_06__POOL_30",
+          "sourceItemId": "PRO_N1_06",
+          "word": "PANADERO",
+          "imageAsset": "assets/images/profesiones/pro_n1_06.png"
+        },
+        {
+          "poolIndex": 31,
+          "poolId": "PRO_N1_07__POOL_31",
+          "sourceItemId": "PRO_N1_07",
+          "word": "COCINERO",
+          "imageAsset": "assets/images/profesiones/pro_n1_07.png"
+        },
+        {
+          "poolIndex": 32,
+          "poolId": "PRO_N1_08__POOL_32",
+          "sourceItemId": "PRO_N1_08",
+          "word": "CARPINTERO",
+          "imageAsset": "assets/images/profesiones/pro_n1_08.png"
+        },
+        {
+          "poolIndex": 33,
+          "poolId": "PRO_N1_09__POOL_33",
+          "sourceItemId": "PRO_N1_09",
+          "word": "MECÁNICO",
+          "imageAsset": "assets/images/profesiones/pro_n1_09.png"
+        },
+        {
+          "poolIndex": 34,
+          "poolId": "PRO_N1_10__POOL_34",
+          "sourceItemId": "PRO_N1_10",
+          "word": "VETERINARIO",
+          "imageAsset": "assets/images/profesiones/pro_n1_10.png"
+        },
+        {
+          "poolIndex": 35,
+          "poolId": "PRO_N1_11__POOL_35",
+          "sourceItemId": "PRO_N1_11",
+          "word": "PILOTO",
+          "imageAsset": "assets/images/profesiones/pro_n1_11.png"
+        },
+        {
+          "poolIndex": 36,
+          "poolId": "PRO_N1_12__POOL_36",
+          "sourceItemId": "PRO_N1_12",
+          "word": "AGRICULTOR",
+          "imageAsset": "assets/images/profesiones/pro_n1_12.png"
+        },
+        {
+          "poolIndex": 37,
+          "poolId": "PRO_N1_01__POOL_37",
+          "sourceItemId": "PRO_N1_01",
+          "word": "DOCENTE",
+          "imageAsset": "assets/images/profesiones/pro_n1_01.png"
+        },
+        {
+          "poolIndex": 38,
+          "poolId": "PRO_N1_02__POOL_38",
+          "sourceItemId": "PRO_N1_02",
+          "word": "MÉDICO",
+          "imageAsset": "assets/images/profesiones/pro_n1_02.png"
+        },
+        {
+          "poolIndex": 39,
+          "poolId": "PRO_N1_03__POOL_39",
+          "sourceItemId": "PRO_N1_03",
+          "word": "ENFERMERA",
+          "imageAsset": "assets/images/profesiones/pro_n1_03.png"
+        },
+        {
+          "poolIndex": 40,
+          "poolId": "PRO_N1_04__POOL_40",
+          "sourceItemId": "PRO_N1_04",
+          "word": "BOMBERO",
+          "imageAsset": "assets/images/profesiones/pro_n1_04.png"
+        },
+        {
+          "poolIndex": 41,
+          "poolId": "PRO_N1_05__POOL_41",
+          "sourceItemId": "PRO_N1_05",
+          "word": "POLICÍA",
+          "imageAsset": "assets/images/profesiones/pro_n1_05.png"
+        },
+        {
+          "poolIndex": 42,
+          "poolId": "PRO_N1_06__POOL_42",
+          "sourceItemId": "PRO_N1_06",
+          "word": "PANADERO",
+          "imageAsset": "assets/images/profesiones/pro_n1_06.png"
+        },
+        {
+          "poolIndex": 43,
+          "poolId": "PRO_N1_07__POOL_43",
+          "sourceItemId": "PRO_N1_07",
+          "word": "COCINERO",
+          "imageAsset": "assets/images/profesiones/pro_n1_07.png"
+        },
+        {
+          "poolIndex": 44,
+          "poolId": "PRO_N1_08__POOL_44",
+          "sourceItemId": "PRO_N1_08",
+          "word": "CARPINTERO",
+          "imageAsset": "assets/images/profesiones/pro_n1_08.png"
+        },
+        {
+          "poolIndex": 45,
+          "poolId": "PRO_N1_09__POOL_45",
+          "sourceItemId": "PRO_N1_09",
+          "word": "MECÁNICO",
+          "imageAsset": "assets/images/profesiones/pro_n1_09.png"
+        },
+        {
+          "poolIndex": 46,
+          "poolId": "PRO_N1_10__POOL_46",
+          "sourceItemId": "PRO_N1_10",
+          "word": "VETERINARIO",
+          "imageAsset": "assets/images/profesiones/pro_n1_10.png"
+        },
+        {
+          "poolIndex": 47,
+          "poolId": "PRO_N1_11__POOL_47",
+          "sourceItemId": "PRO_N1_11",
+          "word": "PILOTO",
+          "imageAsset": "assets/images/profesiones/pro_n1_11.png"
+        },
+        {
+          "poolIndex": 48,
+          "poolId": "PRO_N1_12__POOL_48",
+          "sourceItemId": "PRO_N1_12",
+          "word": "AGRICULTOR",
+          "imageAsset": "assets/images/profesiones/pro_n1_12.png"
+        },
+        {
+          "poolIndex": 49,
+          "poolId": "PRO_N1_01__POOL_49",
+          "sourceItemId": "PRO_N1_01",
+          "word": "DOCENTE",
+          "imageAsset": "assets/images/profesiones/pro_n1_01.png"
+        },
+        {
+          "poolIndex": 50,
+          "poolId": "PRO_N1_02__POOL_50",
+          "sourceItemId": "PRO_N1_02",
+          "word": "MÉDICO",
+          "imageAsset": "assets/images/profesiones/pro_n1_02.png"
+        }
+      ]
+    },
+    {
+      "category": "SALUD",
+      "baseCount": 12,
+      "poolCount": 50,
+      "items": [
+        {
+          "poolIndex": 1,
+          "poolId": "SAL_N1_01__POOL_1",
+          "sourceItemId": "SAL_N1_01",
+          "word": "CUERPO",
+          "imageAsset": "assets/images/salud/sal_n1_01.png"
+        },
+        {
+          "poolIndex": 2,
+          "poolId": "SAL_N1_02__POOL_2",
+          "sourceItemId": "SAL_N1_02",
+          "word": "CORAZÓN",
+          "imageAsset": "assets/images/salud/sal_n1_02.png"
+        },
+        {
+          "poolIndex": 3,
+          "poolId": "SAL_N1_03__POOL_3",
+          "sourceItemId": "SAL_N1_03",
+          "word": "PULSO",
+          "imageAsset": "assets/images/salud/sal_n1_03.png"
+        },
+        {
+          "poolIndex": 4,
+          "poolId": "SAL_N1_04__POOL_4",
+          "sourceItemId": "SAL_N1_04",
+          "word": "FIEBRE",
+          "imageAsset": "assets/images/salud/sal_n1_04.png"
+        },
+        {
+          "poolIndex": 5,
+          "poolId": "SAL_N1_05__POOL_5",
+          "sourceItemId": "SAL_N1_05",
+          "word": "MEDICINA",
+          "imageAsset": "assets/images/salud/sal_n1_05.png"
+        },
+        {
+          "poolIndex": 6,
+          "poolId": "SAL_N1_06__POOL_6",
+          "sourceItemId": "SAL_N1_06",
+          "word": "DOCTOR",
+          "imageAsset": "assets/images/salud/sal_n1_06.png"
+        },
+        {
+          "poolIndex": 7,
+          "poolId": "SAL_N1_07__POOL_7",
+          "sourceItemId": "SAL_N1_07",
+          "word": "DESCANSO",
+          "imageAsset": "assets/images/salud/sal_n1_07.png"
+        },
+        {
+          "poolIndex": 8,
+          "poolId": "SAL_N1_08__POOL_8",
+          "sourceItemId": "SAL_N1_08",
+          "word": "AGUA",
+          "imageAsset": "assets/images/salud/sal_n1_08.png"
+        },
+        {
+          "poolIndex": 9,
+          "poolId": "SAL_N1_09__POOL_9",
+          "sourceItemId": "SAL_N1_09",
+          "word": "EJERCICIO",
+          "imageAsset": "assets/images/salud/sal_n1_09.png"
+        },
+        {
+          "poolIndex": 10,
+          "poolId": "SAL_N1_10__POOL_10",
+          "sourceItemId": "SAL_N1_10",
+          "word": "VACUNA",
+          "imageAsset": "assets/images/salud/sal_n1_10.png"
+        },
+        {
+          "poolIndex": 11,
+          "poolId": "SAL_N1_11__POOL_11",
+          "sourceItemId": "SAL_N1_11",
+          "word": "HERIDA",
+          "imageAsset": "assets/images/salud/sal_n1_11.png"
+        },
+        {
+          "poolIndex": 12,
+          "poolId": "SAL_N1_12__POOL_12",
+          "sourceItemId": "SAL_N1_12",
+          "word": "CURA",
+          "imageAsset": "assets/images/salud/sal_n1_12.png"
+        },
+        {
+          "poolIndex": 13,
+          "poolId": "SAL_N1_01__POOL_13",
+          "sourceItemId": "SAL_N1_01",
+          "word": "CUERPO",
+          "imageAsset": "assets/images/salud/sal_n1_01.png"
+        },
+        {
+          "poolIndex": 14,
+          "poolId": "SAL_N1_02__POOL_14",
+          "sourceItemId": "SAL_N1_02",
+          "word": "CORAZÓN",
+          "imageAsset": "assets/images/salud/sal_n1_02.png"
+        },
+        {
+          "poolIndex": 15,
+          "poolId": "SAL_N1_03__POOL_15",
+          "sourceItemId": "SAL_N1_03",
+          "word": "PULSO",
+          "imageAsset": "assets/images/salud/sal_n1_03.png"
+        },
+        {
+          "poolIndex": 16,
+          "poolId": "SAL_N1_04__POOL_16",
+          "sourceItemId": "SAL_N1_04",
+          "word": "FIEBRE",
+          "imageAsset": "assets/images/salud/sal_n1_04.png"
+        },
+        {
+          "poolIndex": 17,
+          "poolId": "SAL_N1_05__POOL_17",
+          "sourceItemId": "SAL_N1_05",
+          "word": "MEDICINA",
+          "imageAsset": "assets/images/salud/sal_n1_05.png"
+        },
+        {
+          "poolIndex": 18,
+          "poolId": "SAL_N1_06__POOL_18",
+          "sourceItemId": "SAL_N1_06",
+          "word": "DOCTOR",
+          "imageAsset": "assets/images/salud/sal_n1_06.png"
+        },
+        {
+          "poolIndex": 19,
+          "poolId": "SAL_N1_07__POOL_19",
+          "sourceItemId": "SAL_N1_07",
+          "word": "DESCANSO",
+          "imageAsset": "assets/images/salud/sal_n1_07.png"
+        },
+        {
+          "poolIndex": 20,
+          "poolId": "SAL_N1_08__POOL_20",
+          "sourceItemId": "SAL_N1_08",
+          "word": "AGUA",
+          "imageAsset": "assets/images/salud/sal_n1_08.png"
+        },
+        {
+          "poolIndex": 21,
+          "poolId": "SAL_N1_09__POOL_21",
+          "sourceItemId": "SAL_N1_09",
+          "word": "EJERCICIO",
+          "imageAsset": "assets/images/salud/sal_n1_09.png"
+        },
+        {
+          "poolIndex": 22,
+          "poolId": "SAL_N1_10__POOL_22",
+          "sourceItemId": "SAL_N1_10",
+          "word": "VACUNA",
+          "imageAsset": "assets/images/salud/sal_n1_10.png"
+        },
+        {
+          "poolIndex": 23,
+          "poolId": "SAL_N1_11__POOL_23",
+          "sourceItemId": "SAL_N1_11",
+          "word": "HERIDA",
+          "imageAsset": "assets/images/salud/sal_n1_11.png"
+        },
+        {
+          "poolIndex": 24,
+          "poolId": "SAL_N1_12__POOL_24",
+          "sourceItemId": "SAL_N1_12",
+          "word": "CURA",
+          "imageAsset": "assets/images/salud/sal_n1_12.png"
+        },
+        {
+          "poolIndex": 25,
+          "poolId": "SAL_N1_01__POOL_25",
+          "sourceItemId": "SAL_N1_01",
+          "word": "CUERPO",
+          "imageAsset": "assets/images/salud/sal_n1_01.png"
+        },
+        {
+          "poolIndex": 26,
+          "poolId": "SAL_N1_02__POOL_26",
+          "sourceItemId": "SAL_N1_02",
+          "word": "CORAZÓN",
+          "imageAsset": "assets/images/salud/sal_n1_02.png"
+        },
+        {
+          "poolIndex": 27,
+          "poolId": "SAL_N1_03__POOL_27",
+          "sourceItemId": "SAL_N1_03",
+          "word": "PULSO",
+          "imageAsset": "assets/images/salud/sal_n1_03.png"
+        },
+        {
+          "poolIndex": 28,
+          "poolId": "SAL_N1_04__POOL_28",
+          "sourceItemId": "SAL_N1_04",
+          "word": "FIEBRE",
+          "imageAsset": "assets/images/salud/sal_n1_04.png"
+        },
+        {
+          "poolIndex": 29,
+          "poolId": "SAL_N1_05__POOL_29",
+          "sourceItemId": "SAL_N1_05",
+          "word": "MEDICINA",
+          "imageAsset": "assets/images/salud/sal_n1_05.png"
+        },
+        {
+          "poolIndex": 30,
+          "poolId": "SAL_N1_06__POOL_30",
+          "sourceItemId": "SAL_N1_06",
+          "word": "DOCTOR",
+          "imageAsset": "assets/images/salud/sal_n1_06.png"
+        },
+        {
+          "poolIndex": 31,
+          "poolId": "SAL_N1_07__POOL_31",
+          "sourceItemId": "SAL_N1_07",
+          "word": "DESCANSO",
+          "imageAsset": "assets/images/salud/sal_n1_07.png"
+        },
+        {
+          "poolIndex": 32,
+          "poolId": "SAL_N1_08__POOL_32",
+          "sourceItemId": "SAL_N1_08",
+          "word": "AGUA",
+          "imageAsset": "assets/images/salud/sal_n1_08.png"
+        },
+        {
+          "poolIndex": 33,
+          "poolId": "SAL_N1_09__POOL_33",
+          "sourceItemId": "SAL_N1_09",
+          "word": "EJERCICIO",
+          "imageAsset": "assets/images/salud/sal_n1_09.png"
+        },
+        {
+          "poolIndex": 34,
+          "poolId": "SAL_N1_10__POOL_34",
+          "sourceItemId": "SAL_N1_10",
+          "word": "VACUNA",
+          "imageAsset": "assets/images/salud/sal_n1_10.png"
+        },
+        {
+          "poolIndex": 35,
+          "poolId": "SAL_N1_11__POOL_35",
+          "sourceItemId": "SAL_N1_11",
+          "word": "HERIDA",
+          "imageAsset": "assets/images/salud/sal_n1_11.png"
+        },
+        {
+          "poolIndex": 36,
+          "poolId": "SAL_N1_12__POOL_36",
+          "sourceItemId": "SAL_N1_12",
+          "word": "CURA",
+          "imageAsset": "assets/images/salud/sal_n1_12.png"
+        },
+        {
+          "poolIndex": 37,
+          "poolId": "SAL_N1_01__POOL_37",
+          "sourceItemId": "SAL_N1_01",
+          "word": "CUERPO",
+          "imageAsset": "assets/images/salud/sal_n1_01.png"
+        },
+        {
+          "poolIndex": 38,
+          "poolId": "SAL_N1_02__POOL_38",
+          "sourceItemId": "SAL_N1_02",
+          "word": "CORAZÓN",
+          "imageAsset": "assets/images/salud/sal_n1_02.png"
+        },
+        {
+          "poolIndex": 39,
+          "poolId": "SAL_N1_03__POOL_39",
+          "sourceItemId": "SAL_N1_03",
+          "word": "PULSO",
+          "imageAsset": "assets/images/salud/sal_n1_03.png"
+        },
+        {
+          "poolIndex": 40,
+          "poolId": "SAL_N1_04__POOL_40",
+          "sourceItemId": "SAL_N1_04",
+          "word": "FIEBRE",
+          "imageAsset": "assets/images/salud/sal_n1_04.png"
+        },
+        {
+          "poolIndex": 41,
+          "poolId": "SAL_N1_05__POOL_41",
+          "sourceItemId": "SAL_N1_05",
+          "word": "MEDICINA",
+          "imageAsset": "assets/images/salud/sal_n1_05.png"
+        },
+        {
+          "poolIndex": 42,
+          "poolId": "SAL_N1_06__POOL_42",
+          "sourceItemId": "SAL_N1_06",
+          "word": "DOCTOR",
+          "imageAsset": "assets/images/salud/sal_n1_06.png"
+        },
+        {
+          "poolIndex": 43,
+          "poolId": "SAL_N1_07__POOL_43",
+          "sourceItemId": "SAL_N1_07",
+          "word": "DESCANSO",
+          "imageAsset": "assets/images/salud/sal_n1_07.png"
+        },
+        {
+          "poolIndex": 44,
+          "poolId": "SAL_N1_08__POOL_44",
+          "sourceItemId": "SAL_N1_08",
+          "word": "AGUA",
+          "imageAsset": "assets/images/salud/sal_n1_08.png"
+        },
+        {
+          "poolIndex": 45,
+          "poolId": "SAL_N1_09__POOL_45",
+          "sourceItemId": "SAL_N1_09",
+          "word": "EJERCICIO",
+          "imageAsset": "assets/images/salud/sal_n1_09.png"
+        },
+        {
+          "poolIndex": 46,
+          "poolId": "SAL_N1_10__POOL_46",
+          "sourceItemId": "SAL_N1_10",
+          "word": "VACUNA",
+          "imageAsset": "assets/images/salud/sal_n1_10.png"
+        },
+        {
+          "poolIndex": 47,
+          "poolId": "SAL_N1_11__POOL_47",
+          "sourceItemId": "SAL_N1_11",
+          "word": "HERIDA",
+          "imageAsset": "assets/images/salud/sal_n1_11.png"
+        },
+        {
+          "poolIndex": 48,
+          "poolId": "SAL_N1_12__POOL_48",
+          "sourceItemId": "SAL_N1_12",
+          "word": "CURA",
+          "imageAsset": "assets/images/salud/sal_n1_12.png"
+        },
+        {
+          "poolIndex": 49,
+          "poolId": "SAL_N1_01__POOL_49",
+          "sourceItemId": "SAL_N1_01",
+          "word": "CUERPO",
+          "imageAsset": "assets/images/salud/sal_n1_01.png"
+        },
+        {
+          "poolIndex": 50,
+          "poolId": "SAL_N1_02__POOL_50",
+          "sourceItemId": "SAL_N1_02",
+          "word": "CORAZÓN",
+          "imageAsset": "assets/images/salud/sal_n1_02.png"
+        }
+      ]
+    }
+  ]
+}
