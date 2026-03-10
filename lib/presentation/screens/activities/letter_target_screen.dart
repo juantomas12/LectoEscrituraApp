@@ -76,24 +76,16 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
 
   Future<void> _prepareActivity() async {
     final dataset = ref.read(datasetRepositoryProvider);
-    final progressMap = ref.read(itemProgressMapProvider);
-
-    final baseItems = dataset.getPrioritizedItems(
-      category: widget.category,
-      level: AppLevel.uno,
-      activityType: ActivityType.imagenPalabra,
-      difficulty: widget.difficulty,
-      progressMap: progressMap,
-      limit: 28,
-    );
-
-    final fallbackItems = dataset.getItems(
-      category: widget.category,
-      level: AppLevel.uno,
-      activityType: ActivityType.imagenPalabra,
-    );
-
-    final source = baseItems.isNotEmpty ? baseItems : fallbackItems;
+    final source = dataset
+        .getRandomizedPool(
+          category: widget.category,
+          activityType: ActivityType.imagenPalabra,
+          difficulty: widget.difficulty,
+          poolSize: 50,
+        )
+        .where((item) => (item.word ?? '').trim().isNotEmpty)
+        .toList();
+    source.shuffle(_random);
 
     final filteredBySyllables = source.where((item) {
       final word = item.word ?? '';

@@ -117,25 +117,58 @@ class _MatchImagePhraseScreenState
 
   Future<List<Item>> _loadItemsFromDataset() async {
     final dataset = ref.read(datasetRepositoryProvider);
-    final progressMap = ref.read(itemProgressMapProvider);
     final limit = widget.difficulty == Difficulty.primaria ? 4 : 6;
-
-    final items = dataset.getPrioritizedItems(
+    final pool = dataset.getRandomizedPool(
       category: widget.category,
-      level: AppLevel.tres,
       activityType: ActivityType.imagenFrase,
       difficulty: widget.difficulty,
-      progressMap: progressMap,
-      limit: limit,
+      poolSize: 50,
     );
-    if (items.isNotEmpty) {
-      return items;
+    if (pool.isEmpty) {
+      return const [];
     }
-    return dataset.getItems(
-      category: widget.category,
-      level: AppLevel.tres,
-      activityType: ActivityType.imagenFrase,
-    );
+    final shuffledPool = [...pool]..shuffle(_random);
+
+    String phraseKey(Item item) {
+      if (item.phrases.isEmpty) {
+        return '';
+      }
+      final sorted = [...item.phrases]
+        ..sort((a, b) => countWords(a).compareTo(countWords(b)));
+      final selected = widget.difficulty == Difficulty.primaria
+          ? sorted.first
+          : sorted.last;
+      return selected.trim().toUpperCase();
+    }
+
+    final selected = <Item>[];
+    final usedPhrases = <String>{};
+    for (final item in shuffledPool) {
+      final key = phraseKey(item);
+      if (key.isEmpty || !usedPhrases.add(key)) {
+        continue;
+      }
+      selected.add(item);
+      if (selected.length >= limit) {
+        break;
+      }
+    }
+
+    if (selected.length < limit) {
+      final fallback = [...shuffledPool]..shuffle(_random);
+      for (final item in fallback) {
+        selected.add(
+          item.copyWith(
+            id: '${item.id}__EXTRA_${selected.length}_${_random.nextInt(99999)}',
+          ),
+        );
+        if (selected.length >= limit) {
+          break;
+        }
+      }
+    }
+
+    return selected;
   }
 
   Future<void> _handleDrop(Item item, String phrase) async {

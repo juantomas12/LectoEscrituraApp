@@ -25,6 +25,13 @@ abstract class DatasetRepository {
     required int limit,
   });
 
+  List<Item> getRandomizedPool({
+    required AppCategory category,
+    required ActivityType activityType,
+    required Difficulty difficulty,
+    required int poolSize,
+  });
+
   void setImageOverrides(Map<String, String> overrides);
 
   Map<String, String> getImageOverrides();

@@ -84,23 +84,13 @@ class _DiscriminationScreenState extends ConsumerState<DiscriminationScreen> {
 
   Future<void> _prepare({List<Item>? reinforcementTargets}) async {
     final dataset = ref.read(datasetRepositoryProvider);
-    final progressMap = ref.read(itemProgressMapProvider);
-    final source = dataset.getPrioritizedItems(
-      category: widget.category,
-      level: AppLevel.uno,
-      activityType: ActivityType.imagenPalabra,
-      difficulty: widget.difficulty,
-      progressMap: progressMap,
-      limit: 36,
-    );
-
-    final fallback = dataset.getItems(
-      category: widget.category,
-      level: AppLevel.uno,
-      activityType: ActivityType.imagenPalabra,
-    );
-
-    _pool = (source.isNotEmpty ? source : fallback)
+    _pool = dataset
+        .getRandomizedPool(
+          category: widget.category,
+          activityType: ActivityType.imagenPalabra,
+          difficulty: widget.difficulty,
+          poolSize: 50,
+        )
         .where((item) => (item.word ?? '').isNotEmpty)
         .toList();
 

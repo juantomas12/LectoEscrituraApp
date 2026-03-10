@@ -136,6 +136,30 @@ class LocalDatasetRepository implements DatasetRepository {
     return item.copyWith(imageAsset: override);
   }
 
+  bool _passesDifficultyFilter({
+    required Item item,
+    required ActivityType activityType,
+    required Difficulty difficulty,
+  }) {
+    if (difficulty == Difficulty.secundaria) {
+      return true;
+    }
+
+    if (activityType == ActivityType.imagenFrase) {
+      final phrase = item.phrases.isEmpty ? '' : item.phrases.first;
+      return countWords(phrase) <= 8;
+    }
+
+    if (activityType == ActivityType.palabraPalabra) {
+      final left = item.words.isEmpty ? '' : item.words.first;
+      return left.length <= 8;
+    }
+
+    final baseWord =
+        item.word ?? (item.words.isNotEmpty ? item.words.first : '');
+    return baseWord.length <= 8;
+  }
+
   @override
   List<Item> getItems({
     required AppCategory category,
@@ -168,23 +192,11 @@ class LocalDatasetRepository implements DatasetRepository {
           level: level,
           activityType: activityType,
         ).where((item) {
-          if (difficulty == Difficulty.secundaria) {
-            return true;
-          }
-
-          if (activityType == ActivityType.imagenFrase) {
-            final phrase = item.phrases.isEmpty ? '' : item.phrases.first;
-            return countWords(phrase) <= 8;
-          }
-
-          if (activityType == ActivityType.palabraPalabra) {
-            final left = item.words.isEmpty ? '' : item.words.first;
-            return left.length <= 8;
-          }
-
-          final baseWord =
-              item.word ?? (item.words.isNotEmpty ? item.words.first : '');
-          return baseWord.length <= 8;
+          return _passesDifficultyFilter(
+            item: item,
+            activityType: activityType,
+            difficulty: difficulty,
+          );
         }).toList();
 
     filtered.sort((a, b) {
@@ -201,5 +213,50 @@ class LocalDatasetRepository implements DatasetRepository {
       return filtered;
     }
     return filtered.take(limit).toList();
+  }
+
+  @override
+  List<Item> getRandomizedPool({
+    required AppCategory category,
+    required ActivityType activityType,
+    required Difficulty difficulty,
+    required int poolSize,
+  }) {
+    if (poolSize <= 0) {
+      return const [];
+    }
+
+    final filtered = _allItems
+        .where(
+          (item) =>
+              (category == AppCategory.mixta || item.category == category) &&
+              item.activityType == activityType,
+        )
+        .map(_withOverride)
+        .where(
+          (item) => _passesDifficultyFilter(
+            item: item,
+            activityType: activityType,
+            difficulty: difficulty,
+          ),
+        )
+        .toList();
+
+    if (filtered.isEmpty) {
+      return const [];
+    }
+
+    if (filtered.length >= poolSize) {
+      return filtered.take(poolSize).toList();
+    }
+
+    final output = <Item>[...filtered];
+    var replicaIndex = 0;
+    while (output.length < poolSize) {
+      final source = filtered[replicaIndex % filtered.length];
+      output.add(source.copyWith(id: '${source.id}__POOL_${replicaIndex + 1}'));
+      replicaIndex++;
+    }
+    return output;
   }
 }

@@ -117,26 +117,46 @@ class _WriteWordScreenState extends ConsumerState<WriteWordScreen> {
 
   Future<List<Item>> _loadItemsFromDataset() async {
     final dataset = ref.read(datasetRepositoryProvider);
-    final progressMap = ref.read(itemProgressMapProvider);
     final limit = widget.difficulty == Difficulty.primaria ? 5 : 7;
-
-    final items = dataset.getPrioritizedItems(
+    final pool = dataset.getRandomizedPool(
       category: widget.category,
-      level: AppLevel.uno,
       activityType: ActivityType.imagenPalabra,
       difficulty: widget.difficulty,
-      progressMap: progressMap,
-      limit: limit,
+      poolSize: 50,
     );
-
-    if (items.isNotEmpty) {
-      return items;
+    if (pool.isEmpty) {
+      return const [];
     }
-    return dataset.getItems(
-      category: widget.category,
-      level: AppLevel.uno,
-      activityType: ActivityType.imagenPalabra,
-    );
+
+    final shuffledPool = [...pool]..shuffle(_random);
+    final selected = <Item>[];
+    final usedWords = <String>{};
+    for (final item in shuffledPool) {
+      final word = (item.word ?? '').trim().toUpperCase();
+      if (word.isEmpty || !usedWords.add(word)) {
+        continue;
+      }
+      selected.add(item);
+      if (selected.length >= limit) {
+        break;
+      }
+    }
+
+    if (selected.length < limit) {
+      final fallback = [...shuffledPool]..shuffle(_random);
+      for (final item in fallback) {
+        selected.add(
+          item.copyWith(
+            id: '${item.id}__EXTRA_${selected.length}_${_random.nextInt(99999)}',
+          ),
+        );
+        if (selected.length >= limit) {
+          break;
+        }
+      }
+    }
+
+    return selected;
   }
 
   Future<void> _validate() async {

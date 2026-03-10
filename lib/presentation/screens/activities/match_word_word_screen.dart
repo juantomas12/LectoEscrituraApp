@@ -103,26 +103,52 @@ class _MatchWordWordScreenState extends ConsumerState<MatchWordWordScreen> {
 
   Future<List<Item>> _loadPairsFromDataset() async {
     final dataset = ref.read(datasetRepositoryProvider);
-    final progressMap = ref.read(itemProgressMapProvider);
     final limit = widget.difficulty == Difficulty.primaria ? 6 : 8;
-
-    final pairs = dataset.getPrioritizedItems(
+    final pool = dataset.getRandomizedPool(
       category: widget.category,
-      level: AppLevel.dos,
       activityType: ActivityType.palabraPalabra,
       difficulty: widget.difficulty,
-      progressMap: progressMap,
-      limit: limit,
+      poolSize: 50,
     );
-
-    if (pairs.isNotEmpty) {
-      return pairs;
+    if (pool.isEmpty) {
+      return const [];
     }
-    return dataset.getItems(
-      category: widget.category,
-      level: AppLevel.dos,
-      activityType: ActivityType.palabraPalabra,
-    );
+
+    final shuffledPool = [...pool]..shuffle(_random);
+    final selected = <Item>[];
+    final usedPairs = <String>{};
+    for (final item in shuffledPool) {
+      final left = item.words.isNotEmpty
+          ? item.words.first.trim().toUpperCase()
+          : '';
+      final right = item.words.length > 1
+          ? item.words[1].trim().toUpperCase()
+          : '';
+      final pairKey = '$left|$right';
+      if (left.isEmpty || right.isEmpty || !usedPairs.add(pairKey)) {
+        continue;
+      }
+      selected.add(item);
+      if (selected.length >= limit) {
+        break;
+      }
+    }
+
+    if (selected.length < limit) {
+      final fallback = [...shuffledPool]..shuffle(_random);
+      for (final item in fallback) {
+        selected.add(
+          item.copyWith(
+            id: '${item.id}__EXTRA_${selected.length}_${_random.nextInt(99999)}',
+          ),
+        );
+        if (selected.length >= limit) {
+          break;
+        }
+      }
+    }
+
+    return selected;
   }
 
   void _rebuildColumns() {
