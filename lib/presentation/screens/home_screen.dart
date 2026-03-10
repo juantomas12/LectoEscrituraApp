@@ -497,6 +497,12 @@ class _HomeTab extends StatelessWidget {
         ? 0
         : ((totalCorrect / totalAttempts) * 100).round();
     final xp = (totalCorrect * 10) + (rewards.currentStreak * 25);
+    final streakDays = rewards.currentStreak;
+    final streakLabel = streakDays == 1 ? '1 día' : '$streakDays días';
+    final progressRatio = accuracy.clamp(0, 100) / 100.0;
+    final attemptsSummary = totalAttempts == 0
+        ? 'Aún sin intentos hoy. Empieza una actividad.'
+        : '$totalCorrect aciertos de $totalAttempts intentos hoy';
 
     final width = MediaQuery.sizeOf(context).width;
     final isTablet = width >= 900;
@@ -685,37 +691,141 @@ class _HomeTab extends StatelessWidget {
                 const SizedBox(height: 14),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFFE3E8F1)),
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFFFFF6EF), Color(0xFFFFFDF8)],
+                    ),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: const Color(0xFFFFCCA8)),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x1FEF5B10),
+                        blurRadius: 18,
+                        offset: Offset(0, 8),
+                      ),
+                    ],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Precisión de hoy: $accuracy% · Racha ${rewards.currentStreak} días',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Color(0xFF516282),
-                          fontWeight: FontWeight.w700,
-                          fontSize: 15,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
                       Row(
                         children: [
-                          const Spacer(),
+                          Container(
+                            width: 34,
+                            height: 34,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFFFE4D1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.star_rounded,
+                              color: Color(0xFFEF5B10),
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          const Expanded(
+                            child: Text(
+                              'PROGRESO DE HOY',
+                              style: TextStyle(
+                                color: Color(0xFF9D4A16),
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.6,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEF5B10),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.local_fire_department_rounded,
+                                  size: 16,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Racha $streakLabel',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _HomeProgressMetricCard(
+                              icon: Icons.track_changes_rounded,
+                              label: 'Precisión',
+                              value: '$accuracy%',
+                              valueColor: const Color(0xFFEF5B10),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _HomeProgressMetricCard(
+                              icon: Icons.bolt_rounded,
+                              label: 'Puntos',
+                              value: '$xp XP',
+                              valueColor: const Color(0xFFB94A0D),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(999),
+                        child: LinearProgressIndicator(
+                          minHeight: 12,
+                          value: progressRatio,
+                          backgroundColor: const Color(0xFFFFE3CE),
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                            Color(0xFFEF5B10),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              attemptsSummary,
+                              style: const TextStyle(
+                                color: Color(0xFF7E5B45),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
                           FilledButton.icon(
                             onPressed: onOpenAi,
                             style: FilledButton.styleFrom(
                               backgroundColor: const Color(0xFFEF5B10),
                               foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 10,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(999),
                               ),
@@ -726,7 +836,10 @@ class _HomeTab extends StatelessWidget {
                             ),
                             label: const Text(
                               'IA',
-                              style: TextStyle(fontWeight: FontWeight.w900),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.3,
+                              ),
                             ),
                           ),
                         ],
@@ -1418,6 +1531,62 @@ class _BottomNavItem extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _HomeProgressMetricCard extends StatelessWidget {
+  const _HomeProgressMetricCard({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.valueColor,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color valueColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(10, 9, 10, 9),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFFFD7BC)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: const Color(0xFFEF5B10), size: 18),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFFA87555),
+                  ),
+                ),
+                const SizedBox(height: 1),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    color: valueColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
