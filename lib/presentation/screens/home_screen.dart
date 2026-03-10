@@ -1081,78 +1081,113 @@ class _IslandHubScreenState extends State<_IslandHubScreen> {
                     crossAxisCount: isTablet ? 2 : 1,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
-                    childAspectRatio: isTablet ? 2.2 : 1.9,
+                    childAspectRatio: isTablet ? 1.65 : 1.35,
                   ),
                   itemBuilder: (context, index) {
                     final game = widget.games[index];
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
+                    return Material(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(22),
+                      child: InkWell(
                         borderRadius: BorderRadius.circular(22),
-                        border: Border.all(color: const Color(0xFFDDE5F2)),
-                      ),
-                      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 24,
-                            backgroundColor: game.accentColor.withValues(
-                              alpha: 0.16,
-                            ),
-                            child: Icon(
-                              game.icon,
-                              color: game.accentColor,
-                              size: 26,
-                            ),
+                        onTap: () {
+                          widget.onStartGame(_selectedCategory, game.type);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(22),
+                            border: Border.all(color: const Color(0xFFDDE5F2)),
                           ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  game.title.toUpperCase(),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w900,
-                                    color: Color(0xFF111D3A),
+                          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 24,
+                                    backgroundColor: game.accentColor
+                                        .withValues(alpha: 0.16),
+                                    child: Icon(
+                                      game.icon,
+                                      color: game.accentColor,
+                                      size: 26,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  game.subtitle,
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    color: Color(0xFF61739A),
-                                    fontWeight: FontWeight.w600,
+                                  const Spacer(),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: game.accentColor.withValues(
+                                        alpha: 0.14,
+                                      ),
+                                      borderRadius: BorderRadius.circular(999),
+                                    ),
+                                    child: Text(
+                                      _categoryPickerLabel(
+                                        _selectedCategory,
+                                      ).toUpperCase(),
+                                      style: TextStyle(
+                                        color: game.accentColor,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          FilledButton(
-                            onPressed: () {
-                              widget.onStartGame(_selectedCategory, game.type);
-                            },
-                            style: FilledButton.styleFrom(
-                              backgroundColor: game.accentColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(999),
+                                ],
                               ),
-                            ),
-                            child: const Text(
-                              'JUGAR',
-                              style: TextStyle(fontWeight: FontWeight.w900),
-                            ),
+                              const SizedBox(height: 12),
+                              Text(
+                                game.title.toUpperCase(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w900,
+                                  color: Color(0xFF111D3A),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                game.subtitle,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFF61739A),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const Spacer(),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: FilledButton(
+                                  onPressed: () {
+                                    widget.onStartGame(
+                                      _selectedCategory,
+                                      game.type,
+                                    );
+                                  },
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: game.accentColor,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(999),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'JUGAR',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     );
                   },
