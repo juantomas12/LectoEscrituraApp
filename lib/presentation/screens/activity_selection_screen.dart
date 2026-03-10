@@ -190,10 +190,20 @@ class _ActivitySelectionScreenState
                       ),
                       const SizedBox(height: 14),
                       if (!isLetterVowelsGame)
-                        ...levels.map((level) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: _LevelRowCard(
+                        GridView.builder(
+                          itemCount: levels.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 12,
+                                mainAxisSpacing: 12,
+                                childAspectRatio: 2.25,
+                              ),
+                          itemBuilder: (context, index) {
+                            final level = levels[index];
+                            return _LevelGridCard(
                               indexLabel: '$level',
                               title: 'NIVEL $level',
                               selected: _selectedGameLevel == level,
@@ -201,9 +211,14 @@ class _ActivitySelectionScreenState
                               onTap: () => setState(() {
                                 _selectedGameLevel = level;
                               }),
-                            ),
-                          );
-                        })
+                              onPlay: () => _openActivity(
+                                context,
+                                widget.activityType,
+                                level,
+                              ),
+                            );
+                          },
+                        )
                       else ...[
                         ..._vowels.map((vowel) {
                           return Padding(
@@ -258,28 +273,33 @@ class _ActivitySelectionScreenState
                               ),
                             ),
                           ),
-                        const SizedBox(height: 16),
-                        FilledButton.icon(
-                          onPressed: () => _openActivity(
-                            context,
-                            widget.activityType,
-                            _selectedGameLevel,
-                          ),
-                          icon: const Icon(Icons.play_arrow_rounded, size: 30),
-                          label: const UpperText('INICIAR JUEGO'),
-                          style: FilledButton.styleFrom(
-                            backgroundColor: const Color(0xFF24C45F),
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size.fromHeight(66),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(40),
+                        if (isLetterVowelsGame) ...[
+                          const SizedBox(height: 16),
+                          FilledButton.icon(
+                            onPressed: () => _openActivity(
+                              context,
+                              widget.activityType,
+                              _selectedGameLevel,
                             ),
-                            textStyle: const TextStyle(
-                              fontWeight: FontWeight.w900,
-                              fontSize: 22,
+                            icon: const Icon(
+                              Icons.play_arrow_rounded,
+                              size: 30,
+                            ),
+                            label: const UpperText('INICIAR JUEGO'),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: const Color(0xFF24C45F),
+                              foregroundColor: Colors.white,
+                              minimumSize: const Size.fromHeight(66),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(40),
+                              ),
+                              textStyle: const TextStyle(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 22,
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ],
                       if (isSingleLevel)
                         const Padding(
@@ -567,6 +587,124 @@ class _LevelRowCard extends StatelessWidget {
                     : Icons.radio_button_unchecked_rounded,
                 color: selected ? accentColor : const Color(0xFFC0CCDD),
                 size: 44,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LevelGridCard extends StatelessWidget {
+  const _LevelGridCard({
+    required this.indexLabel,
+    required this.title,
+    required this.selected,
+    required this.accentColor,
+    required this.onTap,
+    required this.onPlay,
+  });
+
+  final String indexLabel;
+  final String title;
+  final bool selected;
+  final Color accentColor;
+  final VoidCallback onTap;
+  final VoidCallback onPlay;
+
+  @override
+  Widget build(BuildContext context) {
+    final borderColor = selected ? accentColor : const Color(0xFFCDD7E6);
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(24),
+        child: Ink(
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+          decoration: BoxDecoration(
+            color: selected
+                ? accentColor.withValues(alpha: 0.08)
+                : Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: borderColor, width: selected ? 3 : 2),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: selected ? accentColor : const Color(0xFFEEF2F8),
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: UpperText(
+                      indexLabel,
+                      style: TextStyle(
+                        color: selected
+                            ? Colors.white
+                            : const Color(0xFF62728F),
+                        fontWeight: FontWeight.w900,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  Icon(
+                    selected
+                        ? Icons.check_circle_rounded
+                        : Icons.radio_button_unchecked_rounded,
+                    color: selected ? accentColor : const Color(0xFFC0CCDD),
+                    size: 30,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              UpperText(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF101A39),
+                ),
+              ),
+              const Spacer(),
+              Align(
+                alignment: Alignment.centerRight,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 180),
+                  child: selected
+                      ? FilledButton.icon(
+                          key: const ValueKey('selected-play'),
+                          onPressed: onPlay,
+                          icon: const Icon(Icons.play_arrow_rounded, size: 18),
+                          label: const UpperText(
+                            'JUGAR',
+                            style: TextStyle(fontSize: 13),
+                          ),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: const Color(0xFF24C45F),
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(112, 36),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                          ),
+                        )
+                      : const SizedBox(
+                          key: ValueKey('empty-play'),
+                          height: 36,
+                          width: 112,
+                        ),
+                ),
               ),
             ],
           ),
