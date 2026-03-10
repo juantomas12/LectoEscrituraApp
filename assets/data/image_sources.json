@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-10T19:18:03.997404+00:00",
+  "generatedAt": "2026-03-10T19:34:41.651351+00:00",
   "sources": [
     {
       "itemId": "BAN_N1_01",
@@ -1683,17 +1683,17 @@
     },
     {
       "itemId": "CDC_N1_49",
-      "query": "LIBRERO COSAS DE CASA FOTO REAL",
+      "query": "LIBRERO COSAS DE CASA FOTO REAL (OVERRIDE ESTANTERIA)",
       "provider": "arasaac",
-      "imageUrl": "https://static.arasaac.org/pictograms/16795/16795_500.png",
-      "sourcePage": "https://arasaac.org/pictograms/16795",
-      "title": "librero",
+      "imageUrl": "https://static.arasaac.org/pictograms/2386/2386_500.png",
+      "sourcePage": "https://arasaac.org/pictograms/2386",
+      "title": "estantería",
       "license": "CC BY-NC-SA 4.0",
       "attribution": "ARASAAC",
       "mime": "image/png",
       "width": 0,
       "height": 0,
-      "downloadedAt": "2026-03-10T19:11:37.039501+00:00",
+      "downloadedAt": "2026-03-10T19:34:41.651351+00:00",
       "storedAs": "assets/images/cosas_de_casa/cdc_n1_49.png"
     },
     {
@@ -5928,17 +5928,17 @@
     },
     {
       "itemId": "SAL_N1_12",
-      "query": "CURA SALUD FOTO REAL",
+      "query": "CURA SALUD FOTO REAL (OVERRIDE CURAR)",
       "provider": "arasaac",
-      "imageUrl": "https://static.arasaac.org/pictograms/30700/30700_500.png",
-      "sourcePage": "https://arasaac.org/pictograms/30700",
-      "title": "sacerdote",
+      "imageUrl": "https://static.arasaac.org/pictograms/3302/3302_500.png",
+      "sourcePage": "https://arasaac.org/pictograms/3302",
+      "title": "curar",
       "license": "CC BY-NC-SA 4.0",
       "attribution": "ARASAAC",
       "mime": "image/png",
       "width": 0,
       "height": 0,
-      "downloadedAt": "2026-02-18T17:22:03.206039+00:00",
+      "downloadedAt": "2026-03-10T19:34:41.651351+00:00",
       "storedAs": "assets/images/salud/sal_n1_12.png"
     },
     {

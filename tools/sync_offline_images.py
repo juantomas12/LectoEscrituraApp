@@ -175,6 +175,7 @@ WORD_OBJECT_HINTS = {
     "RELOJ": ["clock", "wall clock", "watch", "timepiece"],
     "CORTINA": ["curtain", "drape", "window curtain"],
     "ALFOMBRA": ["carpet", "rug", "floor rug"],
+    "LIBRERO": ["bookshelf", "bookcase", "shelf", "furniture"],
     "PAN": ["bread", "loaf", "bakery bread"],
     "LECHE": ["milk", "milk glass", "dairy milk"],
     "AGUA": ["water", "drinking water", "water glass"],
@@ -256,9 +257,18 @@ AMBIGUOUS_ITEM_WORDS = {
 ARASAAC_QUERY_ALIASES = {
     "DOCENTE": ["PROFESOR", "MAESTRO"],
     "DOCTOR": ["MEDICO"],
+    "LIBRERO": ["ESTANTERIA", "ESTANTE PARA LIBROS", "MUEBLE LIBROS"],
+    "CURA": ["CURAR", "VENDA", "TIRITA"],
     "ENOJO": ["ENFADO", "ENFADADO", "RABIA"],
     "ORGULLO": ["ORGULLOSO"],
     "PAGO": ["PAGAR"],
+}
+
+ITEM_QUERY_OVERRIDES = {
+    # AVOID AMBIGUOUS MATCHES (E.G., "LIBRERO" PERSON VS FURNITURE).
+    "CDC_N1_49": "ESTANTERIA MUEBLE LIBROS",
+    # AVOID RELIGIOUS "CURA" RESULTS; KEEP HEALTH CONTEXT.
+    "SAL_N1_12": "CURAR HERIDA VENDAJE",
 }
 
 
@@ -1254,6 +1264,10 @@ def main() -> int:
                 continue
 
             queries = _build_query_variants(item)
+            override_query = ITEM_QUERY_OVERRIDES.get(item_id)
+            if override_query:
+                # PLACE OVERRIDE FIRST TO BIAS CANDIDATE FETCHING FOR AMBIGUOUS ITEMS.
+                queries = [override_query, *queries]
             category = str(item.get("category", "GENERAL"))
             category_slug = _slug(category)
 
