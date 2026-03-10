@@ -13,10 +13,10 @@
       "EMOCIONES"
     ],
     "counts": {
-      "nivel1_por_categoria": 12,
+      "nivel1_por_categoria": 50,
       "nivel2_por_categoria": 8,
       "nivel3_por_categoria": 6,
-      "total_items": 182
+      "total_items": 448
     }
   },
   "items": [
@@ -198,6 +198,5076 @@
       "phrases": [],
       "audioAsset": null,
       "ttsText": "ALFOMBRA",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_13",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TELEVISOR",
+      "words": [
+        "TELEVISOR"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_13.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TELEVISOR",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_14",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "NEVERA",
+      "words": [
+        "NEVERA"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_14.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "NEVERA",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_15",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "HORNO",
+      "words": [
+        "HORNO"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_15.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "HORNO",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_16",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "COCINA",
+      "words": [
+        "COCINA"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_16.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "COCINA",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_17",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MICROONDAS",
+      "words": [
+        "MICROONDAS"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_17.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MICROONDAS",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_18",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PLATO",
+      "words": [
+        "PLATO"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_18.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PLATO",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_19",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "VASO",
+      "words": [
+        "VASO"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_19.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "VASO",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_20",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CUCHARA",
+      "words": [
+        "CUCHARA"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_20.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CUCHARA",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_21",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TENEDOR",
+      "words": [
+        "TENEDOR"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_21.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TENEDOR",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_22",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CUCHILLO",
+      "words": [
+        "CUCHILLO"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_22.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CUCHILLO",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_23",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "OLLA",
+      "words": [
+        "OLLA"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_23.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "OLLA",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_24",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SARTÉN",
+      "words": [
+        "SARTÉN"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_24.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SARTÉN",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_25",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ESCOBA",
+      "words": [
+        "ESCOBA"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_25.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ESCOBA",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_26",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "FREGONA",
+      "words": [
+        "FREGONA"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_26.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "FREGONA",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_27",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CUBO",
+      "words": [
+        "CUBO"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_27.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CUBO",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_28",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "COJÍN",
+      "words": [
+        "COJÍN"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_28.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "COJÍN",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_29",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ESTANTERÍA",
+      "words": [
+        "ESTANTERÍA"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_29.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ESTANTERÍA",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_30",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PERCHA",
+      "words": [
+        "PERCHA"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_30.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PERCHA",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_31",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CAJÓN",
+      "words": [
+        "CAJÓN"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_31.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CAJÓN",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_32",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MESILLA",
+      "words": [
+        "MESILLA"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_32.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MESILLA",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_33",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MANTA",
+      "words": [
+        "MANTA"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_33.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MANTA",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_34",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ALMOHADA",
+      "words": [
+        "ALMOHADA"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_34.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ALMOHADA",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_35",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "LAVADORA",
+      "words": [
+        "LAVADORA"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_35.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "LAVADORA",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_36",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SECADORA",
+      "words": [
+        "SECADORA"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_36.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SECADORA",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_37",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PLANCHA",
+      "words": [
+        "PLANCHA"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_37.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PLANCHA",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_38",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ENCHUFE",
+      "words": [
+        "ENCHUFE"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_38.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ENCHUFE",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_39",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "INTERRUPTOR",
+      "words": [
+        "INTERRUPTOR"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_39.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "INTERRUPTOR",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_40",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "LINTERNA",
+      "words": [
+        "LINTERNA"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_40.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "LINTERNA",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_41",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "LLAVE",
+      "words": [
+        "LLAVE"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_41.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "LLAVE",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_42",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TIMBRE",
+      "words": [
+        "TIMBRE"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_42.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TIMBRE",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_43",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "BALCÓN",
+      "words": [
+        "BALCÓN"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_43.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "BALCÓN",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_44",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TECHO",
+      "words": [
+        "TECHO"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_44.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TECHO",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_45",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SUELO",
+      "words": [
+        "SUELO"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_45.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SUELO",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_46",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ESCALERA",
+      "words": [
+        "ESCALERA"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_46.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ESCALERA",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_47",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ESCRITORIO",
+      "words": [
+        "ESCRITORIO"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_47.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ESCRITORIO",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_48",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ORDENADOR",
+      "words": [
+        "ORDENADOR"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_48.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ORDENADOR",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_49",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "LIBRERO",
+      "words": [
+        "LIBRERO"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_49.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "LIBRERO",
+      "relatedWords": []
+    },
+    {
+      "id": "CDC_N1_50",
+      "category": "COSAS DE CASA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CÓMODA",
+      "words": [
+        "CÓMODA"
+      ],
+      "imageAsset": "assets/images/cosas_de_casa/cdc_n1_50.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CÓMODA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_01",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PAN",
+      "words": [
+        "PAN"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_01.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PAN",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_02",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "LECHE",
+      "words": [
+        "LECHE"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_02.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "LECHE",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_03",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "AGUA",
+      "words": [
+        "AGUA"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_03.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "AGUA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_04",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ARROZ",
+      "words": [
+        "ARROZ"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_04.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ARROZ",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_05",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SOPA",
+      "words": [
+        "SOPA"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_05.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SOPA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_06",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MANZANA",
+      "words": [
+        "MANZANA"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_06.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MANZANA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_07",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PERA",
+      "words": [
+        "PERA"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_07.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PERA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_08",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "HUEVO",
+      "words": [
+        "HUEVO"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_08.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "HUEVO",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_09",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "QUESO",
+      "words": [
+        "QUESO"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_09.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "QUESO",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_10",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "YOGUR",
+      "words": [
+        "YOGUR"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_10.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "YOGUR",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_11",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "POLLO",
+      "words": [
+        "POLLO"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_11.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "POLLO",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_12",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PESCADO",
+      "words": [
+        "PESCADO"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_12.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PESCADO",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_13",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PLÁTANO",
+      "words": [
+        "PLÁTANO"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_13.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PLÁTANO",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_14",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "NARANJA",
+      "words": [
+        "NARANJA"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_14.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "NARANJA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_15",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "FRESA",
+      "words": [
+        "FRESA"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_15.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "FRESA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_16",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "UVA",
+      "words": [
+        "UVA"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_16.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "UVA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_17",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TOMATE",
+      "words": [
+        "TOMATE"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_17.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TOMATE",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_18",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "LECHUGA",
+      "words": [
+        "LECHUGA"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_18.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "LECHUGA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_19",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ZANAHORIA",
+      "words": [
+        "ZANAHORIA"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_19.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ZANAHORIA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_20",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PATATA",
+      "words": [
+        "PATATA"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_20.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PATATA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_21",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CEBOLLA",
+      "words": [
+        "CEBOLLA"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_21.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CEBOLLA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_22",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "AJO",
+      "words": [
+        "AJO"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_22.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "AJO",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_23",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MAÍZ",
+      "words": [
+        "MAÍZ"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_23.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MAÍZ",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_24",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "LENTEJAS",
+      "words": [
+        "LENTEJAS"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_24.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "LENTEJAS",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_25",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "GARBANZOS",
+      "words": [
+        "GARBANZOS"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_25.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "GARBANZOS",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_26",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "JAMÓN",
+      "words": [
+        "JAMÓN"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_26.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "JAMÓN",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_27",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SALCHICHA",
+      "words": [
+        "SALCHICHA"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_27.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SALCHICHA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_28",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CARNE",
+      "words": [
+        "CARNE"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_28.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CARNE",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_29",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ATÚN",
+      "words": [
+        "ATÚN"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_29.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ATÚN",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_30",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SARDINA",
+      "words": [
+        "SARDINA"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_30.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SARDINA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_31",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "GALLETA",
+      "words": [
+        "GALLETA"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_31.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "GALLETA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_32",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CHOCOLATE",
+      "words": [
+        "CHOCOLATE"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_32.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CHOCOLATE",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_33",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MIEL",
+      "words": [
+        "MIEL"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_33.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MIEL",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_34",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "AZÚCAR",
+      "words": [
+        "AZÚCAR"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_34.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "AZÚCAR",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_35",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SAL",
+      "words": [
+        "SAL"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_35.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SAL",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_36",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ACEITE",
+      "words": [
+        "ACEITE"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_36.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ACEITE",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_37",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "VINAGRE",
+      "words": [
+        "VINAGRE"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_37.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "VINAGRE",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_38",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MANTEQUILLA",
+      "words": [
+        "MANTEQUILLA"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_38.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MANTEQUILLA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_39",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MERMELADA",
+      "words": [
+        "MERMELADA"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_39.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MERMELADA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_40",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CEREAL",
+      "words": [
+        "CEREAL"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_40.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CEREAL",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_41",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PASTA",
+      "words": [
+        "PASTA"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_41.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PASTA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_42",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "FIDEOS",
+      "words": [
+        "FIDEOS"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_42.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "FIDEOS",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_43",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PIZZA",
+      "words": [
+        "PIZZA"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_43.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PIZZA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_44",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "BOCADILLO",
+      "words": [
+        "BOCADILLO"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_44.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "BOCADILLO",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_45",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SÁNDWICH",
+      "words": [
+        "SÁNDWICH"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_45.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SÁNDWICH",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_46",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "HAMBURGUESA",
+      "words": [
+        "HAMBURGUESA"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_46.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "HAMBURGUESA",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_47",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "HELADO",
+      "words": [
+        "HELADO"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_47.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "HELADO",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_48",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ZUMO",
+      "words": [
+        "ZUMO"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_48.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ZUMO",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_49",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CAFÉ",
+      "words": [
+        "CAFÉ"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_49.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CAFÉ",
+      "relatedWords": []
+    },
+    {
+      "id": "COM_N1_50",
+      "category": "COMIDA",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TÉ",
+      "words": [
+        "TÉ"
+      ],
+      "imageAsset": "assets/images/comida/com_n1_50.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TÉ",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_01",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MONEDA",
+      "words": [
+        "MONEDA"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_01.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MONEDA",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_02",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "BILLETE",
+      "words": [
+        "BILLETE"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_02.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "BILLETE",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_03",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CARTERA",
+      "words": [
+        "CARTERA"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_03.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CARTERA",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_04",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "BANCO",
+      "words": [
+        "BANCO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_04.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "BANCO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_05",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PRECIO",
+      "words": [
+        "PRECIO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_05.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PRECIO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_06",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "COMPRA",
+      "words": [
+        "COMPRA"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_06.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "COMPRA",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_07",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "VENTA",
+      "words": [
+        "VENTA"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_07.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "VENTA",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_08",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CAJA",
+      "words": [
+        "CAJA"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_08.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CAJA",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_09",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CAMBIO",
+      "words": [
+        "CAMBIO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_09.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CAMBIO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_10",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CUENTA",
+      "words": [
+        "CUENTA"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_10.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CUENTA",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_11",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "AHORRO",
+      "words": [
+        "AHORRO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_11.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "AHORRO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_12",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PAGO",
+      "words": [
+        "PAGO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_12.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PAGO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_13",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TARJETA",
+      "words": [
+        "TARJETA"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_13.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TARJETA",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_14",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CAJERO",
+      "words": [
+        "CAJERO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_14.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CAJERO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_15",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MONEDERO",
+      "words": [
+        "MONEDERO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_15.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MONEDERO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_16",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "BOLSILLO",
+      "words": [
+        "BOLSILLO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_16.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "BOLSILLO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_17",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "BOLSO",
+      "words": [
+        "BOLSO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_17.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "BOLSO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_18",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TIENDA",
+      "words": [
+        "TIENDA"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_18.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TIENDA",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_19",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MERCADO",
+      "words": [
+        "MERCADO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_19.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MERCADO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_20",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CLIENTE",
+      "words": [
+        "CLIENTE"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_20.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CLIENTE",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_21",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "VENDEDOR",
+      "words": [
+        "VENDEDOR"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_21.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "VENDEDOR",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_22",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "COMERCIO",
+      "words": [
+        "COMERCIO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_22.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "COMERCIO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_23",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PRODUCTO",
+      "words": [
+        "PRODUCTO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_23.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PRODUCTO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_24",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "FACTURA",
+      "words": [
+        "FACTURA"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_24.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "FACTURA",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_25",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "RECIBO",
+      "words": [
+        "RECIBO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_25.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "RECIBO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_26",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "IMPUESTO",
+      "words": [
+        "IMPUESTO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_26.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "IMPUESTO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_27",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SALARIO",
+      "words": [
+        "SALARIO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_27.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SALARIO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_28",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SUELDO",
+      "words": [
+        "SUELDO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_28.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SUELDO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_29",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PROPINA",
+      "words": [
+        "PROPINA"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_29.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PROPINA",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_30",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PRÉSTAMO",
+      "words": [
+        "PRÉSTAMO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_30.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PRÉSTAMO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_31",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "INTERÉS",
+      "words": [
+        "INTERÉS"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_31.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "INTERÉS",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_32",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "DEUDA",
+      "words": [
+        "DEUDA"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_32.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "DEUDA",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_33",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "GASTO",
+      "words": [
+        "GASTO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_33.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "GASTO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_34",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "INGRESO",
+      "words": [
+        "INGRESO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_34.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "INGRESO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_35",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PRESUPUESTO",
+      "words": [
+        "PRESUPUESTO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_35.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PRESUPUESTO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_36",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "DONACIÓN",
+      "words": [
+        "DONACIÓN"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_36.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "DONACIÓN",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_37",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "INVERSIÓN",
+      "words": [
+        "INVERSIÓN"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_37.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "INVERSIÓN",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_38",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SEGURO",
+      "words": [
+        "SEGURO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_38.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SEGURO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_39",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ALCANCÍA",
+      "words": [
+        "ALCANCÍA"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_39.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ALCANCÍA",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_40",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "AHORRAR",
+      "words": [
+        "AHORRAR"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_40.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "AHORRAR",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_41",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "GASTAR",
+      "words": [
+        "GASTAR"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_41.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "GASTAR",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_42",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "COBRAR",
+      "words": [
+        "COBRAR"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_42.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "COBRAR",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_43",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PAGAR",
+      "words": [
+        "PAGAR"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_43.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PAGAR",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_44",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "VENDER",
+      "words": [
+        "VENDER"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_44.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "VENDER",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_45",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "COMPRAR",
+      "words": [
+        "COMPRAR"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_45.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "COMPRAR",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_46",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "FINANZAS",
+      "words": [
+        "FINANZAS"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_46.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "FINANZAS",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_47",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "OFERTA",
+      "words": [
+        "OFERTA"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_47.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "OFERTA",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_48",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "DESCUENTO",
+      "words": [
+        "DESCUENTO"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_48.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "DESCUENTO",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_49",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "COSTE",
+      "words": [
+        "COSTE"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_49.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "COSTE",
+      "relatedWords": []
+    },
+    {
+      "id": "DIN_N1_50",
+      "category": "DINERO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "GANANCIA",
+      "words": [
+        "GANANCIA"
+      ],
+      "imageAsset": "assets/images/dinero/din_n1_50.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "GANANCIA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_01",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "JABÓN",
+      "words": [
+        "JABÓN"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_01.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "JABÓN",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_02",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TOALLA",
+      "words": [
+        "TOALLA"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_02.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TOALLA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_03",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CEPILLO",
+      "words": [
+        "CEPILLO"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_03.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CEPILLO",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_04",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PASTA",
+      "words": [
+        "PASTA"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_04.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PASTA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_05",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "DUCHA",
+      "words": [
+        "DUCHA"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_05.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "DUCHA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_06",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "GRIFO",
+      "words": [
+        "GRIFO"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_06.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "GRIFO",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_07",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ESPEJO",
+      "words": [
+        "ESPEJO"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_07.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ESPEJO",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_08",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PEINE",
+      "words": [
+        "PEINE"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_08.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PEINE",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_09",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CHAMPÚ",
+      "words": [
+        "CHAMPÚ"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_09.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CHAMPÚ",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_10",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SECADOR",
+      "words": [
+        "SECADOR"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_10.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SECADOR",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_11",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PAPEL",
+      "words": [
+        "PAPEL"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_11.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PAPEL",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_12",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "INODORO",
+      "words": [
+        "INODORO"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_12.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "INODORO",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_13",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "BAÑERA",
+      "words": [
+        "BAÑERA"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_13.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "BAÑERA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_14",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "LAVABO",
+      "words": [
+        "LAVABO"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_14.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "LAVABO",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_15",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "JABONERA",
+      "words": [
+        "JABONERA"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_15.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "JABONERA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_16",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ESCOBILLA",
+      "words": [
+        "ESCOBILLA"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_16.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ESCOBILLA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_17",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PAPELERA",
+      "words": [
+        "PAPELERA"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_17.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PAPELERA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_18",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TOALLERO",
+      "words": [
+        "TOALLERO"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_18.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TOALLERO",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_19",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ALBORNOZ",
+      "words": [
+        "ALBORNOZ"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_19.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ALBORNOZ",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_20",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CHANCLAS",
+      "words": [
+        "CHANCLAS"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_20.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CHANCLAS",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_21",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "COLONIA",
+      "words": [
+        "COLONIA"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_21.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "COLONIA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_22",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PERFUME",
+      "words": [
+        "PERFUME"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_22.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PERFUME",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_23",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "DESODORANTE",
+      "words": [
+        "DESODORANTE"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_23.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "DESODORANTE",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_24",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "GEL",
+      "words": [
+        "GEL"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_24.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "GEL",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_25",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ACONDICIONADOR",
+      "words": [
+        "ACONDICIONADOR"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_25.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ACONDICIONADOR",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_26",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ENJUAGUE",
+      "words": [
+        "ENJUAGUE"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_26.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ENJUAGUE",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_27",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MAQUINILLA",
+      "words": [
+        "MAQUINILLA"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_27.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MAQUINILLA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_28",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "AFEITADORA",
+      "words": [
+        "AFEITADORA"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_28.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "AFEITADORA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_29",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MAQUILLAJE",
+      "words": [
+        "MAQUILLAJE"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_29.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MAQUILLAJE",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_30",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ESPONJA",
+      "words": [
+        "ESPONJA"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_30.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ESPONJA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_31",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TOALLITA",
+      "words": [
+        "TOALLITA"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_31.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TOALLITA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_32",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PINZA",
+      "words": [
+        "PINZA"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_32.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PINZA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_33",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PEINETA",
+      "words": [
+        "PEINETA"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_33.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PEINETA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_34",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CREMA",
+      "words": [
+        "CREMA"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_34.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CREMA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_35",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "LOCIÓN",
+      "words": [
+        "LOCIÓN"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_35.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "LOCIÓN",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_36",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CEPILLO DENTAL",
+      "words": [
+        "CEPILLO DENTAL"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_36.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CEPILLO DENTAL",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_37",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "HILO DENTAL",
+      "words": [
+        "HILO DENTAL"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_37.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "HILO DENTAL",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_38",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "BIDÉ",
+      "words": [
+        "BIDÉ"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_38.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "BIDÉ",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_39",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MAMPARA",
+      "words": [
+        "MAMPARA"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_39.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MAMPARA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_40",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "GRIFERÍA",
+      "words": [
+        "GRIFERÍA"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_40.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "GRIFERÍA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_41",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "LIMPIADOR",
+      "words": [
+        "LIMPIADOR"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_41.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "LIMPIADOR",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_42",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SECAMANOS",
+      "words": [
+        "SECAMANOS"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_42.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SECAMANOS",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_43",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "DISPENSADOR",
+      "words": [
+        "DISPENSADOR"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_43.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "DISPENSADOR",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_44",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "LAVAMANOS",
+      "words": [
+        "LAVAMANOS"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_44.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "LAVAMANOS",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_45",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TINA",
+      "words": [
+        "TINA"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_45.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TINA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_46",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "HIGIENE",
+      "words": [
+        "HIGIENE"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_46.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "HIGIENE",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_47",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "JABÓN LÍQUIDO",
+      "words": [
+        "JABÓN LÍQUIDO"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_47.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "JABÓN LÍQUIDO",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_48",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TRAPO",
+      "words": [
+        "TRAPO"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_48.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TRAPO",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_49",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CUBETA",
+      "words": [
+        "CUBETA"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_49.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CUBETA",
+      "relatedWords": []
+    },
+    {
+      "id": "BAN_N1_50",
+      "category": "BAÑO",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "DESINFECCIÓN",
+      "words": [
+        "DESINFECCIÓN"
+      ],
+      "imageAsset": "assets/images/bano/ban_n1_50.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "DESINFECCIÓN",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_01",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "DOCENTE",
+      "words": [
+        "DOCENTE"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_01.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "DOCENTE",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_02",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MÉDICO",
+      "words": [
+        "MÉDICO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_02.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MÉDICO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_03",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ENFERMERA",
+      "words": [
+        "ENFERMERA"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_03.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ENFERMERA",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_04",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "BOMBERO",
+      "words": [
+        "BOMBERO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_04.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "BOMBERO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_05",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "POLICÍA",
+      "words": [
+        "POLICÍA"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_05.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "POLICÍA",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_06",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PANADERO",
+      "words": [
+        "PANADERO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_06.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PANADERO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_07",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "COCINERO",
+      "words": [
+        "COCINERO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_07.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "COCINERO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_08",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CARPINTERO",
+      "words": [
+        "CARPINTERO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_08.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CARPINTERO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_09",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MECÁNICO",
+      "words": [
+        "MECÁNICO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_09.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MECÁNICO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_10",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "VETERINARIO",
+      "words": [
+        "VETERINARIO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_10.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "VETERINARIO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_11",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PILOTO",
+      "words": [
+        "PILOTO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_11.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PILOTO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_12",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "AGRICULTOR",
+      "words": [
+        "AGRICULTOR"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_12.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "AGRICULTOR",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_13",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ARQUITECTO",
+      "words": [
+        "ARQUITECTO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_13.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ARQUITECTO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_14",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "INGENIERO",
+      "words": [
+        "INGENIERO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_14.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "INGENIERO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_15",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ABOGADO",
+      "words": [
+        "ABOGADO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_15.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ABOGADO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_16",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "JUEZ",
+      "words": [
+        "JUEZ"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_16.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "JUEZ",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_17",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PERIODISTA",
+      "words": [
+        "PERIODISTA"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_17.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PERIODISTA",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_18",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CANTANTE",
+      "words": [
+        "CANTANTE"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_18.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CANTANTE",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_19",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ACTOR",
+      "words": [
+        "ACTOR"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_19.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ACTOR",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_20",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PINTOR",
+      "words": [
+        "PINTOR"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_20.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PINTOR",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_21",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "FOTÓGRAFO",
+      "words": [
+        "FOTÓGRAFO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_21.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "FOTÓGRAFO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_22",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ELECTRICISTA",
+      "words": [
+        "ELECTRICISTA"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_22.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ELECTRICISTA",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_23",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "FONTANERO",
+      "words": [
+        "FONTANERO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_23.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "FONTANERO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_24",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ALBAÑIL",
+      "words": [
+        "ALBAÑIL"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_24.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ALBAÑIL",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_25",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CONDUCTOR",
+      "words": [
+        "CONDUCTOR"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_25.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CONDUCTOR",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_26",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CAMARERO",
+      "words": [
+        "CAMARERO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_26.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CAMARERO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_27",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "BARBERO",
+      "words": [
+        "BARBERO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_27.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "BARBERO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_28",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PELUQUERO",
+      "words": [
+        "PELUQUERO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_28.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PELUQUERO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_29",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "DENTISTA",
+      "words": [
+        "DENTISTA"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_29.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "DENTISTA",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_30",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PSICÓLOGO",
+      "words": [
+        "PSICÓLOGO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_30.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PSICÓLOGO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_31",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CIENTÍFICO",
+      "words": [
+        "CIENTÍFICO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_31.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CIENTÍFICO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_32",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PROGRAMADOR",
+      "words": [
+        "PROGRAMADOR"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_32.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PROGRAMADOR",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_33",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "DISEÑADOR",
+      "words": [
+        "DISEÑADOR"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_33.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "DISEÑADOR",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_34",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MODISTA",
+      "words": [
+        "MODISTA"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_34.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MODISTA",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_35",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "COSTURERA",
+      "words": [
+        "COSTURERA"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_35.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "COSTURERA",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_36",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ZAPATERO",
+      "words": [
+        "ZAPATERO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_36.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ZAPATERO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_37",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CARTERO",
+      "words": [
+        "CARTERO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_37.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CARTERO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_38",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "REPARTIDOR",
+      "words": [
+        "REPARTIDOR"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_38.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "REPARTIDOR",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_39",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "DEPENDIENTE",
+      "words": [
+        "DEPENDIENTE"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_39.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "DEPENDIENTE",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_40",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "BIBLIOTECARIO",
+      "words": [
+        "BIBLIOTECARIO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_40.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "BIBLIOTECARIO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_41",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SOLDADO",
+      "words": [
+        "SOLDADO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_41.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SOLDADO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_42",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MARINERO",
+      "words": [
+        "MARINERO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_42.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MARINERO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_43",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TAXISTA",
+      "words": [
+        "TAXISTA"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_43.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TAXISTA",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_44",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CARNICERO",
+      "words": [
+        "CARNICERO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_44.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CARNICERO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_45",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PESCADERO",
+      "words": [
+        "PESCADERO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_45.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PESCADERO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_46",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "FLORISTA",
+      "words": [
+        "FLORISTA"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_46.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "FLORISTA",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_47",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "JOYERO",
+      "words": [
+        "JOYERO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_47.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "JOYERO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_48",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MÚSICO",
+      "words": [
+        "MÚSICO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_48.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MÚSICO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_49",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SECRETARIO",
+      "words": [
+        "SECRETARIO"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_49.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SECRETARIO",
+      "relatedWords": []
+    },
+    {
+      "id": "PRO_N1_50",
+      "category": "PROFESIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CONTABLE",
+      "words": [
+        "CONTABLE"
+      ],
+      "imageAsset": "assets/images/profesiones/pro_n1_50.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CONTABLE",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_01",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CUERPO",
+      "words": [
+        "CUERPO"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_01.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CUERPO",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_02",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CORAZÓN",
+      "words": [
+        "CORAZÓN"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_02.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CORAZÓN",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_03",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PULSO",
+      "words": [
+        "PULSO"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_03.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PULSO",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_04",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "FIEBRE",
+      "words": [
+        "FIEBRE"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_04.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "FIEBRE",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_05",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MEDICINA",
+      "words": [
+        "MEDICINA"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_05.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MEDICINA",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_06",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "DOCTOR",
+      "words": [
+        "DOCTOR"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_06.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "DOCTOR",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_07",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "DESCANSO",
+      "words": [
+        "DESCANSO"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_07.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "DESCANSO",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_08",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "AGUA",
+      "words": [
+        "AGUA"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_08.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "AGUA",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_09",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "EJERCICIO",
+      "words": [
+        "EJERCICIO"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_09.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "EJERCICIO",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_10",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "VACUNA",
+      "words": [
+        "VACUNA"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_10.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "VACUNA",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_11",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "HERIDA",
+      "words": [
+        "HERIDA"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_11.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "HERIDA",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_12",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CURA",
+      "words": [
+        "CURA"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_12.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CURA",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_13",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ENFERMEDAD",
+      "words": [
+        "ENFERMEDAD"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_13.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ENFERMEDAD",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_14",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SÍNTOMA",
+      "words": [
+        "SÍNTOMA"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_14.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SÍNTOMA",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_15",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TOS",
+      "words": [
+        "TOS"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_15.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TOS",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_16",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "GRIPE",
+      "words": [
+        "GRIPE"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_16.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "GRIPE",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_17",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "DOLOR",
+      "words": [
+        "DOLOR"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_17.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "DOLOR",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_18",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CABEZA",
+      "words": [
+        "CABEZA"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_18.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CABEZA",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_19",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "GARGANTA",
+      "words": [
+        "GARGANTA"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_19.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "GARGANTA",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_20",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "OÍDO",
+      "words": [
+        "OÍDO"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_20.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "OÍDO",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_21",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "NARIZ",
+      "words": [
+        "NARIZ"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_21.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "NARIZ",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_22",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "BOCA",
+      "words": [
+        "BOCA"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_22.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "BOCA",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_23",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "DIENTE",
+      "words": [
+        "DIENTE"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_23.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "DIENTE",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_24",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "BRAZO",
+      "words": [
+        "BRAZO"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_24.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "BRAZO",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_25",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PIERNA",
+      "words": [
+        "PIERNA"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_25.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PIERNA",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_26",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ESPALDA",
+      "words": [
+        "ESPALDA"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_26.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ESPALDA",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_27",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ESTÓMAGO",
+      "words": [
+        "ESTÓMAGO"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_27.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ESTÓMAGO",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_28",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SANGRE",
+      "words": [
+        "SANGRE"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_28.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SANGRE",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_29",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "HOSPITAL",
+      "words": [
+        "HOSPITAL"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_29.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "HOSPITAL",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_30",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CLÍNICA",
+      "words": [
+        "CLÍNICA"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_30.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CLÍNICA",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_31",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "AMBULANCIA",
+      "words": [
+        "AMBULANCIA"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_31.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "AMBULANCIA",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_32",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TERMÓMETRO",
+      "words": [
+        "TERMÓMETRO"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_32.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TERMÓMETRO",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_33",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "JERINGA",
+      "words": [
+        "JERINGA"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_33.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "JERINGA",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_34",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PASTILLA",
+      "words": [
+        "PASTILLA"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_34.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PASTILLA",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_35",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "JARABE",
+      "words": [
+        "JARABE"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_35.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "JARABE",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_36",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "VITAMINA",
+      "words": [
+        "VITAMINA"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_36.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "VITAMINA",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_37",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "HIGIENE",
+      "words": [
+        "HIGIENE"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_37.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "HIGIENE",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_38",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "DESCANSAR",
+      "words": [
+        "DESCANSAR"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_38.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "DESCANSAR",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_39",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "DORMIR",
+      "words": [
+        "DORMIR"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_39.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "DORMIR",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_40",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CAMINAR",
+      "words": [
+        "CAMINAR"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_40.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CAMINAR",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_41",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CORRER",
+      "words": [
+        "CORRER"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_41.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CORRER",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_42",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ESTIRAR",
+      "words": [
+        "ESTIRAR"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_42.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ESTIRAR",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_43",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "RESPIRAR",
+      "words": [
+        "RESPIRAR"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_43.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "RESPIRAR",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_44",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "COMER",
+      "words": [
+        "COMER"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_44.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "COMER",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_45",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "BEBER",
+      "words": [
+        "BEBER"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_45.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "BEBER",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_46",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CURAR",
+      "words": [
+        "CURAR"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_46.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CURAR",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_47",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SANAR",
+      "words": [
+        "SANAR"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_47.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SANAR",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_48",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PREVENCIÓN",
+      "words": [
+        "PREVENCIÓN"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_48.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PREVENCIÓN",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_49",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "REVISIÓN",
+      "words": [
+        "REVISIÓN"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_49.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "REVISIÓN",
+      "relatedWords": []
+    },
+    {
+      "id": "SAL_N1_50",
+      "category": "SALUD",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "RECETA",
+      "words": [
+        "RECETA"
+      ],
+      "imageAsset": "assets/images/salud/sal_n1_50.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "RECETA",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_01",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ALEGRÍA",
+      "words": [
+        "ALEGRÍA"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_01.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ALEGRÍA",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_02",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TRISTEZA",
+      "words": [
+        "TRISTEZA"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_02.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TRISTEZA",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_03",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ENOJO",
+      "words": [
+        "ENOJO"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_03.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ENOJO",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_04",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MIEDO",
+      "words": [
+        "MIEDO"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_04.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MIEDO",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_05",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CALMA",
+      "words": [
+        "CALMA"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_05.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CALMA",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_06",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SORPRESA",
+      "words": [
+        "SORPRESA"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_06.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SORPRESA",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_07",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "AMOR",
+      "words": [
+        "AMOR"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_07.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "AMOR",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_08",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "NERVIOS",
+      "words": [
+        "NERVIOS"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_08.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "NERVIOS",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_09",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ORGULLO",
+      "words": [
+        "ORGULLO"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_09.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ORGULLO",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_10",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "VERGÜENZA",
+      "words": [
+        "VERGÜENZA"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_10.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "VERGÜENZA",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_11",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PACIENCIA",
+      "words": [
+        "PACIENCIA"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_11.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PACIENCIA",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_12",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "EMPATÍA",
+      "words": [
+        "EMPATÍA"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_12.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "EMPATÍA",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_13",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "FELICIDAD",
+      "words": [
+        "FELICIDAD"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_13.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "FELICIDAD",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_14",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "IRA",
+      "words": [
+        "IRA"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_14.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "IRA",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_15",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "RABIA",
+      "words": [
+        "RABIA"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_15.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "RABIA",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_16",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "FRUSTRACIÓN",
+      "words": [
+        "FRUSTRACIÓN"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_16.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "FRUSTRACIÓN",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_17",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ANSIEDAD",
+      "words": [
+        "ANSIEDAD"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_17.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ANSIEDAD",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_18",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TRANQUILIDAD",
+      "words": [
+        "TRANQUILIDAD"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_18.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TRANQUILIDAD",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_19",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ESPERANZA",
+      "words": [
+        "ESPERANZA"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_19.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ESPERANZA",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_20",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "GRATITUD",
+      "words": [
+        "GRATITUD"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_20.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "GRATITUD",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_21",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CARIÑO",
+      "words": [
+        "CARIÑO"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_21.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CARIÑO",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_22",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TERNURA",
+      "words": [
+        "TERNURA"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_22.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TERNURA",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_23",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ILUSIÓN",
+      "words": [
+        "ILUSIÓN"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_23.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ILUSIÓN",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_24",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "EUFORIA",
+      "words": [
+        "EUFORIA"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_24.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "EUFORIA",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_25",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MELANCOLÍA",
+      "words": [
+        "MELANCOLÍA"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_25.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MELANCOLÍA",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_26",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SOLEDAD",
+      "words": [
+        "SOLEDAD"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_26.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SOLEDAD",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_27",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CULPA",
+      "words": [
+        "CULPA"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_27.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CULPA",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_28",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CELOS",
+      "words": [
+        "CELOS"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_28.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CELOS",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_29",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ENVIDIA",
+      "words": [
+        "ENVIDIA"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_29.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ENVIDIA",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_30",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "COMPASIÓN",
+      "words": [
+        "COMPASIÓN"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_30.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "COMPASIÓN",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_31",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "MOTIVACIÓN",
+      "words": [
+        "MOTIVACIÓN"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_31.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "MOTIVACIÓN",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_32",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CANSANCIO",
+      "words": [
+        "CANSANCIO"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_32.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CANSANCIO",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_33",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ABURRIMIENTO",
+      "words": [
+        "ABURRIMIENTO"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_33.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ABURRIMIENTO",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_34",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "NOSTALGIA",
+      "words": [
+        "NOSTALGIA"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_34.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "NOSTALGIA",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_35",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CONFUSIÓN",
+      "words": [
+        "CONFUSIÓN"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_35.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CONFUSIÓN",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_36",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ALIVIO",
+      "words": [
+        "ALIVIO"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_36.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ALIVIO",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_37",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SUSTO",
+      "words": [
+        "SUSTO"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_37.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SUSTO",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_38",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SATISFACCIÓN",
+      "words": [
+        "SATISFACCIÓN"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_38.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SATISFACCIÓN",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_39",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "AGOBIO",
+      "words": [
+        "AGOBIO"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_39.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "AGOBIO",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_40",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TIMIDEZ",
+      "words": [
+        "TIMIDEZ"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_40.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TIMIDEZ",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_41",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "CONFIANZA",
+      "words": [
+        "CONFIANZA"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_41.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "CONFIANZA",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_42",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "SEGURIDAD",
+      "words": [
+        "SEGURIDAD"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_42.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "SEGURIDAD",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_43",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "INSEGURIDAD",
+      "words": [
+        "INSEGURIDAD"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_43.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "INSEGURIDAD",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_44",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "APATÍA",
+      "words": [
+        "APATÍA"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_44.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "APATÍA",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_45",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ENTUSIASMO",
+      "words": [
+        "ENTUSIASMO"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_45.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ENTUSIASMO",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_46",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "RESPETO",
+      "words": [
+        "RESPETO"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_46.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "RESPETO",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_47",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "RECHAZO",
+      "words": [
+        "RECHAZO"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_47.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "RECHAZO",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_48",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "ASCO",
+      "words": [
+        "ASCO"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_48.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "ASCO",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_49",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "TRIUNFO",
+      "words": [
+        "TRIUNFO"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_49.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "TRIUNFO",
+      "relatedWords": []
+    },
+    {
+      "id": "EMO_N1_50",
+      "category": "EMOCIONES",
+      "level": 1,
+      "activityType": "IMAGEN_PALABRA",
+      "word": "PENA",
+      "words": [
+        "PENA"
+      ],
+      "imageAsset": "assets/images/emociones/emo_n1_50.png",
+      "phrases": [],
+      "audioAsset": null,
+      "ttsText": "PENA",
       "relatedWords": []
     },
     {
@@ -453,186 +5523,6 @@
       "relatedWords": []
     },
     {
-      "id": "COM_N1_01",
-      "category": "COMIDA",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "PAN",
-      "words": [
-        "PAN"
-      ],
-      "imageAsset": "assets/images/comida/com_n1_01.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "PAN",
-      "relatedWords": []
-    },
-    {
-      "id": "COM_N1_02",
-      "category": "COMIDA",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "LECHE",
-      "words": [
-        "LECHE"
-      ],
-      "imageAsset": "assets/images/comida/com_n1_02.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "LECHE",
-      "relatedWords": []
-    },
-    {
-      "id": "COM_N1_03",
-      "category": "COMIDA",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "AGUA",
-      "words": [
-        "AGUA"
-      ],
-      "imageAsset": "assets/images/comida/com_n1_03.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "AGUA",
-      "relatedWords": []
-    },
-    {
-      "id": "COM_N1_04",
-      "category": "COMIDA",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "ARROZ",
-      "words": [
-        "ARROZ"
-      ],
-      "imageAsset": "assets/images/comida/com_n1_04.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "ARROZ",
-      "relatedWords": []
-    },
-    {
-      "id": "COM_N1_05",
-      "category": "COMIDA",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "SOPA",
-      "words": [
-        "SOPA"
-      ],
-      "imageAsset": "assets/images/comida/com_n1_05.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "SOPA",
-      "relatedWords": []
-    },
-    {
-      "id": "COM_N1_06",
-      "category": "COMIDA",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "MANZANA",
-      "words": [
-        "MANZANA"
-      ],
-      "imageAsset": "assets/images/comida/com_n1_06.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "MANZANA",
-      "relatedWords": []
-    },
-    {
-      "id": "COM_N1_07",
-      "category": "COMIDA",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "PERA",
-      "words": [
-        "PERA"
-      ],
-      "imageAsset": "assets/images/comida/com_n1_07.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "PERA",
-      "relatedWords": []
-    },
-    {
-      "id": "COM_N1_08",
-      "category": "COMIDA",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "HUEVO",
-      "words": [
-        "HUEVO"
-      ],
-      "imageAsset": "assets/images/comida/com_n1_08.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "HUEVO",
-      "relatedWords": []
-    },
-    {
-      "id": "COM_N1_09",
-      "category": "COMIDA",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "QUESO",
-      "words": [
-        "QUESO"
-      ],
-      "imageAsset": "assets/images/comida/com_n1_09.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "QUESO",
-      "relatedWords": []
-    },
-    {
-      "id": "COM_N1_10",
-      "category": "COMIDA",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "YOGUR",
-      "words": [
-        "YOGUR"
-      ],
-      "imageAsset": "assets/images/comida/com_n1_10.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "YOGUR",
-      "relatedWords": []
-    },
-    {
-      "id": "COM_N1_11",
-      "category": "COMIDA",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "POLLO",
-      "words": [
-        "POLLO"
-      ],
-      "imageAsset": "assets/images/comida/com_n1_11.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "POLLO",
-      "relatedWords": []
-    },
-    {
-      "id": "COM_N1_12",
-      "category": "COMIDA",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "PESCADO",
-      "words": [
-        "PESCADO"
-      ],
-      "imageAsset": "assets/images/comida/com_n1_12.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "PESCADO",
-      "relatedWords": []
-    },
-    {
       "id": "COM_N2_01",
       "category": "COMIDA",
       "level": 2,
@@ -882,186 +5772,6 @@
       ],
       "audioAsset": null,
       "ttsText": "EL PESCADO ES FRESCO",
-      "relatedWords": []
-    },
-    {
-      "id": "DIN_N1_01",
-      "category": "DINERO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "MONEDA",
-      "words": [
-        "MONEDA"
-      ],
-      "imageAsset": "assets/images/dinero/din_n1_01.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "MONEDA",
-      "relatedWords": []
-    },
-    {
-      "id": "DIN_N1_02",
-      "category": "DINERO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "BILLETE",
-      "words": [
-        "BILLETE"
-      ],
-      "imageAsset": "assets/images/dinero/din_n1_02.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "BILLETE",
-      "relatedWords": []
-    },
-    {
-      "id": "DIN_N1_03",
-      "category": "DINERO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "CARTERA",
-      "words": [
-        "CARTERA"
-      ],
-      "imageAsset": "assets/images/dinero/din_n1_03.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "CARTERA",
-      "relatedWords": []
-    },
-    {
-      "id": "DIN_N1_04",
-      "category": "DINERO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "BANCO",
-      "words": [
-        "BANCO"
-      ],
-      "imageAsset": "assets/images/dinero/din_n1_04.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "BANCO",
-      "relatedWords": []
-    },
-    {
-      "id": "DIN_N1_05",
-      "category": "DINERO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "PRECIO",
-      "words": [
-        "PRECIO"
-      ],
-      "imageAsset": "assets/images/dinero/din_n1_05.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "PRECIO",
-      "relatedWords": []
-    },
-    {
-      "id": "DIN_N1_06",
-      "category": "DINERO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "COMPRA",
-      "words": [
-        "COMPRA"
-      ],
-      "imageAsset": "assets/images/dinero/din_n1_06.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "COMPRA",
-      "relatedWords": []
-    },
-    {
-      "id": "DIN_N1_07",
-      "category": "DINERO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "VENTA",
-      "words": [
-        "VENTA"
-      ],
-      "imageAsset": "assets/images/dinero/din_n1_07.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "VENTA",
-      "relatedWords": []
-    },
-    {
-      "id": "DIN_N1_08",
-      "category": "DINERO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "CAJA",
-      "words": [
-        "CAJA"
-      ],
-      "imageAsset": "assets/images/dinero/din_n1_08.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "CAJA",
-      "relatedWords": []
-    },
-    {
-      "id": "DIN_N1_09",
-      "category": "DINERO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "CAMBIO",
-      "words": [
-        "CAMBIO"
-      ],
-      "imageAsset": "assets/images/dinero/din_n1_09.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "CAMBIO",
-      "relatedWords": []
-    },
-    {
-      "id": "DIN_N1_10",
-      "category": "DINERO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "CUENTA",
-      "words": [
-        "CUENTA"
-      ],
-      "imageAsset": "assets/images/dinero/din_n1_10.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "CUENTA",
-      "relatedWords": []
-    },
-    {
-      "id": "DIN_N1_11",
-      "category": "DINERO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "AHORRO",
-      "words": [
-        "AHORRO"
-      ],
-      "imageAsset": "assets/images/dinero/din_n1_11.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "AHORRO",
-      "relatedWords": []
-    },
-    {
-      "id": "DIN_N1_12",
-      "category": "DINERO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "PAGO",
-      "words": [
-        "PAGO"
-      ],
-      "imageAsset": "assets/images/dinero/din_n1_12.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "PAGO",
       "relatedWords": []
     },
     {
@@ -1317,186 +6027,6 @@
       "relatedWords": []
     },
     {
-      "id": "BAN_N1_01",
-      "category": "BAÑO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "JABÓN",
-      "words": [
-        "JABÓN"
-      ],
-      "imageAsset": "assets/images/bano/ban_n1_01.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "JABÓN",
-      "relatedWords": []
-    },
-    {
-      "id": "BAN_N1_02",
-      "category": "BAÑO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "TOALLA",
-      "words": [
-        "TOALLA"
-      ],
-      "imageAsset": "assets/images/bano/ban_n1_02.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "TOALLA",
-      "relatedWords": []
-    },
-    {
-      "id": "BAN_N1_03",
-      "category": "BAÑO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "CEPILLO",
-      "words": [
-        "CEPILLO"
-      ],
-      "imageAsset": "assets/images/bano/ban_n1_03.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "CEPILLO",
-      "relatedWords": []
-    },
-    {
-      "id": "BAN_N1_04",
-      "category": "BAÑO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "PASTA",
-      "words": [
-        "PASTA"
-      ],
-      "imageAsset": "assets/images/bano/ban_n1_04.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "PASTA",
-      "relatedWords": []
-    },
-    {
-      "id": "BAN_N1_05",
-      "category": "BAÑO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "DUCHA",
-      "words": [
-        "DUCHA"
-      ],
-      "imageAsset": "assets/images/bano/ban_n1_05.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "DUCHA",
-      "relatedWords": []
-    },
-    {
-      "id": "BAN_N1_06",
-      "category": "BAÑO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "GRIFO",
-      "words": [
-        "GRIFO"
-      ],
-      "imageAsset": "assets/images/bano/ban_n1_06.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "GRIFO",
-      "relatedWords": []
-    },
-    {
-      "id": "BAN_N1_07",
-      "category": "BAÑO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "ESPEJO",
-      "words": [
-        "ESPEJO"
-      ],
-      "imageAsset": "assets/images/bano/ban_n1_07.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "ESPEJO",
-      "relatedWords": []
-    },
-    {
-      "id": "BAN_N1_08",
-      "category": "BAÑO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "PEINE",
-      "words": [
-        "PEINE"
-      ],
-      "imageAsset": "assets/images/bano/ban_n1_08.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "PEINE",
-      "relatedWords": []
-    },
-    {
-      "id": "BAN_N1_09",
-      "category": "BAÑO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "CHAMPÚ",
-      "words": [
-        "CHAMPÚ"
-      ],
-      "imageAsset": "assets/images/bano/ban_n1_09.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "CHAMPÚ",
-      "relatedWords": []
-    },
-    {
-      "id": "BAN_N1_10",
-      "category": "BAÑO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "SECADOR",
-      "words": [
-        "SECADOR"
-      ],
-      "imageAsset": "assets/images/bano/ban_n1_10.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "SECADOR",
-      "relatedWords": []
-    },
-    {
-      "id": "BAN_N1_11",
-      "category": "BAÑO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "PAPEL",
-      "words": [
-        "PAPEL"
-      ],
-      "imageAsset": "assets/images/bano/ban_n1_11.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "PAPEL",
-      "relatedWords": []
-    },
-    {
-      "id": "BAN_N1_12",
-      "category": "BAÑO",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "INODORO",
-      "words": [
-        "INODORO"
-      ],
-      "imageAsset": "assets/images/bano/ban_n1_12.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "INODORO",
-      "relatedWords": []
-    },
-    {
       "id": "BAN_N2_01",
       "category": "BAÑO",
       "level": 2,
@@ -1746,186 +6276,6 @@
       ],
       "audioAsset": null,
       "ttsText": "EL SECADOR HACE RUIDO",
-      "relatedWords": []
-    },
-    {
-      "id": "PRO_N1_01",
-      "category": "PROFESIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "DOCENTE",
-      "words": [
-        "DOCENTE"
-      ],
-      "imageAsset": "assets/images/profesiones/pro_n1_01.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "DOCENTE",
-      "relatedWords": []
-    },
-    {
-      "id": "PRO_N1_02",
-      "category": "PROFESIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "MÉDICO",
-      "words": [
-        "MÉDICO"
-      ],
-      "imageAsset": "assets/images/profesiones/pro_n1_02.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "MÉDICO",
-      "relatedWords": []
-    },
-    {
-      "id": "PRO_N1_03",
-      "category": "PROFESIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "ENFERMERA",
-      "words": [
-        "ENFERMERA"
-      ],
-      "imageAsset": "assets/images/profesiones/pro_n1_03.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "ENFERMERA",
-      "relatedWords": []
-    },
-    {
-      "id": "PRO_N1_04",
-      "category": "PROFESIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "BOMBERO",
-      "words": [
-        "BOMBERO"
-      ],
-      "imageAsset": "assets/images/profesiones/pro_n1_04.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "BOMBERO",
-      "relatedWords": []
-    },
-    {
-      "id": "PRO_N1_05",
-      "category": "PROFESIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "POLICÍA",
-      "words": [
-        "POLICÍA"
-      ],
-      "imageAsset": "assets/images/profesiones/pro_n1_05.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "POLICÍA",
-      "relatedWords": []
-    },
-    {
-      "id": "PRO_N1_06",
-      "category": "PROFESIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "PANADERO",
-      "words": [
-        "PANADERO"
-      ],
-      "imageAsset": "assets/images/profesiones/pro_n1_06.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "PANADERO",
-      "relatedWords": []
-    },
-    {
-      "id": "PRO_N1_07",
-      "category": "PROFESIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "COCINERO",
-      "words": [
-        "COCINERO"
-      ],
-      "imageAsset": "assets/images/profesiones/pro_n1_07.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "COCINERO",
-      "relatedWords": []
-    },
-    {
-      "id": "PRO_N1_08",
-      "category": "PROFESIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "CARPINTERO",
-      "words": [
-        "CARPINTERO"
-      ],
-      "imageAsset": "assets/images/profesiones/pro_n1_08.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "CARPINTERO",
-      "relatedWords": []
-    },
-    {
-      "id": "PRO_N1_09",
-      "category": "PROFESIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "MECÁNICO",
-      "words": [
-        "MECÁNICO"
-      ],
-      "imageAsset": "assets/images/profesiones/pro_n1_09.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "MECÁNICO",
-      "relatedWords": []
-    },
-    {
-      "id": "PRO_N1_10",
-      "category": "PROFESIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "VETERINARIO",
-      "words": [
-        "VETERINARIO"
-      ],
-      "imageAsset": "assets/images/profesiones/pro_n1_10.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "VETERINARIO",
-      "relatedWords": []
-    },
-    {
-      "id": "PRO_N1_11",
-      "category": "PROFESIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "PILOTO",
-      "words": [
-        "PILOTO"
-      ],
-      "imageAsset": "assets/images/profesiones/pro_n1_11.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "PILOTO",
-      "relatedWords": []
-    },
-    {
-      "id": "PRO_N1_12",
-      "category": "PROFESIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "AGRICULTOR",
-      "words": [
-        "AGRICULTOR"
-      ],
-      "imageAsset": "assets/images/profesiones/pro_n1_12.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "AGRICULTOR",
       "relatedWords": []
     },
     {
@@ -2181,186 +6531,6 @@
       "relatedWords": []
     },
     {
-      "id": "SAL_N1_01",
-      "category": "SALUD",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "CUERPO",
-      "words": [
-        "CUERPO"
-      ],
-      "imageAsset": "assets/images/salud/sal_n1_01.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "CUERPO",
-      "relatedWords": []
-    },
-    {
-      "id": "SAL_N1_02",
-      "category": "SALUD",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "CORAZÓN",
-      "words": [
-        "CORAZÓN"
-      ],
-      "imageAsset": "assets/images/salud/sal_n1_02.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "CORAZÓN",
-      "relatedWords": []
-    },
-    {
-      "id": "SAL_N1_03",
-      "category": "SALUD",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "PULSO",
-      "words": [
-        "PULSO"
-      ],
-      "imageAsset": "assets/images/salud/sal_n1_03.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "PULSO",
-      "relatedWords": []
-    },
-    {
-      "id": "SAL_N1_04",
-      "category": "SALUD",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "FIEBRE",
-      "words": [
-        "FIEBRE"
-      ],
-      "imageAsset": "assets/images/salud/sal_n1_04.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "FIEBRE",
-      "relatedWords": []
-    },
-    {
-      "id": "SAL_N1_05",
-      "category": "SALUD",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "MEDICINA",
-      "words": [
-        "MEDICINA"
-      ],
-      "imageAsset": "assets/images/salud/sal_n1_05.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "MEDICINA",
-      "relatedWords": []
-    },
-    {
-      "id": "SAL_N1_06",
-      "category": "SALUD",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "DOCTOR",
-      "words": [
-        "DOCTOR"
-      ],
-      "imageAsset": "assets/images/salud/sal_n1_06.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "DOCTOR",
-      "relatedWords": []
-    },
-    {
-      "id": "SAL_N1_07",
-      "category": "SALUD",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "DESCANSO",
-      "words": [
-        "DESCANSO"
-      ],
-      "imageAsset": "assets/images/salud/sal_n1_07.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "DESCANSO",
-      "relatedWords": []
-    },
-    {
-      "id": "SAL_N1_08",
-      "category": "SALUD",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "AGUA",
-      "words": [
-        "AGUA"
-      ],
-      "imageAsset": "assets/images/salud/sal_n1_08.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "AGUA",
-      "relatedWords": []
-    },
-    {
-      "id": "SAL_N1_09",
-      "category": "SALUD",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "EJERCICIO",
-      "words": [
-        "EJERCICIO"
-      ],
-      "imageAsset": "assets/images/salud/sal_n1_09.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "EJERCICIO",
-      "relatedWords": []
-    },
-    {
-      "id": "SAL_N1_10",
-      "category": "SALUD",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "VACUNA",
-      "words": [
-        "VACUNA"
-      ],
-      "imageAsset": "assets/images/salud/sal_n1_10.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "VACUNA",
-      "relatedWords": []
-    },
-    {
-      "id": "SAL_N1_11",
-      "category": "SALUD",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "HERIDA",
-      "words": [
-        "HERIDA"
-      ],
-      "imageAsset": "assets/images/salud/sal_n1_11.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "HERIDA",
-      "relatedWords": []
-    },
-    {
-      "id": "SAL_N1_12",
-      "category": "SALUD",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "CURA",
-      "words": [
-        "CURA"
-      ],
-      "imageAsset": "assets/images/salud/sal_n1_12.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "CURA",
-      "relatedWords": []
-    },
-    {
       "id": "SAL_N2_01",
       "category": "SALUD",
       "level": 2,
@@ -2610,186 +6780,6 @@
       ],
       "audioAsset": null,
       "ttsText": "LA HERIDA SE LIMPIA",
-      "relatedWords": []
-    },
-    {
-      "id": "EMO_N1_01",
-      "category": "EMOCIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "ALEGRÍA",
-      "words": [
-        "ALEGRÍA"
-      ],
-      "imageAsset": "assets/images/emociones/emo_n1_01.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "ALEGRÍA",
-      "relatedWords": []
-    },
-    {
-      "id": "EMO_N1_02",
-      "category": "EMOCIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "TRISTEZA",
-      "words": [
-        "TRISTEZA"
-      ],
-      "imageAsset": "assets/images/emociones/emo_n1_02.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "TRISTEZA",
-      "relatedWords": []
-    },
-    {
-      "id": "EMO_N1_03",
-      "category": "EMOCIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "ENOJO",
-      "words": [
-        "ENOJO"
-      ],
-      "imageAsset": "assets/images/emociones/emo_n1_03.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "ENOJO",
-      "relatedWords": []
-    },
-    {
-      "id": "EMO_N1_04",
-      "category": "EMOCIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "MIEDO",
-      "words": [
-        "MIEDO"
-      ],
-      "imageAsset": "assets/images/emociones/emo_n1_04.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "MIEDO",
-      "relatedWords": []
-    },
-    {
-      "id": "EMO_N1_05",
-      "category": "EMOCIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "CALMA",
-      "words": [
-        "CALMA"
-      ],
-      "imageAsset": "assets/images/emociones/emo_n1_05.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "CALMA",
-      "relatedWords": []
-    },
-    {
-      "id": "EMO_N1_06",
-      "category": "EMOCIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "SORPRESA",
-      "words": [
-        "SORPRESA"
-      ],
-      "imageAsset": "assets/images/emociones/emo_n1_06.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "SORPRESA",
-      "relatedWords": []
-    },
-    {
-      "id": "EMO_N1_07",
-      "category": "EMOCIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "AMOR",
-      "words": [
-        "AMOR"
-      ],
-      "imageAsset": "assets/images/emociones/emo_n1_07.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "AMOR",
-      "relatedWords": []
-    },
-    {
-      "id": "EMO_N1_08",
-      "category": "EMOCIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "NERVIOS",
-      "words": [
-        "NERVIOS"
-      ],
-      "imageAsset": "assets/images/emociones/emo_n1_08.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "NERVIOS",
-      "relatedWords": []
-    },
-    {
-      "id": "EMO_N1_09",
-      "category": "EMOCIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "ORGULLO",
-      "words": [
-        "ORGULLO"
-      ],
-      "imageAsset": "assets/images/emociones/emo_n1_09.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "ORGULLO",
-      "relatedWords": []
-    },
-    {
-      "id": "EMO_N1_10",
-      "category": "EMOCIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "VERGÜENZA",
-      "words": [
-        "VERGÜENZA"
-      ],
-      "imageAsset": "assets/images/emociones/emo_n1_10.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "VERGÜENZA",
-      "relatedWords": []
-    },
-    {
-      "id": "EMO_N1_11",
-      "category": "EMOCIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "PACIENCIA",
-      "words": [
-        "PACIENCIA"
-      ],
-      "imageAsset": "assets/images/emociones/emo_n1_11.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "PACIENCIA",
-      "relatedWords": []
-    },
-    {
-      "id": "EMO_N1_12",
-      "category": "EMOCIONES",
-      "level": 1,
-      "activityType": "IMAGEN_PALABRA",
-      "word": "EMPATÍA",
-      "words": [
-        "EMPATÍA"
-      ],
-      "imageAsset": "assets/images/emociones/emo_n1_12.png",
-      "phrases": [],
-      "audioAsset": null,
-      "ttsText": "EMPATÍA",
       "relatedWords": []
     },
     {
