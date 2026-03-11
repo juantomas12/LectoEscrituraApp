@@ -43,10 +43,13 @@ class LetterTargetScreen extends ConsumerStatefulWidget {
 }
 
 class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
+  static const _vowels = ['A', 'E', 'I', 'O', 'U'];
   final Random _random = Random();
 
   List<Item> _items = [];
   final Map<String, bool> _classifiedByItem = {};
+  late final bool _allowVowelSwitcher;
+  String? _selectedPlayableLetter;
   String _targetLetter = 'A';
   bool _isLoading = true;
   String? _lastFailedItemId;
@@ -71,6 +74,13 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
   @override
   void initState() {
     super.initState();
+    final normalizedTarget = (widget.targetLetter ?? '').trim().toUpperCase();
+    _allowVowelSwitcher =
+        widget.matchMode == LetterMatchMode.contiene &&
+        _vowels.contains(normalizedTarget);
+    if (_allowVowelSwitcher) {
+      _selectedPlayableLetter = normalizedTarget;
+    }
     _prepareActivity();
   }
 
@@ -128,8 +138,11 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
       ],
     };
 
-    final selectedCandidates = widget.targetLetter != null
-        ? [widget.targetLetter!.toUpperCase()]
+    final forcedLetter = _allowVowelSwitcher
+        ? _selectedPlayableLetter
+        : widget.targetLetter?.toUpperCase();
+    final selectedCandidates = forcedLetter != null
+        ? [forcedLetter]
         : candidateLetters;
 
     String selectedLetter = selectedCandidates.first;
@@ -177,6 +190,9 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
     setState(() {
       _items = selectedItems;
       _targetLetter = selectedLetter;
+      if (_allowVowelSwitcher) {
+        _selectedPlayableLetter = selectedLetter;
+      }
       _classifiedByItem.clear();
       _lastFailedItemId = null;
       _lastFailedMessage = null;
@@ -188,6 +204,23 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
       _startedAt = DateTime.now();
       _isLoading = false;
     });
+  }
+
+  Future<void> _changePlayableLetter(String letter) async {
+    final normalized = letter.trim().toUpperCase();
+    if (!_allowVowelSwitcher ||
+        _isLoading ||
+        normalized.isEmpty ||
+        normalized == _targetLetter) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _selectedPlayableLetter = normalized;
+    });
+
+    await _prepareActivity();
   }
 
   Future<void> _playFailureSound() async {
@@ -538,6 +571,70 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
     );
   }
 
+  Widget _buildVowelSwitcher() {
+    if (!_allowVowelSwitcher) {
+      return const SizedBox.shrink();
+    }
+
+    return GamePanel(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      backgroundColor: const Color(0xFFF4F8FF),
+      borderColor: const Color(0xFFCFE0FF),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const UpperText(
+            'CAMBIAR VOCAL',
+            style: TextStyle(
+              fontSize: 14,
+              color: Color(0xFF2C86EA),
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _vowels.map((letter) {
+              final selected = _targetLetter == letter;
+              return InkWell(
+                borderRadius: BorderRadius.circular(999),
+                onTap: () => _changePlayableLetter(letter),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? const Color(0xFF2C86EA)
+                        : const Color(0xFFEAF2FF),
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(
+                      color: selected
+                          ? const Color(0xFF2C86EA)
+                          : const Color(0xFFBED5FF),
+                      width: selected ? 2 : 1.4,
+                    ),
+                  ),
+                  child: UpperText(
+                    letter,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                      color: selected ? Colors.white : const Color(0xFF2C86EA),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
@@ -661,6 +758,10 @@ class _LetterTargetScreenState extends ConsumerState<LetterTargetScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
+                    if (_allowVowelSwitcher) ...[
+                      _buildVowelSwitcher(),
+                      const SizedBox(height: 10),
+                    ],
                     if (!isTabletLandscape) ...[
                       Wrap(
                         spacing: 10,
