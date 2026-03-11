@@ -559,7 +559,6 @@ class _HomeTab extends StatelessWidget {
 
     final width = MediaQuery.sizeOf(context).width;
     final isTablet = width >= 900;
-    final compactProgressLayout = width < 760;
     final horizontalPadding = isTablet ? 28.0 : 14.0;
     final contentWidth = isTablet ? 1320.0 : 860.0;
     final playerName = profileName.split(' ').first;
@@ -768,264 +767,257 @@ class _HomeTab extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (compactProgressLayout) ...[
-                        Row(
-                          children: [
-                            Container(
-                              width: 34,
-                              height: 34,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFFFE4D1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.star_rounded,
-                                color: Color(0xFFEF5B10),
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            const Expanded(
-                              child: Text(
-                                'PROGRESO DE HOY',
-                                style: TextStyle(
-                                  color: Color(0xFF9D4A16),
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 0.6,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFEF5B10),
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final compactProgressLayout = constraints.maxWidth < 720;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (compactProgressLayout) ...[
+                            Row(
                               children: [
-                                const Icon(
-                                  Icons.local_fire_department_rounded,
-                                  size: 16,
-                                  color: Colors.white,
+                                Container(
+                                  width: 34,
+                                  height: 34,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFFFE4D1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.star_rounded,
+                                    color: Color(0xFFEF5B10),
+                                    size: 20,
+                                  ),
                                 ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'Racha $streakLabel',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 12,
+                                const SizedBox(width: 10),
+                                const Expanded(
+                                  child: Text(
+                                    'PROGRESO DE HOY',
+                                    style: TextStyle(
+                                      color: Color(0xFF9D4A16),
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 0.6,
+                                      fontSize: 14,
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                        ),
-                      ] else ...[
-                        Row(
-                          children: [
-                            Container(
-                              width: 34,
-                              height: 34,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFFFE4D1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.star_rounded,
-                                color: Color(0xFFEF5B10),
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            const Expanded(
-                              child: Text(
-                                'PROGRESO DE HOY',
-                                style: TextStyle(
-                                  color: Color(0xFF9D4A16),
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 0.6,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFEF5B10),
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    Icons.local_fire_department_rounded,
-                                    size: 16,
-                                    color: Colors.white,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'Racha $streakLabel',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                      const SizedBox(height: 12),
-                      if (compactProgressLayout) ...[
-                        _HomeProgressMetricCard(
-                          icon: Icons.track_changes_rounded,
-                          label: 'Precisión',
-                          value: '$accuracy%',
-                          valueColor: const Color(0xFFEF5B10),
-                        ),
-                        const SizedBox(height: 10),
-                        _HomeProgressMetricCard(
-                          icon: Icons.bolt_rounded,
-                          label: 'Puntos',
-                          value: '$xp XP',
-                          valueColor: const Color(0xFFB94A0D),
-                        ),
-                      ] else ...[
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _HomeProgressMetricCard(
-                                icon: Icons.track_changes_rounded,
-                                label: 'Precisión',
-                                value: '$accuracy%',
-                                valueColor: const Color(0xFFEF5B10),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: _HomeProgressMetricCard(
-                                icon: Icons.bolt_rounded,
-                                label: 'Puntos',
-                                value: '$xp XP',
-                                valueColor: const Color(0xFFB94A0D),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                      const SizedBox(height: 12),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(999),
-                        child: LinearProgressIndicator(
-                          minHeight: 12,
-                          value: progressRatio,
-                          backgroundColor: const Color(0xFFFFE3CE),
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                            Color(0xFFEF5B10),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      if (compactProgressLayout) ...[
-                        Text(
-                          attemptsSummary,
-                          style: const TextStyle(
-                            color: Color(0xFF7E5B45),
-                            fontWeight: FontWeight.w700,
-                            fontSize: 13,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          child: FilledButton.icon(
-                            onPressed: onOpenAi,
-                            style: FilledButton.styleFrom(
-                              backgroundColor: const Color(0xFFEF5B10),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 10,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                            ),
-                            icon: const Icon(
-                              Icons.auto_awesome_rounded,
-                              size: 18,
-                            ),
-                            label: const Text(
-                              'IA',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 0.3,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ] else ...[
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                attemptsSummary,
-                                style: const TextStyle(
-                                  color: Color(0xFF7E5B45),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            FilledButton.icon(
-                              onPressed: onOpenAi,
-                              style: FilledButton.styleFrom(
-                                backgroundColor: const Color(0xFFEF5B10),
-                                foregroundColor: Colors.white,
+                            const SizedBox(height: 10),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 14,
-                                  vertical: 10,
+                                  horizontal: 10,
+                                  vertical: 6,
                                 ),
-                                shape: RoundedRectangleBorder(
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFEF5B10),
                                   borderRadius: BorderRadius.circular(999),
                                 ),
-                              ),
-                              icon: const Icon(
-                                Icons.auto_awesome_rounded,
-                                size: 18,
-                              ),
-                              label: const Text(
-                                'IA',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 0.3,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.local_fire_department_rounded,
+                                      size: 16,
+                                      color: Colors.white,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'Racha $streakLabel',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
+                          ] else ...[
+                            Row(
+                              children: [
+                                Container(
+                                  width: 34,
+                                  height: 34,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFFFE4D1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.star_rounded,
+                                    color: Color(0xFFEF5B10),
+                                    size: 20,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                const Expanded(
+                                  child: Text(
+                                    'PROGRESO DE HOY',
+                                    style: TextStyle(
+                                      color: Color(0xFF9D4A16),
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 0.6,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFEF5B10),
+                                    borderRadius: BorderRadius.circular(999),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(
+                                        Icons.local_fire_department_rounded,
+                                        size: 16,
+                                        color: Colors.white,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        'Racha $streakLabel',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
-                        ),
-                      ],
-                    ],
+                          const SizedBox(height: 12),
+                          if (compactProgressLayout) ...[
+                            _HomeProgressMetricCard(
+                              icon: Icons.track_changes_rounded,
+                              label: 'Precisión',
+                              value: '$accuracy%',
+                              valueColor: const Color(0xFFEF5B10),
+                            ),
+                            const SizedBox(height: 10),
+                            _HomeProgressMetricCard(
+                              icon: Icons.bolt_rounded,
+                              label: 'Puntos',
+                              value: '$xp XP',
+                              valueColor: const Color(0xFFB94A0D),
+                            ),
+                          ] else ...[
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _HomeProgressMetricCard(
+                                    icon: Icons.track_changes_rounded,
+                                    label: 'Precisión',
+                                    value: '$accuracy%',
+                                    valueColor: const Color(0xFFEF5B10),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: _HomeProgressMetricCard(
+                                    icon: Icons.bolt_rounded,
+                                    label: 'Puntos',
+                                    value: '$xp XP',
+                                    valueColor: const Color(0xFFB94A0D),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                          const SizedBox(height: 12),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(999),
+                            child: LinearProgressIndicator(
+                              minHeight: 12,
+                              value: progressRatio,
+                              backgroundColor: const Color(0xFFFFE3CE),
+                              valueColor: const AlwaysStoppedAnimation<Color>(
+                                Color(0xFFEF5B10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            attemptsSummary,
+                            style: const TextStyle(
+                              color: Color(0xFF7E5B45),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          if (compactProgressLayout)
+                            SizedBox(
+                              width: double.infinity,
+                              child: FilledButton.icon(
+                                onPressed: onOpenAi,
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: const Color(0xFFEF5B10),
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 10,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(999),
+                                  ),
+                                ),
+                                icon: const Icon(
+                                  Icons.auto_awesome_rounded,
+                                  size: 18,
+                                ),
+                                label: const Text(
+                                  'IA',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+                              ),
+                            )
+                          else
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: FilledButton.icon(
+                                onPressed: onOpenAi,
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: const Color(0xFFEF5B10),
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 10,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(999),
+                                  ),
+                                ),
+                                icon: const Icon(
+                                  Icons.auto_awesome_rounded,
+                                  size: 18,
+                                ),
+                                label: const Text(
+                                  'IA',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    },
                   ),
                 ),
               ],
