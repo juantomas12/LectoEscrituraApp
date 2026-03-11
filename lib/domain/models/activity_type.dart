@@ -9,6 +9,16 @@ enum ActivityType {
   ruletaLetras,
   discriminacion,
   discriminacionInversa,
+  eligePalabra,
+  verdaderoFalso,
+  palabraIncompleta,
+  letraInicial,
+  letraFinal,
+  cuentaSilabas,
+  primeraSilaba,
+  ultimaSilaba,
+  ordenaLetras,
+  ordenaFrase,
 }
 
 extension ActivityTypeX on ActivityType {
@@ -23,6 +33,16 @@ extension ActivityTypeX on ActivityType {
     ActivityType.ruletaLetras => 'RULETA_LETRAS',
     ActivityType.discriminacion => 'DISCRIMINACION',
     ActivityType.discriminacionInversa => 'DISCRIMINACION_INVERSA',
+    ActivityType.eligePalabra => 'ELIGE_PALABRA',
+    ActivityType.verdaderoFalso => 'VERDADERO_FALSO',
+    ActivityType.palabraIncompleta => 'PALABRA_INCOMPLETA',
+    ActivityType.letraInicial => 'LETRA_INICIAL',
+    ActivityType.letraFinal => 'LETRA_FINAL',
+    ActivityType.cuentaSilabas => 'CUENTA_SILABAS',
+    ActivityType.primeraSilaba => 'PRIMERA_SILABA',
+    ActivityType.ultimaSilaba => 'ULTIMA_SILABA',
+    ActivityType.ordenaLetras => 'ORDENA_LETRAS',
+    ActivityType.ordenaFrase => 'ORDENA_FRASE',
   };
 
   String get label => switch (this) {
@@ -36,6 +56,16 @@ extension ActivityTypeX on ActivityType {
     ActivityType.ruletaLetras => 'RULETA DE LETRAS Y VOCALES',
     ActivityType.discriminacion => 'DISCRIMINACIÓN VISUAL',
     ActivityType.discriminacionInversa => 'DISCRIMINACIÓN INVERSA',
+    ActivityType.eligePalabra => 'ELIGE LA PALABRA CORRECTA',
+    ActivityType.verdaderoFalso => 'VERDADERO O FALSO',
+    ActivityType.palabraIncompleta => 'PALABRA INCOMPLETA',
+    ActivityType.letraInicial => 'LETRA INICIAL',
+    ActivityType.letraFinal => 'LETRA FINAL',
+    ActivityType.cuentaSilabas => 'CUENTA SÍLABAS',
+    ActivityType.primeraSilaba => 'PRIMERA SÍLABA',
+    ActivityType.ultimaSilaba => 'ÚLTIMA SÍLABA',
+    ActivityType.ordenaLetras => 'ORDENA LETRAS',
+    ActivityType.ordenaFrase => 'ORDENA FRASE',
   };
 
   static ActivityType fromKey(String key) {

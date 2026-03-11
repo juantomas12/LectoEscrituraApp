@@ -32,6 +32,16 @@ class ProgressDashboardScreen extends ConsumerWidget {
     ActivityType.ruletaLetras,
     ActivityType.discriminacion,
     ActivityType.discriminacionInversa,
+    ActivityType.eligePalabra,
+    ActivityType.verdaderoFalso,
+    ActivityType.palabraIncompleta,
+    ActivityType.letraInicial,
+    ActivityType.letraFinal,
+    ActivityType.cuentaSilabas,
+    ActivityType.primeraSilaba,
+    ActivityType.ultimaSilaba,
+    ActivityType.ordenaLetras,
+    ActivityType.ordenaFrase,
   ];
 
   static const _bg = Color(0xFFF1F3F8);
@@ -1279,5 +1289,15 @@ IconData _iconForGame(ActivityType game) {
     ActivityType.ruletaLetras => Icons.casino_outlined,
     ActivityType.discriminacion => Icons.filter_alt_outlined,
     ActivityType.discriminacionInversa => Icons.swap_horiz_rounded,
+    ActivityType.eligePalabra => Icons.touch_app_rounded,
+    ActivityType.verdaderoFalso => Icons.rule_rounded,
+    ActivityType.palabraIncompleta => Icons.edit_note_rounded,
+    ActivityType.letraInicial => Icons.vertical_align_top_rounded,
+    ActivityType.letraFinal => Icons.vertical_align_bottom_rounded,
+    ActivityType.cuentaSilabas => Icons.format_list_numbered_rounded,
+    ActivityType.primeraSilaba => Icons.skip_previous_rounded,
+    ActivityType.ultimaSilaba => Icons.skip_next_rounded,
+    ActivityType.ordenaLetras => Icons.sort_by_alpha_rounded,
+    ActivityType.ordenaFrase => Icons.reorder_rounded,
   };
 }

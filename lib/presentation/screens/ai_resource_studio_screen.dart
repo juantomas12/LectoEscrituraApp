@@ -43,6 +43,16 @@ String _studioGameLabel(ActivityType type) {
     ActivityType.ruletaLetras => 'RULETA DE LETRAS',
     ActivityType.discriminacion => 'DISCRIMINACIÓN',
     ActivityType.discriminacionInversa => 'DISCRIMINACIÓN INVERSA',
+    ActivityType.eligePalabra => 'ELIGE LA PALABRA',
+    ActivityType.verdaderoFalso => 'VERDADERO O FALSO',
+    ActivityType.palabraIncompleta => 'PALABRA INCOMPLETA',
+    ActivityType.letraInicial => 'LETRA INICIAL',
+    ActivityType.letraFinal => 'LETRA FINAL',
+    ActivityType.cuentaSilabas => 'CUENTA SÍLABAS',
+    ActivityType.primeraSilaba => 'PRIMERA SÍLABA',
+    ActivityType.ultimaSilaba => 'ÚLTIMA SÍLABA',
+    ActivityType.ordenaLetras => 'ORDENA LETRAS',
+    ActivityType.ordenaFrase => 'ORDENA FRASE',
   };
 }
 
@@ -68,6 +78,26 @@ String _studioGameDescription(ActivityType type) {
       'MEJORA ATENCIÓN VISUAL ENCONTRANDO OPCIONES CORRECTAS.',
     ActivityType.discriminacionInversa =>
       'IDENTIFICA EL INTRUSO Y PRACTICA DISCRIMINACIÓN AVANZADA.',
+    ActivityType.eligePalabra =>
+      'LEE OPCIONES Y ELIGE LA PALABRA CORRECTA PARA CADA IMAGEN.',
+    ActivityType.verdaderoFalso =>
+      'DECIDE SI UNA PALABRA COINCIDE O NO CON LA IMAGEN MOSTRADA.',
+    ActivityType.palabraIncompleta =>
+      'COMPLETA PALABRAS INCOMPLETAS PARA REFORZAR DECODIFICACIÓN.',
+    ActivityType.letraInicial =>
+      'IDENTIFICA LA LETRA INICIAL DE CADA PALABRA A PARTIR DE SU IMAGEN.',
+    ActivityType.letraFinal =>
+      'IDENTIFICA LA LETRA FINAL Y REFUERZA CIERRE FONOLÓGICO.',
+    ActivityType.cuentaSilabas =>
+      'CUENTA SÍLABAS Y ENTRENARÁS CONCIENCIA SILÁBICA.',
+    ActivityType.primeraSilaba =>
+      'SELECCIONA LA PRIMERA SÍLABA PARA ANTICIPAR CÓMO EMPIEZA CADA PALABRA.',
+    ActivityType.ultimaSilaba =>
+      'SELECCIONA LA ÚLTIMA SÍLABA PARA TRABAJAR TERMINACIONES.',
+    ActivityType.ordenaLetras =>
+      'RECONSTRUYE PALABRAS ORDENANDO LETRAS EN SECUENCIA.',
+    ActivityType.ordenaFrase =>
+      'RECOMPÓN FRASES ORDENANDO PALABRAS PARA FAVORECER COMPRENSIÓN.',
   };
 }
 

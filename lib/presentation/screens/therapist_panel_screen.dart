@@ -530,6 +530,16 @@ class _TherapistPanelScreenState extends ConsumerState<TherapistPanelScreen> {
       ActivityType.ruletaLetras => 'RULETA LETRAS',
       ActivityType.discriminacion => 'DISCRIMINACIÓN',
       ActivityType.discriminacionInversa => 'DISCRIMINACIÓN INVERSA',
+      ActivityType.eligePalabra => 'ELIGE PALABRA',
+      ActivityType.verdaderoFalso => 'VERDADERO O FALSO',
+      ActivityType.palabraIncompleta => 'PALABRA INCOMPLETA',
+      ActivityType.letraInicial => 'LETRA INICIAL',
+      ActivityType.letraFinal => 'LETRA FINAL',
+      ActivityType.cuentaSilabas => 'CUENTA SÍLABAS',
+      ActivityType.primeraSilaba => 'PRIMERA SÍLABA',
+      ActivityType.ultimaSilaba => 'ÚLTIMA SÍLABA',
+      ActivityType.ordenaLetras => 'ORDENA LETRAS',
+      ActivityType.ordenaFrase => 'ORDENA FRASE',
     };
   }
 

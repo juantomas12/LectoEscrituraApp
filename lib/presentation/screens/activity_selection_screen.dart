@@ -15,6 +15,7 @@ import 'activities/discrimination_screen.dart';
 import 'activities/exact_change_store_screen.dart';
 import 'activities/inverse_discrimination_screen.dart';
 import 'activities/letter_target_screen.dart';
+import 'activities/literacy_challenge_screen.dart';
 import 'activities/match_image_phrase_screen.dart';
 import 'activities/match_image_word_screen.dart';
 import 'activities/match_word_word_screen.dart';
@@ -336,6 +337,16 @@ class _ActivitySelectionScreenState
       ActivityType.ruletaLetras => 'RULETA DE LETRAS',
       ActivityType.discriminacion => 'DISCRIMINACIÓN VISUAL',
       ActivityType.discriminacionInversa => 'DISCRIMINACIÓN INVERSA',
+      ActivityType.eligePalabra => 'ELIGE LA PALABRA',
+      ActivityType.verdaderoFalso => 'VERDADERO O FALSO',
+      ActivityType.palabraIncompleta => 'PALABRA INCOMPLETA',
+      ActivityType.letraInicial => 'LETRA INICIAL',
+      ActivityType.letraFinal => 'LETRA FINAL',
+      ActivityType.cuentaSilabas => 'CUENTA SÍLABAS',
+      ActivityType.primeraSilaba => 'PRIMERA SÍLABA',
+      ActivityType.ultimaSilaba => 'ÚLTIMA SÍLABA',
+      ActivityType.ordenaLetras => 'ORDENA LETRAS',
+      ActivityType.ordenaFrase => 'ORDENA FRASE',
     };
   }
 
@@ -351,6 +362,16 @@ class _ActivitySelectionScreenState
       ActivityType.ruletaLetras => Icons.rotate_right_rounded,
       ActivityType.discriminacion => Icons.visibility_rounded,
       ActivityType.discriminacionInversa => Icons.find_replace_rounded,
+      ActivityType.eligePalabra => Icons.touch_app_rounded,
+      ActivityType.verdaderoFalso => Icons.rule_rounded,
+      ActivityType.palabraIncompleta => Icons.edit_note_rounded,
+      ActivityType.letraInicial => Icons.vertical_align_top_rounded,
+      ActivityType.letraFinal => Icons.vertical_align_bottom_rounded,
+      ActivityType.cuentaSilabas => Icons.format_list_numbered_rounded,
+      ActivityType.primeraSilaba => Icons.skip_previous_rounded,
+      ActivityType.ultimaSilaba => Icons.skip_next_rounded,
+      ActivityType.ordenaLetras => Icons.sort_by_alpha_rounded,
+      ActivityType.ordenaFrase => Icons.reorder_rounded,
     };
   }
 
@@ -361,6 +382,16 @@ class _ActivitySelectionScreenState
       ActivityType.ruletaLetras => const Color(0xFF7A5CD6),
       ActivityType.discriminacion => const Color(0xFF2C86EA),
       ActivityType.discriminacionInversa => const Color(0xFFB86115),
+      ActivityType.eligePalabra => const Color(0xFFEF7D32),
+      ActivityType.verdaderoFalso => const Color(0xFF0F9DAA),
+      ActivityType.palabraIncompleta => const Color(0xFFB66A17),
+      ActivityType.letraInicial => const Color(0xFF2C86EA),
+      ActivityType.letraFinal => const Color(0xFF7A5CD6),
+      ActivityType.cuentaSilabas => const Color(0xFF1BA76A),
+      ActivityType.primeraSilaba => const Color(0xFF3A9CE6),
+      ActivityType.ultimaSilaba => const Color(0xFFC64890),
+      ActivityType.ordenaLetras => const Color(0xFF6658D3),
+      ActivityType.ordenaFrase => const Color(0xFFD9645D),
       _ => const Color(0xFF2C86EA),
     };
   }
@@ -394,6 +425,16 @@ class _ActivitySelectionScreenState
       ActivityType.ruletaLetras => [1],
       ActivityType.discriminacion => [1, 2, 3],
       ActivityType.discriminacionInversa => [1, 2, 3],
+      ActivityType.eligePalabra => [1, 2, 3],
+      ActivityType.verdaderoFalso => [1, 2, 3],
+      ActivityType.palabraIncompleta => [1, 2, 3],
+      ActivityType.letraInicial => [1, 2, 3],
+      ActivityType.letraFinal => [1, 2, 3],
+      ActivityType.cuentaSilabas => [1, 2, 3],
+      ActivityType.primeraSilaba => [1, 2, 3],
+      ActivityType.ultimaSilaba => [1, 2, 3],
+      ActivityType.ordenaLetras => [1, 2, 3],
+      ActivityType.ordenaFrase => [1, 2, 3],
       _ => [1],
     };
   }
@@ -432,6 +473,66 @@ class _ActivitySelectionScreenState
         1 => 'ENCUENTRA LA INTRUSA ENTRE POCAS OPCIONES',
         2 => 'MÁS OPCIONES Y MÁS ATENCIÓN',
         3 => 'INTRUSA CON DISTRACCIONES ALTAS',
+        _ => 'NIVEL BASE',
+      },
+      ActivityType.eligePalabra => switch (level) {
+        1 => 'POCAS OPCIONES Y PALABRAS MUY CLARAS',
+        2 => 'MÁS OPCIONES Y DISTRACCIÓN MEDIA',
+        3 => 'MÁS RONDAS Y VOCABULARIO MÁS AMPLIO',
+        _ => 'NIVEL BASE',
+      },
+      ActivityType.verdaderoFalso => switch (level) {
+        1 => 'PALABRAS MUY DISTINTAS Y DECISIÓN SIMPLE',
+        2 => 'MÁS RONDAS Y PARECIDOS MAYORES',
+        3 => 'COMPARACIONES MÁS FINAS Y RITMO MAYOR',
+        _ => 'NIVEL BASE',
+      },
+      ActivityType.palabraIncompleta => switch (level) {
+        1 => 'PALABRAS CORTAS Y LETRAS MUY FRECUENTES',
+        2 => 'LETRAS INTERIORES Y MÁS OPCIONES',
+        3 => 'PALABRAS MÁS LARGAS Y MAYOR RETO',
+        _ => 'NIVEL BASE',
+      },
+      ActivityType.letraInicial => switch (level) {
+        1 => 'INICIOS MUY CLAROS Y POCAS OPCIONES',
+        2 => 'MÁS LETRAS Y PALABRAS MEDIAS',
+        3 => 'DISTINCIÓN ENTRE LETRAS PARECIDAS',
+        _ => 'NIVEL BASE',
+      },
+      ActivityType.letraFinal => switch (level) {
+        1 => 'FINALES CLAROS Y POCAS OPCIONES',
+        2 => 'MÁS PALABRAS Y MÁS LETRAS FINALES',
+        3 => 'MAYOR ATENCIÓN A TERMINACIONES',
+        _ => 'NIVEL BASE',
+      },
+      ActivityType.cuentaSilabas => switch (level) {
+        1 => 'PALABRAS DE HASTA 3 SÍLABAS',
+        2 => 'PALABRAS DE HASTA 4 SÍLABAS',
+        3 => 'PALABRAS LARGAS Y MÁS RONDAS',
+        _ => 'NIVEL BASE',
+      },
+      ActivityType.primeraSilaba => switch (level) {
+        1 => 'PALABRAS DE 2 O 3 SÍLABAS',
+        2 => 'SÍLABAS MÁS VARIADAS',
+        3 => 'PALABRAS MÁS LARGAS Y MÁS OPCIONES',
+        _ => 'NIVEL BASE',
+      },
+      ActivityType.ultimaSilaba => switch (level) {
+        1 => 'TERMINACIONES MUY CLARAS',
+        2 => 'MÁS OPCIONES Y SÍLABAS MEDIAS',
+        3 => 'TERMINACIONES MÁS COMPLEJAS',
+        _ => 'NIVEL BASE',
+      },
+      ActivityType.ordenaLetras => switch (level) {
+        1 => 'PALABRAS CORTAS PARA ORDENAR',
+        2 => 'PALABRAS MEDIAS CON MÁS LETRAS',
+        3 => 'PALABRAS LARGAS Y MAYOR RETO',
+        _ => 'NIVEL BASE',
+      },
+      ActivityType.ordenaFrase => switch (level) {
+        1 => 'FRASES CORTAS DE 2 A 4 PALABRAS',
+        2 => 'FRASES MEDIAS DE HASTA 8 PALABRAS',
+        3 => 'FRASES LARGAS DE COMPRENSIÓN',
         _ => 'NIVEL BASE',
       },
       _ => 'ESTE JUEGO TIENE UN NIVEL ACTIVO POR AHORA',
@@ -548,6 +649,27 @@ class _ActivitySelectionScreenState
         Navigator.of(context).push(
           MaterialPageRoute<void>(
             builder: (_) => InverseDiscriminationScreen(
+              category: widget.category,
+              difficulty: widget.difficulty,
+              level: AppLevelX.fromInt(gameLevel),
+            ),
+          ),
+        );
+        return;
+      case ActivityType.eligePalabra:
+      case ActivityType.verdaderoFalso:
+      case ActivityType.palabraIncompleta:
+      case ActivityType.letraInicial:
+      case ActivityType.letraFinal:
+      case ActivityType.cuentaSilabas:
+      case ActivityType.primeraSilaba:
+      case ActivityType.ultimaSilaba:
+      case ActivityType.ordenaLetras:
+      case ActivityType.ordenaFrase:
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => LiteracyChallengeScreen(
+              activityType: activity,
               category: widget.category,
               difficulty: widget.difficulty,
               level: AppLevelX.fromInt(gameLevel),

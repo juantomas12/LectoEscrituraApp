@@ -116,6 +116,16 @@ class ProgressViewModel extends Notifier<int> {
     ActivityType.cambioExacto,
     ActivityType.discriminacion,
     ActivityType.discriminacionInversa,
+    ActivityType.eligePalabra,
+    ActivityType.verdaderoFalso,
+    ActivityType.palabraIncompleta,
+    ActivityType.letraInicial,
+    ActivityType.letraFinal,
+    ActivityType.cuentaSilabas,
+    ActivityType.primeraSilaba,
+    ActivityType.ultimaSilaba,
+    ActivityType.ordenaLetras,
+    ActivityType.ordenaFrase,
   ];
 
   @override
@@ -384,6 +394,16 @@ class ProgressViewModel extends Notifier<int> {
       ActivityType.sonidos => 3,
       ActivityType.discriminacion => 3,
       ActivityType.discriminacionInversa => 3,
+      ActivityType.eligePalabra => 3,
+      ActivityType.verdaderoFalso => 3,
+      ActivityType.palabraIncompleta => 3,
+      ActivityType.letraInicial => 3,
+      ActivityType.letraFinal => 3,
+      ActivityType.cuentaSilabas => 3,
+      ActivityType.primeraSilaba => 3,
+      ActivityType.ultimaSilaba => 3,
+      ActivityType.ordenaLetras => 3,
+      ActivityType.ordenaFrase => 3,
       _ => 1,
     };
   }

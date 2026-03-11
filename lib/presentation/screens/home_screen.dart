@@ -129,6 +129,86 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       backgroundColor: Color(0xFFFFE2F1),
       gameType: ActivityType.cambioExacto,
     ),
+    _QuickTrack(
+      title: 'Elige Palabra',
+      subtitle: 'Lee y toca la opción correcta',
+      icon: Icons.touch_app_rounded,
+      iconColor: Color(0xFFEF7D32),
+      backgroundColor: Color(0xFFFFEEDA),
+      gameType: ActivityType.eligePalabra,
+    ),
+    _QuickTrack(
+      title: 'Verdadero o Falso',
+      subtitle: 'Decide si imagen y palabra coinciden',
+      icon: Icons.rule_rounded,
+      iconColor: Color(0xFF0F9DAA),
+      backgroundColor: Color(0xFFE1F8FB),
+      gameType: ActivityType.verdaderoFalso,
+    ),
+    _QuickTrack(
+      title: 'Palabra Incompleta',
+      subtitle: 'Completa la letra que falta',
+      icon: Icons.edit_note_rounded,
+      iconColor: Color(0xFFB66A17),
+      backgroundColor: Color(0xFFFFF0DD),
+      gameType: ActivityType.palabraIncompleta,
+    ),
+    _QuickTrack(
+      title: 'Letra Inicial',
+      subtitle: 'Busca con qué empieza',
+      icon: Icons.vertical_align_top_rounded,
+      iconColor: Color(0xFF2C86EA),
+      backgroundColor: Color(0xFFE7F1FF),
+      gameType: ActivityType.letraInicial,
+    ),
+    _QuickTrack(
+      title: 'Letra Final',
+      subtitle: 'Busca con qué termina',
+      icon: Icons.vertical_align_bottom_rounded,
+      iconColor: Color(0xFF7A5CD6),
+      backgroundColor: Color(0xFFEEE7FF),
+      gameType: ActivityType.letraFinal,
+    ),
+    _QuickTrack(
+      title: 'Cuenta Sílabas',
+      subtitle: 'Cuenta los golpes de voz',
+      icon: Icons.format_list_numbered_rounded,
+      iconColor: Color(0xFF1BA76A),
+      backgroundColor: Color(0xFFDEF8E7),
+      gameType: ActivityType.cuentaSilabas,
+    ),
+    _QuickTrack(
+      title: 'Primera Sílaba',
+      subtitle: 'Elige cómo empieza la palabra',
+      icon: Icons.skip_previous_rounded,
+      iconColor: Color(0xFF3A9CE6),
+      backgroundColor: Color(0xFFE4F3FF),
+      gameType: ActivityType.primeraSilaba,
+    ),
+    _QuickTrack(
+      title: 'Última Sílaba',
+      subtitle: 'Elige cómo termina la palabra',
+      icon: Icons.skip_next_rounded,
+      iconColor: Color(0xFFC64890),
+      backgroundColor: Color(0xFFFFE7F3),
+      gameType: ActivityType.ultimaSilaba,
+    ),
+    _QuickTrack(
+      title: 'Ordena Letras',
+      subtitle: 'Reconstruye la palabra',
+      icon: Icons.sort_by_alpha_rounded,
+      iconColor: Color(0xFF6658D3),
+      backgroundColor: Color(0xFFEBE8FF),
+      gameType: ActivityType.ordenaLetras,
+    ),
+    _QuickTrack(
+      title: 'Ordena Frase',
+      subtitle: 'Recompón la frase correcta',
+      icon: Icons.reorder_rounded,
+      iconColor: Color(0xFFD9645D),
+      backgroundColor: Color(0xFFFFE9E8),
+      gameType: ActivityType.ordenaFrase,
+    ),
   ];
 
   static const _allGameShortcuts = <_GameShortcut>[
@@ -182,6 +262,56 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       type: ActivityType.discriminacionInversa,
       icon: Icons.find_replace_rounded,
     ),
+    _GameShortcut(
+      title: 'Elige la Palabra',
+      type: ActivityType.eligePalabra,
+      icon: Icons.touch_app_rounded,
+    ),
+    _GameShortcut(
+      title: 'Verdadero o Falso',
+      type: ActivityType.verdaderoFalso,
+      icon: Icons.rule_rounded,
+    ),
+    _GameShortcut(
+      title: 'Palabra Incompleta',
+      type: ActivityType.palabraIncompleta,
+      icon: Icons.edit_note_rounded,
+    ),
+    _GameShortcut(
+      title: 'Letra Inicial',
+      type: ActivityType.letraInicial,
+      icon: Icons.vertical_align_top_rounded,
+    ),
+    _GameShortcut(
+      title: 'Letra Final',
+      type: ActivityType.letraFinal,
+      icon: Icons.vertical_align_bottom_rounded,
+    ),
+    _GameShortcut(
+      title: 'Cuenta Sílabas',
+      type: ActivityType.cuentaSilabas,
+      icon: Icons.format_list_numbered_rounded,
+    ),
+    _GameShortcut(
+      title: 'Primera Sílaba',
+      type: ActivityType.primeraSilaba,
+      icon: Icons.skip_previous_rounded,
+    ),
+    _GameShortcut(
+      title: 'Última Sílaba',
+      type: ActivityType.ultimaSilaba,
+      icon: Icons.skip_next_rounded,
+    ),
+    _GameShortcut(
+      title: 'Ordena Letras',
+      type: ActivityType.ordenaLetras,
+      icon: Icons.sort_by_alpha_rounded,
+    ),
+    _GameShortcut(
+      title: 'Ordena Frase',
+      type: ActivityType.ordenaFrase,
+      icon: Icons.reorder_rounded,
+    ),
   ];
 
   static const _mainIslands = <_MainIslandDefinition>[
@@ -193,7 +323,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       accentColor: Color(0xFFFF7A00),
       fillColor: Color(0xFFFFA24D),
       badgeIcon: Icons.music_note_rounded,
-      games: [ActivityType.letraObjetivo, ActivityType.ruletaLetras],
+      games: [
+        ActivityType.letraObjetivo,
+        ActivityType.ruletaLetras,
+        ActivityType.letraInicial,
+        ActivityType.letraFinal,
+      ],
     ),
     _MainIslandDefinition(
       id: 'silabas',
@@ -207,6 +342,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ActivityType.palabraPalabra,
         ActivityType.discriminacion,
         ActivityType.discriminacionInversa,
+        ActivityType.cuentaSilabas,
+        ActivityType.primeraSilaba,
+        ActivityType.ultimaSilaba,
       ],
     ),
     _MainIslandDefinition(
@@ -221,6 +359,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ActivityType.imagenPalabra,
         ActivityType.imagenFrase,
         ActivityType.sonidos,
+        ActivityType.eligePalabra,
+        ActivityType.verdaderoFalso,
       ],
     ),
     _MainIslandDefinition(
@@ -231,7 +371,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       accentColor: Color(0xFFA65AF0),
       fillColor: Color(0xFF9B55E2),
       badgeIcon: Icons.draw_rounded,
-      games: [ActivityType.escribirPalabra, ActivityType.cambioExacto],
+      games: [
+        ActivityType.escribirPalabra,
+        ActivityType.cambioExacto,
+        ActivityType.palabraIncompleta,
+        ActivityType.ordenaLetras,
+        ActivityType.ordenaFrase,
+      ],
     ),
   ];
 
@@ -1124,6 +1270,16 @@ class _IslandHubScreenState extends State<_IslandHubScreen> {
       ActivityType.sonidos => [1, 2, 3],
       ActivityType.discriminacion => [1, 2, 3],
       ActivityType.discriminacionInversa => [1, 2, 3],
+      ActivityType.eligePalabra => [1, 2, 3],
+      ActivityType.verdaderoFalso => [1, 2, 3],
+      ActivityType.palabraIncompleta => [1, 2, 3],
+      ActivityType.letraInicial => [1, 2, 3],
+      ActivityType.letraFinal => [1, 2, 3],
+      ActivityType.cuentaSilabas => [1, 2, 3],
+      ActivityType.primeraSilaba => [1, 2, 3],
+      ActivityType.ultimaSilaba => [1, 2, 3],
+      ActivityType.ordenaLetras => [1, 2, 3],
+      ActivityType.ordenaFrase => [1, 2, 3],
       _ => [1],
     };
   }

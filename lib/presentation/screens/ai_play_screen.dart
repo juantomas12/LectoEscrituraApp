@@ -11,6 +11,19 @@ import '../viewmodels/settings_view_model.dart';
 import 'generated_session_game_screen.dart';
 import 'settings_screen.dart';
 
+const _aiSupportedGames = <ActivityType>[
+  ActivityType.imagenPalabra,
+  ActivityType.escribirPalabra,
+  ActivityType.palabraPalabra,
+  ActivityType.imagenFrase,
+  ActivityType.sonidos,
+  ActivityType.letraObjetivo,
+  ActivityType.cambioExacto,
+  ActivityType.ruletaLetras,
+  ActivityType.discriminacion,
+  ActivityType.discriminacionInversa,
+];
+
 class AiPlayScreen extends ConsumerStatefulWidget {
   const AiPlayScreen({super.key, this.embedded = false, this.onOpenSettings});
 
@@ -57,6 +70,16 @@ class _AiPlayScreenState extends ConsumerState<AiPlayScreen> {
       ActivityType.ruletaLetras => 'Ruleta de letras',
       ActivityType.discriminacion => 'Discriminación',
       ActivityType.discriminacionInversa => 'Discriminación inversa',
+      ActivityType.eligePalabra => 'Elige la palabra',
+      ActivityType.verdaderoFalso => 'Verdadero o falso',
+      ActivityType.palabraIncompleta => 'Palabra incompleta',
+      ActivityType.letraInicial => 'Letra inicial',
+      ActivityType.letraFinal => 'Letra final',
+      ActivityType.cuentaSilabas => 'Cuenta sílabas',
+      ActivityType.primeraSilaba => 'Primera sílaba',
+      ActivityType.ultimaSilaba => 'Última sílaba',
+      ActivityType.ordenaLetras => 'Ordena letras',
+      ActivityType.ordenaFrase => 'Ordena frase',
     };
   }
 
@@ -272,7 +295,7 @@ class _AiPlayScreenState extends ConsumerState<AiPlayScreen> {
                                               child: _PickerField<ActivityType>(
                                                 label: 'Categoría',
                                                 value: _selectedGame,
-                                                items: ActivityType.values,
+                                                items: _aiSupportedGames,
                                                 itemLabel: _gameLabel,
                                                 onChanged: (value) {
                                                   if (value == null) return;
@@ -359,7 +382,7 @@ class _AiPlayScreenState extends ConsumerState<AiPlayScreen> {
                               _PickerField<ActivityType>(
                                 label: 'Categoría',
                                 value: _selectedGame,
-                                items: ActivityType.values,
+                                items: _aiSupportedGames,
                                 itemLabel: _gameLabel,
                                 onChanged: (value) {
                                   if (value == null) return;
@@ -1066,6 +1089,76 @@ class _ResourcePalette {
         softBackground: Color(0xFFF1E8FD),
         borderColor: Color(0xFFE0CDF7),
         icon: Icons.pets_rounded,
+      ),
+      ActivityType.eligePalabra => const _ResourcePalette(
+        accent: Color(0xFFEF7D32),
+        playButton: Color(0xFF2ECC71),
+        softBackground: Color(0xFFFFEEDC),
+        borderColor: Color(0xFFFFD5AF),
+        icon: Icons.touch_app_rounded,
+      ),
+      ActivityType.verdaderoFalso => const _ResourcePalette(
+        accent: Color(0xFF0F9DAA),
+        playButton: Color(0xFF2ECC71),
+        softBackground: Color(0xFFE2F7FA),
+        borderColor: Color(0xFFB9E8EE),
+        icon: Icons.rule_rounded,
+      ),
+      ActivityType.palabraIncompleta => const _ResourcePalette(
+        accent: Color(0xFFB66A17),
+        playButton: Color(0xFF2ECC71),
+        softBackground: Color(0xFFFFF1E0),
+        borderColor: Color(0xFFF2D6B4),
+        icon: Icons.edit_note_rounded,
+      ),
+      ActivityType.letraInicial => const _ResourcePalette(
+        accent: Color(0xFF2C86EA),
+        playButton: Color(0xFF2ECC71),
+        softBackground: Color(0xFFE6F1FF),
+        borderColor: Color(0xFFBED7FA),
+        icon: Icons.vertical_align_top_rounded,
+      ),
+      ActivityType.letraFinal => const _ResourcePalette(
+        accent: Color(0xFF7A5CD6),
+        playButton: Color(0xFF2ECC71),
+        softBackground: Color(0xFFEEE7FF),
+        borderColor: Color(0xFFD7CCFB),
+        icon: Icons.vertical_align_bottom_rounded,
+      ),
+      ActivityType.cuentaSilabas => const _ResourcePalette(
+        accent: Color(0xFF1BA76A),
+        playButton: Color(0xFF2ECC71),
+        softBackground: Color(0xFFE3F7EB),
+        borderColor: Color(0xFFBFE8D1),
+        icon: Icons.format_list_numbered_rounded,
+      ),
+      ActivityType.primeraSilaba => const _ResourcePalette(
+        accent: Color(0xFF3A9CE6),
+        playButton: Color(0xFF2ECC71),
+        softBackground: Color(0xFFE6F5FF),
+        borderColor: Color(0xFFC5E3F8),
+        icon: Icons.skip_previous_rounded,
+      ),
+      ActivityType.ultimaSilaba => const _ResourcePalette(
+        accent: Color(0xFFC64890),
+        playButton: Color(0xFF2ECC71),
+        softBackground: Color(0xFFFFE7F3),
+        borderColor: Color(0xFFF4C5DD),
+        icon: Icons.skip_next_rounded,
+      ),
+      ActivityType.ordenaLetras => const _ResourcePalette(
+        accent: Color(0xFF6658D3),
+        playButton: Color(0xFF2ECC71),
+        softBackground: Color(0xFFEBE8FF),
+        borderColor: Color(0xFFD3CCFA),
+        icon: Icons.sort_by_alpha_rounded,
+      ),
+      ActivityType.ordenaFrase => const _ResourcePalette(
+        accent: Color(0xFFD9645D),
+        playButton: Color(0xFF2ECC71),
+        softBackground: Color(0xFFFFEBE9),
+        borderColor: Color(0xFFF5C8C3),
+        icon: Icons.reorder_rounded,
       ),
     };
   }
