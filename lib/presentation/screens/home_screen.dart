@@ -5,11 +5,14 @@ import '../../application/providers/app_providers.dart';
 import '../../domain/models/app_settings.dart';
 import '../../domain/models/activity_type.dart';
 import '../../domain/models/category.dart';
+import '../../domain/models/letter_match_mode.dart';
+import '../../domain/models/level.dart';
 import '../utils/category_visuals.dart';
 import '../viewmodels/home_selection_view_model.dart';
 import '../viewmodels/progress_view_model.dart';
 import '../viewmodels/settings_view_model.dart';
 import 'activity_selection_screen.dart';
+import 'activities/letter_target_screen.dart';
 import 'ai_play_screen.dart';
 import 'ai_resource_studio_screen.dart';
 import 'progress_dashboard_screen.dart';
@@ -353,6 +356,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final category = categoryOverride ?? selection.category;
     selectionVm.setCategory(category, optionId: category.id);
     selectionVm.setGame(type);
+
+    if (type == ActivityType.letraObjetivo) {
+      final settings = ref.read(settingsViewModelProvider);
+      final progressVm = ref.read(progressViewModelProvider.notifier);
+      final resolvedLevel =
+          initialGameLevel ??
+          (settings.autoAdjustLevel
+              ? progressVm.recommendedLevelForGame(
+                  ActivityType.letraObjetivo,
+                  maxLevel: 3,
+                )
+              : 1);
+
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => LetterTargetScreen(
+            category: category,
+            difficulty: selection.difficulty,
+            level: AppLevelX.fromInt(resolvedLevel),
+            targetLetter: 'A',
+            matchMode: LetterMatchMode.contiene,
+            customTitle: 'LETRAS Y VOCALES',
+          ),
+        ),
+      );
+      return;
+    }
+
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => ActivitySelectionScreen(
