@@ -541,7 +541,7 @@
       ],
       "imageAsset": "assets/images/cosas_de_casa/cdc_n1_35.png",
       "phrases": [],
-      "audioAsset": null,
+      "audioAsset": "assets/audio/lavadora_ciclo.wav",
       "ttsText": "LAVADORA",
       "relatedWords": []
     },
@@ -556,7 +556,7 @@
       ],
       "imageAsset": "assets/images/cosas_de_casa/cdc_n1_36.png",
       "phrases": [],
-      "audioAsset": null,
+      "audioAsset": "assets/audio/secadora_tambor.wav",
       "ttsText": "SECADORA",
       "relatedWords": []
     },
@@ -646,7 +646,7 @@
       ],
       "imageAsset": "assets/images/cosas_de_casa/cdc_n1_42.png",
       "phrases": [],
-      "audioAsset": null,
+      "audioAsset": "assets/audio/timbre_casa.wav",
       "ttsText": "TIMBRE",
       "relatedWords": []
     },
@@ -2341,7 +2341,7 @@
       ],
       "imageAsset": "assets/images/bano/ban_n1_05.png",
       "phrases": [],
-      "audioAsset": null,
+      "audioAsset": "assets/audio/ducha_agua.wav",
       "ttsText": "DUCHA",
       "relatedWords": []
     },
@@ -2356,7 +2356,7 @@
       ],
       "imageAsset": "assets/images/bano/ban_n1_06.png",
       "phrases": [],
-      "audioAsset": null,
+      "audioAsset": "assets/audio/grifo_agua.wav",
       "ttsText": "GRIFO",
       "relatedWords": []
     },
@@ -2416,7 +2416,7 @@
       ],
       "imageAsset": "assets/images/bano/ban_n1_10.png",
       "phrases": [],
-      "audioAsset": null,
+      "audioAsset": "assets/audio/secador_aire.wav",
       "ttsText": "SECADOR",
       "relatedWords": []
     },
@@ -6110,7 +6110,7 @@
       ],
       "imageAsset": "assets/images/bano/ban_n2_05.png",
       "phrases": [],
-      "audioAsset": null,
+      "audioAsset": "assets/audio/ducha_agua.wav",
       "ttsText": "DUCHA",
       "relatedWords": [
         "AGUA"
@@ -6128,7 +6128,7 @@
       ],
       "imageAsset": "assets/images/bano/ban_n2_06.png",
       "phrases": [],
-      "audioAsset": null,
+      "audioAsset": "assets/audio/grifo_agua.wav",
       "ttsText": "GRIFO",
       "relatedWords": [
         "ABRIR"
@@ -6184,7 +6184,7 @@
         "LA DUCHA ESTÁ ABIERTA",
         "LA DUCHA TIBIA CAE SOBRE EL CABELLO DESPUÉS DEL DEPORTE"
       ],
-      "audioAsset": null,
+      "audioAsset": "assets/audio/ducha_agua.wav",
       "ttsText": "LA DUCHA ESTÁ ABIERTA",
       "relatedWords": []
     },
@@ -6274,7 +6274,7 @@
         "EL SECADOR HACE RUIDO",
         "EL SECADOR ELÉCTRICO SE USA PARA SECAR EL CABELLO RÁPIDO"
       ],
-      "audioAsset": null,
+      "audioAsset": "assets/audio/secador_aire.wav",
       "ttsText": "EL SECADOR HACE RUIDO",
       "relatedWords": []
     },
@@ -6472,7 +6472,7 @@
         "EL BOMBERO AYUDA",
         "EL BOMBERO USA SU CASCO Y APAGA EL FUEGO CON UNA MANGUERA"
       ],
-      "audioAsset": null,
+      "audioAsset": "assets/audio/manguera_agua.wav",
       "ttsText": "EL BOMBERO AYUDA",
       "relatedWords": []
     },
@@ -6526,7 +6526,7 @@
         "EL VETERINARIO CUIDA MASCOTAS",
         "EL VETERINARIO REVISA AL PERRO Y EXPLICA EL TRATAMIENTO A LA FAMILIA"
       ],
-      "audioAsset": null,
+      "audioAsset": "assets/audio/perro_ladrido.wav",
       "ttsText": "EL VETERINARIO CUIDA MASCOTAS",
       "relatedWords": []
     },

@@ -10,6 +10,7 @@ import '../../data/repositories/session_plan_repository.dart';
 import '../../data/repositories/settings_repository.dart';
 import '../../data/services/openai_resource_generator_service.dart';
 import '../../data/services/openai_session_copilot_service.dart';
+import '../../data/services/audio_playback_service.dart';
 import '../../data/services/tts_service.dart';
 import '../../domain/models/user_profile.dart';
 
@@ -46,6 +47,12 @@ final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
 final ttsServiceProvider = Provider<TtsService>((ref) {
   final service = TtsService();
   ref.onDispose(service.stop);
+  return service;
+});
+
+final audioPlaybackServiceProvider = Provider<AudioPlaybackService>((ref) {
+  final service = AudioPlaybackService();
+  ref.onDispose(service.dispose);
   return service;
 });
 

@@ -87,6 +87,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       gameType: ActivityType.imagenFrase,
     ),
     _QuickTrack(
+      title: 'Sonidos',
+      subtitle: 'Escucha y toca la imagen',
+      icon: Icons.volume_up_rounded,
+      iconColor: Color(0xFF0E9667),
+      backgroundColor: Color(0xFFDDF8EF),
+      gameType: ActivityType.sonidos,
+    ),
+    _QuickTrack(
       title: 'Ruleta',
       subtitle: 'Retos por inicio, medio y final',
       icon: Icons.rotate_right_rounded,
@@ -140,6 +148,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       title: 'Imagen y Frase',
       type: ActivityType.imagenFrase,
       icon: Icons.text_snippet_rounded,
+    ),
+    _GameShortcut(
+      title: 'Juego de Sonidos',
+      type: ActivityType.sonidos,
+      icon: Icons.volume_up_rounded,
     ),
     _GameShortcut(
       title: 'Letras y Vocales',
@@ -201,7 +214,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       accentColor: Color(0xFF16B982),
       fillColor: Color(0xFF1AB586),
       badgeIcon: Icons.menu_book_rounded,
-      games: [ActivityType.imagenPalabra, ActivityType.imagenFrase],
+      games: [
+        ActivityType.imagenPalabra,
+        ActivityType.imagenFrase,
+        ActivityType.sonidos,
+      ],
     ),
     _MainIslandDefinition(
       id: 'escritura',

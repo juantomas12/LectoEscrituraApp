@@ -43,6 +43,7 @@ dependencies:
   flutter_tts: ^4.2.3
   flutter_svg: ^2.2.1
   http: ^1.6.0
+  just_audio: ^0.10.5
 
 dev_dependencies:
   flutter_test:

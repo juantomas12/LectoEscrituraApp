@@ -524,6 +524,7 @@ class _TherapistPanelScreenState extends ConsumerState<TherapistPanelScreen> {
       ActivityType.escribirPalabra => 'ESCRITURA',
       ActivityType.palabraPalabra => 'PALABRA - PALABRA',
       ActivityType.imagenFrase => 'IMAGEN - FRASE',
+      ActivityType.sonidos => 'SONIDOS',
       ActivityType.letraObjetivo => 'LETRA OBJETIVO',
       ActivityType.cambioExacto => 'CAMBIO EXACTO',
       ActivityType.ruletaLetras => 'RULETA LETRAS',

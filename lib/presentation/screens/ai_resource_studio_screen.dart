@@ -23,6 +23,7 @@ const _aiStudioGameChoices = <ActivityType>[
   ActivityType.escribirPalabra,
   ActivityType.palabraPalabra,
   ActivityType.imagenFrase,
+  ActivityType.sonidos,
   ActivityType.letraObjetivo,
   ActivityType.cambioExacto,
   ActivityType.ruletaLetras,
@@ -36,6 +37,7 @@ String _studioGameLabel(ActivityType type) {
     ActivityType.escribirPalabra => 'ESCRIBIR PALABRA',
     ActivityType.palabraPalabra => 'PALABRA CON PALABRA',
     ActivityType.imagenFrase => 'IMAGEN Y FRASE',
+    ActivityType.sonidos => 'JUEGO DE SONIDOS',
     ActivityType.letraObjetivo => 'LETRAS Y VOCALES',
     ActivityType.cambioExacto => 'TIENDA DE CHUCHES',
     ActivityType.ruletaLetras => 'RULETA DE LETRAS',
@@ -54,6 +56,8 @@ String _studioGameDescription(ActivityType type) {
       'RELACIONA PALABRAS ENTRE SÍ PARA TRABAJAR SIGNIFICADO Y MEMORIA.',
     ActivityType.imagenFrase =>
       'UNE UNA FRASE CON LA IMAGEN CORRECTA PARA COMPRENSIÓN LECTORA.',
+    ActivityType.sonidos =>
+      'ESCUCHA UN SONIDO Y SELECCIONA LA IMAGEN QUE LO REPRESENTA.',
     ActivityType.letraObjetivo =>
       'ENTRENA LETRAS Y VOCALES EN CONTEXTOS VISUALES ADAPTADOS.',
     ActivityType.cambioExacto =>
@@ -132,6 +136,18 @@ const _studioGameVisuals = <ActivityType, _StudioGameVisual>{
     storyChips: ['FRASE', 'LECTURA'],
     icon: Icons.auto_stories_rounded,
     startColor: Color(0xFF88D4FF),
+    endColor: Color(0xFF6EC5FF),
+  ),
+  ActivityType.sonidos: _StudioGameVisual(
+    focusTag: 'ESCUCHA',
+    storyIcons: [
+      Icons.volume_up_rounded,
+      Icons.hearing_rounded,
+      Icons.image_search_rounded,
+    ],
+    storyChips: ['SONIDO', 'IMAGEN'],
+    icon: Icons.volume_up_rounded,
+    startColor: Color(0xFF84E2C0),
     endColor: Color(0xFF6EC5FF),
   ),
   ActivityType.letraObjetivo: _StudioGameVisual(

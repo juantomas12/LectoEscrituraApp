@@ -111,6 +111,7 @@ class ProgressViewModel extends Notifier<int> {
     ActivityType.escribirPalabra,
     ActivityType.palabraPalabra,
     ActivityType.imagenFrase,
+    ActivityType.sonidos,
     ActivityType.letraObjetivo,
     ActivityType.cambioExacto,
     ActivityType.discriminacion,
@@ -380,6 +381,7 @@ class ProgressViewModel extends Notifier<int> {
     return switch (activityType) {
       ActivityType.letraObjetivo => 3,
       ActivityType.cambioExacto => 3,
+      ActivityType.sonidos => 3,
       ActivityType.discriminacion => 3,
       ActivityType.discriminacionInversa => 3,
       _ => 1,

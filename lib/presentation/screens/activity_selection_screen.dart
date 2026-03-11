@@ -19,6 +19,7 @@ import 'activities/match_image_phrase_screen.dart';
 import 'activities/match_image_word_screen.dart';
 import 'activities/match_word_word_screen.dart';
 import 'activities/roulette_letters_screen.dart';
+import 'activities/sound_match_screen.dart';
 import 'activities/write_word_screen.dart';
 
 class ActivitySelectionScreen extends ConsumerStatefulWidget {
@@ -313,6 +314,7 @@ class _ActivitySelectionScreenState
       ActivityType.escribirPalabra => 'ESCRIBIR PALABRA',
       ActivityType.palabraPalabra => 'PALABRA CON PALABRA',
       ActivityType.imagenFrase => 'IMAGEN Y FRASE',
+      ActivityType.sonidos => 'JUEGO DE SONIDOS',
       ActivityType.letraObjetivo => 'LETRAS Y VOCALES',
       ActivityType.cambioExacto => 'TIENDA DE CHUCHES',
       ActivityType.ruletaLetras => 'RULETA DE LETRAS',
@@ -327,6 +329,7 @@ class _ActivitySelectionScreenState
       ActivityType.escribirPalabra => Icons.edit_rounded,
       ActivityType.palabraPalabra => Icons.compare_arrows_rounded,
       ActivityType.imagenFrase => Icons.text_snippet_rounded,
+      ActivityType.sonidos => Icons.volume_up_rounded,
       ActivityType.letraObjetivo => Icons.spellcheck_rounded,
       ActivityType.cambioExacto => Icons.shopping_bag_rounded,
       ActivityType.ruletaLetras => Icons.rotate_right_rounded,
@@ -338,6 +341,7 @@ class _ActivitySelectionScreenState
   Color _displayGameColor(ActivityType type) {
     return switch (type) {
       ActivityType.cambioExacto => const Color(0xFFC64890),
+      ActivityType.sonidos => const Color(0xFF0F9C78),
       ActivityType.ruletaLetras => const Color(0xFF7A5CD6),
       ActivityType.discriminacion => const Color(0xFF2C86EA),
       ActivityType.discriminacionInversa => const Color(0xFFB86115),
@@ -370,6 +374,7 @@ class _ActivitySelectionScreenState
     return switch (activityType) {
       ActivityType.letraObjetivo => [1, 2, 3],
       ActivityType.cambioExacto => [1, 2, 3],
+      ActivityType.sonidos => [1, 2, 3],
       ActivityType.ruletaLetras => [1],
       ActivityType.discriminacion => [1, 2, 3],
       ActivityType.discriminacionInversa => [1, 2, 3],
@@ -387,6 +392,12 @@ class _ActivitySelectionScreenState
       },
       ActivityType.ruletaLetras => switch (level) {
         1 => 'LA RULETA DEFINE LA LETRA Y EL RETO',
+        _ => 'NIVEL BASE',
+      },
+      ActivityType.sonidos => switch (level) {
+        1 => 'ESCUCHA Y ELIGE ENTRE POCAS IMÁGENES MUY DISTINTAS',
+        2 => 'MÁS OPCIONES Y REPETICIÓN DE SONIDOS DE APOYO',
+        3 => 'MÁS RONDAS Y MAYOR DISCRIMINACIÓN AUDITIVA',
         _ => 'NIVEL BASE',
       },
       ActivityType.cambioExacto => switch (level) {
@@ -453,6 +464,17 @@ class _ActivitySelectionScreenState
             builder: (_) => MatchImagePhraseScreen(
               category: widget.category,
               difficulty: widget.difficulty,
+            ),
+          ),
+        );
+        return;
+      case ActivityType.sonidos:
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => SoundMatchScreen(
+              category: widget.category,
+              difficulty: widget.difficulty,
+              level: AppLevelX.fromInt(gameLevel),
             ),
           ),
         );

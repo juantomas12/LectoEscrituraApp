@@ -51,6 +51,7 @@ class _AiPlayScreenState extends ConsumerState<AiPlayScreen> {
       ActivityType.escribirPalabra => 'Escribir palabra',
       ActivityType.palabraPalabra => 'Palabra con palabra',
       ActivityType.imagenFrase => 'Imagen y frase',
+      ActivityType.sonidos => 'Juego de sonidos',
       ActivityType.letraObjetivo => 'Letras y vocales',
       ActivityType.cambioExacto => 'Tienda de chuches',
       ActivityType.ruletaLetras => 'Ruleta de letras',
@@ -1023,6 +1024,13 @@ class _ResourcePalette {
         softBackground: Color(0xFFEEEAFE),
         borderColor: Color(0xFFD7CCFB),
         icon: Icons.chat_bubble_rounded,
+      ),
+      ActivityType.sonidos => const _ResourcePalette(
+        accent: Color(0xFF0F9C78),
+        playButton: Color(0xFF0F9C78),
+        softBackground: Color(0xFFE0F6F0),
+        borderColor: Color(0xFFB7E8D8),
+        icon: Icons.volume_up_rounded,
       ),
       ActivityType.letraObjetivo => const _ResourcePalette(
         accent: Color(0xFFEF7D32),
