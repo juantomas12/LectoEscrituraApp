@@ -496,7 +496,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 selection: selection,
                 selectionVm: selectionVm,
               ),
-              onOpenAi: () => setState(() => _currentTab = 1),
               onOpenProgress: () => setState(() => _currentTab = 2),
             ),
           },
@@ -521,7 +520,6 @@ class _HomeTab extends StatelessWidget {
     required this.onMenuTap,
     required this.onProfileTap,
     required this.onOpenIsland,
-    required this.onOpenAi,
     required this.onOpenProgress,
   });
 
@@ -531,7 +529,6 @@ class _HomeTab extends StatelessWidget {
   final VoidCallback onMenuTap;
   final VoidCallback onProfileTap;
   final ValueChanged<_MainIslandDefinition> onOpenIsland;
-  final VoidCallback onOpenAi;
   final VoidCallback onOpenProgress;
 
   @override
@@ -956,65 +953,6 @@ class _HomeTab extends StatelessWidget {
                               fontSize: 13,
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          if (compactProgressLayout)
-                            SizedBox(
-                              width: double.infinity,
-                              child: FilledButton.icon(
-                                onPressed: onOpenAi,
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: const Color(0xFFEF5B10),
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 14,
-                                    vertical: 10,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(999),
-                                  ),
-                                ),
-                                icon: const Icon(
-                                  Icons.auto_awesome_rounded,
-                                  size: 18,
-                                ),
-                                label: const Text(
-                                  'IA',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: 0.3,
-                                  ),
-                                ),
-                              ),
-                            )
-                          else
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: FilledButton.icon(
-                                onPressed: onOpenAi,
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: const Color(0xFFEF5B10),
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 14,
-                                    vertical: 10,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(999),
-                                  ),
-                                ),
-                                icon: const Icon(
-                                  Icons.auto_awesome_rounded,
-                                  size: 18,
-                                ),
-                                label: const Text(
-                                  'IA',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: 0.3,
-                                  ),
-                                ),
-                              ),
-                            ),
                         ],
                       );
                     },
