@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.educacion.app" "\0"
-            VALUE "FileDescription", "lectoescritura_app" "\0"
+            VALUE "FileDescription", "IAprende" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "lectoescritura_app" "\0"
+            VALUE "InternalName", "iaprende" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.educacion.app. All rights reserved." "\0"
-            VALUE "OriginalFilename", "lectoescritura_app.exe" "\0"
-            VALUE "ProductName", "lectoescritura_app" "\0"
+            VALUE "OriginalFilename", "iaprende.exe" "\0"
+            VALUE "ProductName", "IAprende" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

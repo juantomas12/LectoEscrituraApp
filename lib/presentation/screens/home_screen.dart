@@ -593,13 +593,19 @@ class _HomeTab extends StatelessWidget {
                         width: isTablet ? 50 : 44,
                         height: isTablet ? 50 : 44,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFEF5B10),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: Icon(
-                          Icons.menu_book_rounded,
                           color: Colors.white,
-                          size: isTablet ? 26 : 22,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: const Color(0xFFFFC9A2),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.asset(
+                            'assets/images/image.png',
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -608,7 +614,7 @@ class _HomeTab extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'EduMundo',
+                              'IAprende',
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w900,

@@ -421,7 +421,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In es, this message translates to:
-  /// **'EduMundo'**
+  /// **'IAprende'**
   String get appName;
 
   /// No description provided for @appSubtitle.

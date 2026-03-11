@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.educacion.app.lectoescritura_app"
+    namespace = "com.educacion.app.iaprende"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.educacion.app.lectoescritura_app"
+        applicationId = "com.educacion.app.iaprende"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

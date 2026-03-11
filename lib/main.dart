@@ -11,11 +11,11 @@ import 'presentation/widgets/upper_text.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
-  runApp(const ProviderScope(child: LectoescrituraApp()));
+  runApp(const ProviderScope(child: IAprendeApp()));
 }
 
-class LectoescrituraApp extends ConsumerWidget {
-  const LectoescrituraApp({super.key});
+class IAprendeApp extends ConsumerWidget {
+  const IAprendeApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,7 +27,7 @@ class LectoescrituraApp extends ConsumerWidget {
 
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'APP DE LECTOESCRITURA',
+          title: 'IAprende',
           theme: buildAppTheme(settings),
           home: const HomeScreen(),
         );
@@ -51,8 +51,21 @@ class LectoescrituraApp extends ConsumerWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CircularProgressIndicator(),
+                  SizedBox(
+                    width: 96,
+                    height: 96,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(24)),
+                      child: Image(
+                        image: AssetImage('assets/images/image.png'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
                   SizedBox(height: 16),
+                  UpperText('IAprende'),
+                  SizedBox(height: 16),
+                  CircularProgressIndicator(),
                   UpperText('CARGANDO CONTENIDO OFFLINE...'),
                 ],
               ),

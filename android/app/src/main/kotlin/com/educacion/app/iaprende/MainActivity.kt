@@ -1,4 +1,4 @@
-package com.educacion.app.lectoescritura_app
+package com.educacion.app.iaprende
 
 import io.flutter.embedding.android.FlutterActivity
 

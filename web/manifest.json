@@ -1,11 +1,11 @@
 {
-    "name": "lectoescritura_app",
-    "short_name": "lectoescritura_app",
+    "name": "IAprende",
+    "short_name": "IAprende",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "IAprende offline learning app.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

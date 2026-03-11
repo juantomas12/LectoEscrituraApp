@@ -180,7 +180,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aiSaved_resources => 'Saved resources';
 
   @override
-  String get appName => 'EduMundo';
+  String get appName => 'IAprende';
 
   @override
   String get appSubtitle => 'Literacy';

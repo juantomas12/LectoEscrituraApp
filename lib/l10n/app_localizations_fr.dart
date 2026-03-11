@@ -181,7 +181,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get aiSaved_resources => 'Ressources enregistrées';
 
   @override
-  String get appName => 'EduMundo';
+  String get appName => 'IAprende';
 
   @override
   String get appSubtitle => 'Alphabétisation';

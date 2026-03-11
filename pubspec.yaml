@@ -1,5 +1,5 @@
-name: lectoescritura_app
-description: "A new Flutter project."
+name: iaprende
+description: "IAprende offline learning app."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -70,15 +70,7 @@ flutter:
 
   assets:
     - assets/data/
-    - assets/images/cosas_de_casa/
-    - assets/images/comida/
-    - assets/images/dinero/
-    - assets/images/bano/
-    - assets/images/profesiones/
-    - assets/images/salud/
-    - assets/images/emociones/
-    - assets/images/game_cards/
-    - assets/images/category_cards/
+    - assets/images/
     - assets/audio/
 
   # An image asset can refer to one or more resolution-specific "variants", see
