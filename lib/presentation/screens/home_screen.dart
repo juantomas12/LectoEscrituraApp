@@ -348,6 +348,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     required HomeSelectionViewModel selectionVm,
     required ActivityType type,
     AppCategory? categoryOverride,
+    int? initialGameLevel,
   }) {
     final category = categoryOverride ?? selection.category;
     selectionVm.setCategory(category, optionId: category.id);
@@ -358,6 +359,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           category: category,
           activityType: type,
           difficulty: selection.difficulty,
+          initialGameLevel: initialGameLevel,
+          autoLaunchOnLoad:
+              initialGameLevel != null && type != ActivityType.letraObjetivo,
         ),
       ),
     );
@@ -386,12 +390,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           categories: _categoryChoices,
           initialCategory: selection.category,
           games: games,
-          onStartGame: (pickedCategory, type) {
+          onStartGame: (pickedCategory, type, initialGameLevel) {
             _startActivity(
               selection: selection,
               selectionVm: selectionVm,
               type: type,
               categoryOverride: pickedCategory,
+              initialGameLevel: initialGameLevel,
             );
           },
         ),
@@ -999,7 +1004,12 @@ class _IslandHubScreen extends StatefulWidget {
   final List<AppCategory> categories;
   final AppCategory initialCategory;
   final List<_IslandSubGame> games;
-  final void Function(AppCategory category, ActivityType type) onStartGame;
+  final void Function(
+    AppCategory category,
+    ActivityType type,
+    int? initialGameLevel,
+  )
+  onStartGame;
 
   @override
   State<_IslandHubScreen> createState() => _IslandHubScreenState();
@@ -1007,6 +1017,37 @@ class _IslandHubScreen extends StatefulWidget {
 
 class _IslandHubScreenState extends State<_IslandHubScreen> {
   late AppCategory _selectedCategory = widget.initialCategory;
+  late final Map<ActivityType, int> _selectedLevelsByGame;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedLevelsByGame = {
+      for (final game in widget.games)
+        game.type: _levelsForGame(game.type).first,
+    };
+  }
+
+  List<int> _levelsForGame(ActivityType activityType) {
+    return switch (activityType) {
+      ActivityType.letraObjetivo => [1, 2, 3],
+      ActivityType.cambioExacto => [1, 2, 3],
+      ActivityType.sonidos => [1, 2, 3],
+      ActivityType.discriminacion => [1, 2, 3],
+      ActivityType.discriminacionInversa => [1, 2, 3],
+      _ => [1],
+    };
+  }
+
+  int _selectedLevelForGame(ActivityType type) {
+    return _selectedLevelsByGame[type] ?? _levelsForGame(type).first;
+  }
+
+  void _setSelectedLevel(ActivityType type, int level) {
+    setState(() {
+      _selectedLevelsByGame[type] = level;
+    });
+  }
 
   Future<void> _openCategorySelector() async {
     final picked = await showModalBottomSheet<AppCategory>(
@@ -1211,112 +1252,169 @@ class _IslandHubScreenState extends State<_IslandHubScreen> {
                     crossAxisCount: isTablet ? 2 : 1,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
-                    childAspectRatio: isTablet ? 1.65 : 1.35,
+                    childAspectRatio: isTablet ? 1.42 : 1.18,
                   ),
                   itemBuilder: (context, index) {
                     final game = widget.games[index];
+                    final levels = _levelsForGame(game.type);
+                    final selectedLevel = _selectedLevelForGame(game.type);
                     return Material(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(22),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(22),
-                        onTap: () {
-                          widget.onStartGame(_selectedCategory, game.type);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(22),
-                            border: Border.all(color: const Color(0xFFDDE5F2)),
-                          ),
-                          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 24,
-                                    backgroundColor: game.accentColor
-                                        .withValues(alpha: 0.16),
-                                    child: Icon(
-                                      game.icon,
-                                      color: game.accentColor,
-                                      size: 26,
-                                    ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(22),
+                          border: Border.all(color: const Color(0xFFDDE5F2)),
+                        ),
+                        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 24,
+                                  backgroundColor: game.accentColor.withValues(
+                                    alpha: 0.16,
                                   ),
-                                  const Spacer(),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: game.accentColor.withValues(
-                                        alpha: 0.14,
-                                      ),
-                                      borderRadius: BorderRadius.circular(999),
-                                    ),
-                                    child: Text(
-                                      _categoryPickerLabel(
-                                        _selectedCategory,
-                                      ).toUpperCase(),
-                                      style: TextStyle(
-                                        color: game.accentColor,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w900,
-                                      ),
-                                    ),
+                                  child: Icon(
+                                    game.icon,
+                                    color: game.accentColor,
+                                    size: 26,
                                   ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                game.title.toUpperCase(),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w900,
-                                  color: Color(0xFF111D3A),
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                game.subtitle,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Color(0xFF61739A),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const Spacer(),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: FilledButton(
-                                  onPressed: () {
-                                    widget.onStartGame(
+                                const Spacer(),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: game.accentColor.withValues(
+                                      alpha: 0.14,
+                                    ),
+                                    borderRadius: BorderRadius.circular(999),
+                                  ),
+                                  child: Text(
+                                    _categoryPickerLabel(
                                       _selectedCategory,
-                                      game.type,
-                                    );
-                                  },
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: game.accentColor,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(999),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'JUGAR',
+                                    ).toUpperCase(),
                                     style: TextStyle(
+                                      color: game.accentColor,
+                                      fontSize: 11,
                                       fontWeight: FontWeight.w900,
                                     ),
                                   ),
                                 ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              game.title.toUpperCase(),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFF111D3A),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              game.subtitle,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFF61739A),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            if (levels.length > 1) ...[
+                              const SizedBox(height: 14),
+                              Text(
+                                'ELIGE NIVEL',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 0.8,
+                                  color: game.accentColor,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: levels.map((level) {
+                                  final selected = selectedLevel == level;
+                                  return InkWell(
+                                    borderRadius: BorderRadius.circular(999),
+                                    onTap: () {
+                                      _setSelectedLevel(game.type, level);
+                                    },
+                                    child: AnimatedContainer(
+                                      duration: const Duration(
+                                        milliseconds: 180,
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 14,
+                                        vertical: 8,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: selected
+                                            ? game.accentColor
+                                            : game.accentColor.withValues(
+                                                alpha: 0.10,
+                                              ),
+                                        borderRadius: BorderRadius.circular(
+                                          999,
+                                        ),
+                                        border: Border.all(
+                                          color: game.accentColor.withValues(
+                                            alpha: selected ? 1 : 0.22,
+                                          ),
+                                          width: selected ? 2 : 1.4,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'NIVEL $level',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w900,
+                                          color: selected
+                                              ? Colors.white
+                                              : game.accentColor,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
                               ),
                             ],
-                          ),
+                            const Spacer(),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: FilledButton(
+                                onPressed: () {
+                                  widget.onStartGame(
+                                    _selectedCategory,
+                                    game.type,
+                                    levels.length > 1 ? selectedLevel : null,
+                                  );
+                                },
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: game.accentColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(999),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'JUGAR',
+                                  style: TextStyle(fontWeight: FontWeight.w900),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     );

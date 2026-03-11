@@ -30,6 +30,7 @@ class ActivitySelectionScreen extends ConsumerStatefulWidget {
     required this.difficulty,
     this.initialGameLevel,
     this.initialVowelMode,
+    this.autoLaunchOnLoad = false,
   });
 
   final AppCategory category;
@@ -37,6 +38,7 @@ class ActivitySelectionScreen extends ConsumerStatefulWidget {
   final Difficulty difficulty;
   final int? initialGameLevel;
   final String? initialVowelMode;
+  final bool autoLaunchOnLoad;
 
   @override
   ConsumerState<ActivitySelectionScreen> createState() =>
@@ -52,6 +54,7 @@ class _ActivitySelectionScreenState
   int _selectedGameLevel = 1;
   bool _didApplyAutoLevel = false;
   bool _didAutoStartSingleLevel = false;
+  bool _didAutoLaunchInitialLevel = false;
   String _selectedVowelMode = 'A';
 
   @override
@@ -104,6 +107,19 @@ class _ActivitySelectionScreenState
       _selectedGameLevel = levels.contains(recommended)
           ? recommended
           : levels.first;
+    }
+
+    if (!_didAutoLaunchInitialLevel &&
+        widget.autoLaunchOnLoad &&
+        widget.initialGameLevel != null &&
+        levels.contains(widget.initialGameLevel)) {
+      _didAutoLaunchInitialLevel = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) {
+          return;
+        }
+        _openActivity(context, widget.activityType, widget.initialGameLevel!);
+      });
     }
 
     final isSingleLevel = levels.length == 1;
